@@ -1,0 +1,9 @@
+target_sources(NcAssetBuilder
+    PRIVATE
+        Builders.cpp
+        Main.cpp
+        MeshAnalysis.cpp
+        NcaFile.cpp
+        Serialize.cpp
+        Validation.cpp
+)

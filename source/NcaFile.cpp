@@ -1,6 +1,7 @@
 #include "NcaFile.h"
 #include "MeshAnalysis.h"
 #include "Serialize.h"
+#include "Version.h"
 
 NcaFile::NcaFile(const std::filesystem::path& outPath)
     : m_file{outPath},
@@ -10,6 +11,8 @@ NcaFile::NcaFile(const std::filesystem::path& outPath)
     {
         throw std::runtime_error("Failure opening: " + outPath.string());
     }
+
+    m_file << "NcEngine Asset v" << NC_ASSET_TOOLS_VERSION << '\n';
 }
 
 void NcaFile::AddMesh(aiMesh* mesh)

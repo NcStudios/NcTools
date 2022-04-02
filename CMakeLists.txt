@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project("NcAssetBuilder" VERSION "1.0.0" LANGUAGES CXX)
+project("NcAssetBuilder" VERSION "0.1.0" LANGUAGES CXX)
 
 if(${PROJECT_SOURCE_DIR} EQUAL ${PROJECT_BINARY_DIR})
     message(FATAL_ERROR "Don't be a fool, out-of-source build with your tool.")
@@ -16,6 +16,10 @@ endif()
 
 add_executable(NcAssetBuilder)
 
+configure_file(${PROJECT_SOURCE_DIR}/source/Version.h.in
+               ${PROJECT_SOURCE_DIR}/source/Version.h
+)
+
 set_target_properties(NcAssetBuilder
     PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -28,8 +32,8 @@ target_compile_options(NcAssetBuilder
 
 target_include_directories(NcAssetBuilder
     PRIVATE
-        source
-        external
+        ${PROJECT_SOURCE_DIR}/source
+        ${PROJECT_SOURCE_DIR}/external
 )
 
 target_link_libraries(NcAssetBuilder

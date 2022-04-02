@@ -11,12 +11,13 @@
 *.log
 
 #directories
+.idea/
 .vs/
 .vscode/
 build/
 install/
 scratch/
-.idea/
+test/temp/
 
 !libassimp.dll
 !libassimp.dll.a

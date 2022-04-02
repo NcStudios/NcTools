@@ -22,7 +22,7 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
  
     - name: Configure
-      run: cmake -S ${{github.workspace}}/source -B ${{github.workspace}}/build
+      run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build

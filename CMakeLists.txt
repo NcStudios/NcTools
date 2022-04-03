@@ -33,12 +33,12 @@ target_compile_options(NcAssetBuilder
 target_include_directories(NcAssetBuilder
     PRIVATE
         ${PROJECT_SOURCE_DIR}/source
-        ${PROJECT_SOURCE_DIR}/external
+        ${PROJECT_SOURCE_DIR}/external/assimp/include
 )
 
 target_link_libraries(NcAssetBuilder
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/libassimp.dll.a
+        ${PROJECT_SOURCE_DIR}/external/assimp/lib/assimp.lib
 )
 
 add_subdirectory(source)

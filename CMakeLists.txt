@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project("NcAssetBuilder" VERSION "0.1.0" LANGUAGES CXX)
+project("nc-tools" VERSION "0.1.0" LANGUAGES CXX)
 
 if(${PROJECT_SOURCE_DIR} EQUAL ${PROJECT_BINARY_DIR})
     message(FATAL_ERROR "Don't be a fool, out-of-source build with your tool.")
@@ -14,29 +14,29 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(WARNING_FLAGS /W3 /WX)
 endif()
 
-add_executable(NcAssetBuilder)
+add_executable(nc-tools)
 
 configure_file(${PROJECT_SOURCE_DIR}/source/Version.h.in
                ${PROJECT_SOURCE_DIR}/source/Version.h
 )
 
-set_target_properties(NcAssetBuilder
+set_target_properties(nc-tools
     PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
-target_compile_options(NcAssetBuilder
+target_compile_options(nc-tools
     PRIVATE
         ${WARNING_FLAGS}
 )
 
-target_include_directories(NcAssetBuilder
+target_include_directories(nc-tools
     PRIVATE
         ${PROJECT_SOURCE_DIR}/source
         ${PROJECT_SOURCE_DIR}/external/assimp/include
 )
 
-target_link_libraries(NcAssetBuilder
+target_link_libraries(nc-tools
     PRIVATE
         ${PROJECT_SOURCE_DIR}/external/assimp/lib/assimp-vc143-mt.lib
 )

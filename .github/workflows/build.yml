@@ -25,4 +25,9 @@ jobs:
       run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build
+      run: cmake --build ${{github.workspace}}/build --config "Release"
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: nc-tools
+        path: ${{github.workspace}}/Release/NcAssetTools.exe

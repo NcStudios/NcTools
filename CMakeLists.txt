@@ -38,7 +38,7 @@ target_include_directories(NcAssetBuilder
 
 target_link_libraries(NcAssetBuilder
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/external/assimp/lib/assimp.lib
+        ${PROJECT_SOURCE_DIR}/external/assimp/lib/assimp-vc143-mt.lib
 )
 
 add_subdirectory(source)

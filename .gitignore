@@ -19,5 +19,7 @@ install/
 scratch/
 test/temp/
 
-!libassimp.dll
-!libassimp.dll.a
+!assimp-vc143-mt.dll
+!assimp-vc143-mt.lib
+!assimp-vc143-mt.exp
+!assimp-vc143-mt.pdb

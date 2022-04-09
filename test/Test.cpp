@@ -69,9 +69,9 @@ bool RunCommand(std::string appName, std::string cmdLine)
 bool RunBuilder(const std::filesystem::path& in, const std::filesystem::path& outDir, const std::string& type)
 {
     std::stringstream cmdStream;
-    cmdStream << "../nc-tools.exe -a " << type << " -i " << in.lexically_normal() << " -o " << outDir.lexically_normal();
+    cmdStream << "./nc-tools.exe -a " << type << " -i " << in.lexically_normal() << " -o " << outDir.lexically_normal();
 
-    if(!RunCommand("../nc-tools.exe", cmdStream.str()))
+    if(!RunCommand("nc-tools.exe", cmdStream.str()))
     {
         std::cerr << "Failure building asset file: " << in.string() << '\n';
         return false;
@@ -109,10 +109,10 @@ int RunTests(const std::vector<TestInput>& files)
             continue;
         }
 
-        auto testPath = std::filesystem::path{"temp"} / rawPath.filename();
+        auto testPath = std::filesystem::path{"test/temp"} / rawPath.filename();
         testPath.replace_extension(".nca");
 
-        auto buildResult = RunBuilder(rawPath, "temp", type);
+        auto buildResult = RunBuilder(rawPath, "test/temp", type);
         if(!buildResult)
         {
             std::cerr << "nc-tools failure: " << rawPath << '\n';

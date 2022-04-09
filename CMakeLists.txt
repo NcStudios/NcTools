@@ -14,6 +14,8 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(WARNING_FLAGS /W3 /WX)
 endif()
 
+option(NC_BUILD_TESTS "Include tests in build" ON)
+
 add_executable(nc-tools)
 
 configure_file(${PROJECT_SOURCE_DIR}/source/Version.h.in
@@ -22,7 +24,8 @@ configure_file(${PROJECT_SOURCE_DIR}/source/Version.h.in
 
 set_target_properties(nc-tools
     PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}
 )
 
 target_compile_options(nc-tools
@@ -42,3 +45,7 @@ target_link_libraries(nc-tools
 )
 
 add_subdirectory(source)
+
+if(NC_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

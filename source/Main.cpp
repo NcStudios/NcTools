@@ -48,9 +48,9 @@ int main(int argc, char** argv)
 void Usage()
 {
     std::cout << "Usage:\n"
-              << "  NcAssetBuilder -a TYPE -i IN\n"
-              << "  NcAssetBuilder -a TYPE -i IN -o OUT\n"
-              << "  NcAssetBuilder -m MANIFEST -o OUT\n\n"
+              << "  NcAssetBuilder -a TYPE -i IN_FILE\n"
+              << "  NcAssetBuilder -a TYPE -i IN_FILE -o OUT_DIR\n"
+              << "  NcAssetBuilder -m MANIFEST -o OUT_DIR\n\n"
 
               << "  Valid asset types are 'mesh', 'hull-collider', 'concave-collider', and 'skybox' and are\n"
               << "  case-insensitive.\n\n"

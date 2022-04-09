@@ -1,4 +1,4 @@
-target_sources(NcAssetBuilder
+target_sources(nc-tools
     PRIVATE
         Builders.cpp
         Main.cpp

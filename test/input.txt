@@ -1,0 +1,4 @@
+mesh test_data/plane.fbx test_data/plane_mesh.nca
+hull-collider test_data/coin.fbx test_data/coin_hull.nca
+concave-collider test_data/plane.fbx test_data/plane_concave.nca
+garbage nothing nada

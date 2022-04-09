@@ -20,7 +20,8 @@ void NcaFile::AddMesh(aiMesh* mesh)
     const auto extents = GetMeshVertexExtents(mesh->mVertices, mesh->mNumVertices);
     const auto vertexCount = mesh->mNumVertices;
     const auto faceCount = mesh->mNumFaces;
-    m_file << extents << '\n'
+    m_file << "type: mesh\n"
+           << extents << '\n'
            << "vertext_count: " << vertexCount << '\n'
            << "index_count: " << faceCount * 3 << '\n';
 
@@ -45,8 +46,9 @@ void NcaFile::AddConcaveCollider(aiMesh* mesh)
 {
     const auto extents = GetMeshVertexExtents(mesh->mVertices, mesh->mNumVertices);
 
-    m_file << mesh->mNumFaces << '\n'
-           << extents.max << '\n';
+    m_file << "type: concave-collider\n"
+           << extents << '\n'
+           << "triangle count: " << mesh->mNumFaces << '\n';
 
     const auto* vertices = mesh->mVertices;
 
@@ -68,8 +70,9 @@ void NcaFile::AddConvexHull(aiMesh* mesh)
 {
     const auto extents = GetMeshVertexExtents(mesh->mVertices, mesh->mNumVertices);
 
-    m_file << extents << '\n'
-           << mesh->mNumVertices << '\n';
+    m_file << "type: convex-hull\n"
+           << extents << '\n'
+           << "vertex count: " << mesh->mNumVertices << '\n';
 
     for (size_t i = 0u; i < mesh->mNumVertices; ++i)
     {

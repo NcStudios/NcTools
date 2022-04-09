@@ -23,7 +23,7 @@ auto ReadTestInput(const std::filesystem::path& path) -> std::vector<TestInput>
     auto file = std::ifstream{path};
     if (!file)
     {
-        std::cerr << "Bad input path: " << path << '\n';
+        std::cout << "Bad input path: " << path << '\n';
         return {};
     }
 
@@ -54,7 +54,7 @@ bool RunCommand(std::string appName, std::string cmdLine)
     if(!result)
     {
         auto error = GetLastError();
-        std::cerr << "Failure creating nc-tools process: " << error << '\n';
+        std::cout << "Failure creating nc-tools process: " << error << '\n';
         return false;
     }
 
@@ -73,7 +73,7 @@ bool RunBuilder(const std::filesystem::path& in, const std::filesystem::path& ou
 
     if(!RunCommand("nc-tools.exe", cmdStream.str()))
     {
-        std::cerr << "Failure building asset file: " << in.string() << '\n';
+        std::cout << "Failure building asset file: " << in.string() << '\n';
         return false;
     }
 
@@ -105,7 +105,7 @@ int RunTests(const std::vector<TestInput>& files)
     {
         if (!std::filesystem::exists(rawPath) || !std::filesystem::exists(referencePath))
         {
-            std::cerr << BadFileText << rawPath << " or " << referencePath << '\n';
+            std::cout << BadFileText << rawPath << " or " << referencePath << '\n';
             continue;
         }
 
@@ -115,13 +115,13 @@ int RunTests(const std::vector<TestInput>& files)
         auto buildResult = RunBuilder(rawPath, "test/temp", type);
         if(!buildResult)
         {
-            std::cerr << "nc-tools failure: " << rawPath << '\n';
+            std::cout << "nc-tools failure: " << rawPath << '\n';
             continue;
         }
 
         auto result = EqualFiles(referencePath, testPath);
         if(!result) ++failureCount;
-        std::cerr << (result ? PassText : FailText) << testPath.filename() << '\n';
+        std::cout << (result ? PassText : FailText) << testPath.filename() << '\n';
     }
 
     return failureCount;
@@ -134,14 +134,14 @@ int main(int argc, const char** argv)
 
     if (argc != 2)
     {
-        std::cerr << "Error: arg count expected to be 2 but was " << argc << '\n';
+        std::cout << "Error: arg count expected to be 2 but was " << argc << '\n';
         return 1;
     }
 
     auto files = ReadTestInput(argv[1]);
     auto failureCount = RunTests(files);
 
-    std::cerr << "\nResults - Run: " << files.size() << ", Failed: " << failureCount << '\n';
+    std::cout << "\nResults - Run: " << files.size() << ", Failed: " << failureCount << '\n';
 
     return failureCount;
 }

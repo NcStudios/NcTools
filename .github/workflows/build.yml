@@ -3,7 +3,7 @@ name: Build
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ main ]
+    branches: [ vnext ]
     paths-ignore:
       - '**/*.md'
       - '**/*.txt'
@@ -22,20 +22,18 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
  
     - name: Configure
-      run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build
+      run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_BUILD_TESTS=ON
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config "Release"
 
-    # - name: Run Tests
-    #   run: ./nc-tools_tests test/collateral/input.txt
+    - name: Run Tests
+      run: ./nc-tools_tests test/collateral/input.txt
 
-    - name: Release
-      uses: marvinpinto/action-automatic-releases@latest
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        title: "Test Release"
-        files: |
-          nc-tools.exe
-          assimp-vc143-mt.dll
+        name: nc-tools
+        path: |
+          ${{github.workspace}}/nc-tools.exe
+          ${{github.workspace}}/assimp-vs143-mt.dll

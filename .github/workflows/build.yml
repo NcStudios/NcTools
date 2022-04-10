@@ -10,6 +10,9 @@ on:
       - '**/*.config'
       - '**/*.ini'
 
+evv:
+  VERSION: 0.1.0
+
 jobs:
   Windows:
     runs-on: windows-2022
@@ -38,7 +41,7 @@ jobs:
     #       ${{github.workspace}}/nc-tools.exe
     #       ${{github.workspace}}/assimp-vc143-mt.dll
     - name: Publish to Artifactory
-      run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.exe "https://ncstudios.jfrog.io/artifactory/tools-generic-local/some_version/nc-tools.exe"
+      run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.exe https://ncstudios.jfrog.io/artifactory/nctools/$VERSION/nc-tools.exe
 
     # - name: Publish to Artifactory
     #   uses: advancedcsg-open/action-jfrog-cli@master

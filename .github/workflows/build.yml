@@ -10,8 +10,8 @@ on:
       - '**/*.config'
       - '**/*.ini'
 
-env:
-  VERSION: '0.1.0'
+#env:
+#  VERSION: '0.1.0'
 
 jobs:
   Windows:
@@ -33,8 +33,16 @@ jobs:
     - name: Run Tests
       run: ./nc-tools_tests test/collateral/input.txt
 
-    - name: Create Archive
-      run: 7z a -tzip -mx=9 nc-tools.zip ./nc-tools.exe ./assimp-vc143-mt.dll
+    - name: Upload Artifacts
+    - uses: actions/upload-artifact@v3
+      with:
+        name: nc-tools
+        path: |
+          nc-tools.exe
+          assimp-vc143-mt.dll
 
-    - name: Publish to Artifactory
-      run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.zip ${{ format('https://ncstudios.jfrog.io/artifactory/nctools/{0}/nc-tools.zip', env.VERSION) }}
+    #- name: Create Archive
+    #  run: 7z a -tzip -mx=9 nc-tools.zip ./nc-tools.exe ./assimp-vc143-mt.dll
+
+    #- name: Publish to Artifactory
+    #  run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.zip ${{ format('https://ncstudios.jfrog.io/artifactory/nctools/{0}/nc-tools.zip', env.VERSION) }}

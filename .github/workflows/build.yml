@@ -27,8 +27,8 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config "Release"
 
-    - name: Run Tests
-      run: ./nc-tools_tests test/collateral/input.txt
+    # - name: Run Tests
+    #   run: ./nc-tools_tests test/collateral/input.txt
 
     - name: Release
       uses: marvinpinto/action-automatic-releases@latest

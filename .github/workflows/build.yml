@@ -11,7 +11,7 @@ on:
       - '**/*.ini'
 
 env:
-  VERSION: "0.1.0"
+  VERSION: '0.1.0'
 
 jobs:
   Windows:
@@ -43,4 +43,4 @@ jobs:
       run: 7z a -tzip -mx=9 nc-tools.zip ./nc-tools.exe ./assimp-vc143-mt.dll
 
     - name: Publish to Artifactory
-      run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.zip ${{format(https://ncstudios.jfrog.io/artifactory/nctools/{0}/nc-tools.zip, VERSION)}}
+      run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.zip ${{format('https://ncstudios.jfrog.io/artifactory/nctools/{0}/nc-tools.zip', VERSION)}}

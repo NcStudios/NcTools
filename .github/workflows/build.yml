@@ -42,6 +42,7 @@ jobs:
       uses: advancedcsg-open/action-jfrog-cli@master
       with:
         url: 'https://ncstudios.jfrog.io/'
-        credentials type: 'apikey'
-        apikey: ${{ secrets.RT_APIKEY }}
+        credentials type: 'username'
+        user: ${{ secrets.JFROG_USER }}
+        password: ${{ secrets.JFROG_PASSWORD }}
         args: u ${{github.workspace}}/nc-tools.exe "/version/" --recursive=true --build-name=nc-tools

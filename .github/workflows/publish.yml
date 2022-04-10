@@ -16,7 +16,6 @@ jobs:
     runs-on: windows-2022
 
     steps:
-
     - name: Get Artifacts
     - uses: actions/download-artifact@v3
       with:

@@ -1,5 +1,6 @@
 NcEngine Asset v0.1.0
-2
-1.41421
+type: concave-collider
+extents: 2 2 0 1.41421
+triangle count: 2
 -1 -1 -0  -1 1 -0  1 -1 -0 
 -1 1 -0  1 1 -0  1 -1 -0 

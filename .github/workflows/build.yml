@@ -3,7 +3,7 @@ name: Build
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ vnext ]
+    branches: [ release, vnext ]
     paths-ignore:
       - '**/*.md'
       - '**/*.txt'
@@ -32,12 +32,6 @@ jobs:
 
     - name: Run Tests
       run: ./nc-tools_tests test/collateral/input.txt
-
-    # - name: Create Artifacts
-    # - uses: papeloto/action-zip@v1
-    #   with:
-    #     files: nc-tools.exe assimp-vc143-mt.dll
-    #     dest: nc-tools.zip
 
     - name: Create Archive
       run: 7z a -tzip -mx=9 nc-tools.zip ./nc-tools.exe ./assimp-vc143-mt.dll

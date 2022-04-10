@@ -11,7 +11,7 @@ on:
       - '**/*.ini'
 
 env:
-  VERSION: 0.1.0
+  VERSION: "0.1.0"
 
 jobs:
   Windows:

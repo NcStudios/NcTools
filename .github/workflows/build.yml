@@ -10,7 +10,7 @@ on:
       - '**/*.config'
       - '**/*.ini'
 
-evv:
+env:
   VERSION: 0.1.0
 
 jobs:

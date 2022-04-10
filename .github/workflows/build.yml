@@ -30,10 +30,18 @@ jobs:
     - name: Run Tests
       run: ./nc-tools_tests test/collateral/input.txt
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+    # - name: Upload Artifacts
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: nc-tools
+    #     path: |
+    #       ${{github.workspace}}/nc-tools.exe
+    #       ${{github.workspace}}/assimp-vc143-mt.dll
+
+    - name: Publish to Artifactory
+      uses: advancedcsg-open/action-jfrog-cli@master
       with:
-        name: nc-tools
-        path: |
-          ${{github.workspace}}/nc-tools.exe
-          ${{github.workspace}}/assimp-vc143-mt.dll
+        url: 'https://ncstudios.jfrog.io/'
+        credentials type: 'apikey'
+        apikey: ${{ secrets.RT_APIKEY }}
+        args: u ${{github.workspace}}/nc-tools.exe "/version/" --recursive=true --build-name=nc-tools

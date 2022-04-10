@@ -11,7 +11,7 @@ on:
       - '**/*.ini'
 
 jobs:
-  Windows:
+  Build:
     runs-on: windows-2022
 
     steps:
@@ -31,7 +31,7 @@ jobs:
       run: ./nc-tools_tests test/collateral/input.txt
 
     - name: Upload Artifacts
-    - uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v3
       with:
         name: nc-tools
         path: |

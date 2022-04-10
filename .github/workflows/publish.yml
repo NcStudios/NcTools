@@ -3,7 +3,7 @@ name: Publish
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ release ]
+    branches: [ vnext, release ]
     types:
       - closed
 
@@ -16,10 +16,25 @@ jobs:
     runs-on: windows-2022
 
     steps:
-    - name: Get Artifacts
-      uses: actions/download-artifact@v3
+    # - name: Get Artifacts
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: nc-tools
+
+    - name: Download artifact
+      uses: dawidd6/action-download-artifact@v2
       with:
+        workflow: build.yml
+        workflow_conclusion: success
+        branch: vnext
         name: nc-tools
+# Optional, directory where to extract artifact(s), defaults to current directory
+# path: extract_here
+# default false, just try to download from the last one
+# check_artifacts:  false
+# Optional, search for the last workflow run whose stored an artifact named as in `name` input
+# default false
+# search_artifacts: false
 
     - name: Publish to Artifactory
       run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.zip ${{ format('https://ncstudios.jfrog.io/artifactory/nctools/{0}/nc-tools.zip', env.VERSION) }}

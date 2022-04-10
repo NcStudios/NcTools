@@ -36,4 +36,4 @@ jobs:
         name: nc-tools
         path: |
           ${{github.workspace}}/nc-tools.exe
-          ${{github.workspace}}/assimp-vs143-mt.dll
+          ${{github.workspace}}/assimp-vc143-mt.dll

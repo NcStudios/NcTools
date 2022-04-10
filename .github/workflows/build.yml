@@ -33,21 +33,11 @@ jobs:
     - name: Run Tests
       run: ./nc-tools_tests test/collateral/input.txt
 
-    # - name: Upload Artifacts
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: nc-tools
-    #     path: |
-    #       ${{github.workspace}}/nc-tools.exe
-    #       ${{github.workspace}}/assimp-vc143-mt.dll
-    - name: Publish to Artifactory
-      run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.exe https://ncstudios.jfrog.io/artifactory/nctools/$VERSION/nc-tools.exe
+    - name: Create Artifacts
+    - uses: papeloto/action-zip@v1
+      with:
+        files: nc-tools.exe assimp-vc143-mt.dll
+        dest: nc-tools.zip
 
-    # - name: Publish to Artifactory
-    #   uses: advancedcsg-open/action-jfrog-cli@master
-    #   with:
-    #     url: 'https://ncstudios.jfrog.io/'
-    #     credentials type: 'username'
-    #     user: ${{ secrets.JFROG_USER }}
-    #     password: ${{ secrets.JFROG_PASSWORD }}
-    #     args: u ${{github.workspace}}/nc-tools.exe "/version/" --recursive=true --build-name=nc-tools
+    - name: Publish to Artifactory
+      run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.zip format(https://ncstudios.jfrog.io/artifactory/nctools/{0}/nc-tools.zip, $VERSION)

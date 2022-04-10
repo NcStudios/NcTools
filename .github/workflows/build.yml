@@ -37,12 +37,14 @@ jobs:
     #     path: |
     #       ${{github.workspace}}/nc-tools.exe
     #       ${{github.workspace}}/assimp-vc143-mt.dll
-
     - name: Publish to Artifactory
-      uses: advancedcsg-open/action-jfrog-cli@master
-      with:
-        url: 'https://ncstudios.jfrog.io/'
-        credentials type: 'username'
-        user: ${{ secrets.JFROG_USER }}
-        password: ${{ secrets.JFROG_PASSWORD }}
-        args: u ${{github.workspace}}/nc-tools.exe "/version/" --recursive=true --build-name=nc-tools
+      run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.exe "https://ncstudios.jfrog.io/artifactory/tools-generic-local/some_version/nc-tools.exe"
+
+    # - name: Publish to Artifactory
+    #   uses: advancedcsg-open/action-jfrog-cli@master
+    #   with:
+    #     url: 'https://ncstudios.jfrog.io/'
+    #     credentials type: 'username'
+    #     user: ${{ secrets.JFROG_USER }}
+    #     password: ${{ secrets.JFROG_PASSWORD }}
+    #     args: u ${{github.workspace}}/nc-tools.exe "/version/" --recursive=true --build-name=nc-tools

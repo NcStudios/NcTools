@@ -33,11 +33,11 @@ jobs:
     - name: Run Tests
       run: ./nc-tools_tests test/collateral/input.txt
 
-    # - name: Create Artifacts
-    # - uses: papeloto/action-zip@v1
-    #   with:
-    #     files: nc-tools.exe assimp-vc143-mt.dll
-    #     dest: nc-tools.zip
+    - name: Create Artifacts
+    - uses: papeloto/action-zip@v1
+      with:
+        files: nc-tools.exe assimp-vc143-mt.dll
+        dest: nc-tools.zip
 
     - name: Publish to Artifactory
       run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.zip https://ncstudios.jfrog.io/artifactory/nctools/$VERSION/nc-tools.zip

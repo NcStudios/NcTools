@@ -7,7 +7,7 @@ env:
   VERSION: '0.1.1'
 
 jobs:
-  Windows:
+  Publish:
     runs-on: windows-2022
 
     steps:
@@ -19,6 +19,7 @@ jobs:
         branch: release
         name: nc-tools
         path: ${{ github.workspace }}\artifacts
+        skip_unpack: true
 
     - name: Create release
       uses: softprops/action-gh-release@v1

@@ -1,18 +1,13 @@
-name: Publish
+name: Release
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ release ]
-    types:
-      - closed
 
 env:
   VERSION: '0.1.1'
 
 jobs:
-  Publish:
-    if: github.event.pull_request.merged == true
+  Windows:
     runs-on: windows-2022
 
     steps:
@@ -21,11 +16,13 @@ jobs:
       with:
         workflow: build.yml
         workflow_conclusion: success
-        pr: ${{github.event.pull_request.number}}
+        branch: release
         name: nc-tools
 
-    - name: Create Archive
-      run: 7z a -tzip -mx=9 nc-tools.zip ./nc-tools.exe ./assimp-vc143-mt.dll
-
-    - name: Publish to Artifactory
-      run: curl -u ${{secrets.JFROG_USER}}:${{secrets.JFROG_PASSWORD}} -T ${{github.workspace}}/nc-tools.zip ${{ format('https://ncstudios.jfrog.io/artifactory/nctools/{0}/nc-tools.zip', env.VERSION) }}
+    - name: Create release
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        prerelease: false
+        automatic_release_tag: format('v{0}', env.VERSION)
+        files: |
+          ${{github.workspace}}/nc-tools/nc-tools.exe

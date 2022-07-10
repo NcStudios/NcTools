@@ -1,7 +1,6 @@
 name: Build
 
 on:
-  workflow_dispatch:
   pull_request:
     branches: [ release, vnext ]
     paths-ignore:
@@ -9,30 +8,61 @@ on:
       - '**/*.txt'
       - '**/*.config'
       - '**/*.ini'
+  workflow_dispatch:
+    inputs:
+      createRelease:
+        required: false
+        type: boolean
+
+env:
+  VERSION: '0.1.1'
 
 jobs:
   Build:
     runs-on: windows-2022
-
     steps:
-    - name: Checkout Branch
-      uses: actions/checkout@v2
+      - name: Checkout Branch
+        uses: actions/checkout@v2
 
-    - name: Setup MSVC
-      uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Configure
-      run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_BUILD_TESTS=ON
+      - name: Configure
+        run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_BUILD_TESTS=ON
 
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config "Release"
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config "Release"
 
-    - name: Run Tests
-      run: ./nc-tools_tests test/collateral/input.txt
+      - name: Run Tests
+        run: ./nc-tools_tests test/collateral/input.txt
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: nc-tools
-        path: |
-          nc-tools.exe
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: nc-tools
+          path: |
+            nc-tools.exe
+
+  CreateRelease:
+    runs-on: windows-2022
+    if: inputs.createRelease && github.ref == 'refs/heads/release'
+    needs: Build
+    steps:
+      - name: Download artifacts
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build.yml
+          workflow_conclusion: success
+          branch: release
+          name: nc-tools
+          path: ${{ github.workspace }}/artifacts
+          skip_unpack: true
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        if: inputs.createRelease && github.ref == 'refs/heads/release'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ format('v{0}', env.VERSION) }}
+          fail_on_unmatched_files: true
+          files: ${{ github.workspace }}/artifacts/nc-tools.zip

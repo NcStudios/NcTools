@@ -61,7 +61,7 @@ jobs:
 
       - name: Generate file hash
         shell: pwsh
-        run: Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256 > ${{ github.workspace }}/hash.txt
+        run: Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256 | Format-List -Property Algorithm, Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
 
       - name: Create release
         uses: softprops/action-gh-release@v1

@@ -69,9 +69,9 @@ bool RunCommand(std::string appName, std::string cmdLine)
 bool RunBuilder(const std::filesystem::path& in, const std::filesystem::path& outDir, const std::string& type)
 {
     std::stringstream cmdStream;
-    cmdStream << "./nc-tools.exe -a " << type << " -i " << in.lexically_normal() << " -o " << outDir.lexically_normal();
+    cmdStream << "./nc-tools-2.exe -a " << type << " -i " << in.lexically_normal() << " -o " << outDir.lexically_normal();
 
-    if(!RunCommand("nc-tools.exe", cmdStream.str()))
+    if(!RunCommand("nc-tools-2.exe", cmdStream.str()))
     {
         std::cout << "Failure building asset file: " << in.string() << '\n';
         return false;

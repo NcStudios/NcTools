@@ -36,4 +36,3 @@ jobs:
         name: nc-tools
         path: |
           nc-tools.exe
-          assimp-vc143-mt.dll

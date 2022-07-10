@@ -68,12 +68,10 @@ jobs:
       #     skip_unpack: true
 
       - name: Test (true)
-        uses: actions/cache@v3
         if: steps.cache.outputs.cache-hit == 'true'
         run: echo "cache hit"
 
       - name: Test (false)
-        uses: actions/cache@v3
         if: steps.cache.outputs.cache-hit != 'true'
         run: echo "cache miss"
 

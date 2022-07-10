@@ -20,6 +20,14 @@ jobs:
         name: nc-tools
         path: ${{github.workspace}}/artifacts
 
+    - name: List working dir
+      run: |
+        ls
+      
+    - name: List artifacts dir
+      run: |
+        ls ${{github.workspace}}/artifacts
+
     - name: Create release
       uses: "marvinpinto/action-automatic-releases@latest"
       with:

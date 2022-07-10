@@ -43,26 +43,53 @@ jobs:
           path: |
             nc-tools.exe
 
+      - name: Cache Artifacts
+        id: cache
+        uses: actions/cache@v3
+        # if:
+        with:
+          path: ${{ github.workspace }}/nc-tools.exe
+          key: NcToolsCacheKey
+
   CreateRelease:
     runs-on: windows-2022
     # if: inputs.createRelease && github.ref == 'refs/heads/release'
     if: inputs.createRelease
     needs: Build
     steps:
-      - name: Download artifacts
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: build.yml
-          workflow_conclusion: success
-          branch: release
-          name: nc-tools
-          path: ${{ github.workspace }}/artifacts
-          skip_unpack: true
+      # - name: Download artifacts
+      #   uses: dawidd6/action-download-artifact@v2
+      #   with:
+      #     workflow: build.yml
+      #     workflow_conclusion: success
+      #     branch: release
+      #     name: nc-tools
+      #     path: ${{ github.workspace }}/artifacts
+      #     skip_unpack: true
+
+      - name: Test (true)
+        uses: actions/cache@v3
+        if: steps.cache.outputs.cache-hit == 'true'
+        run: echo "cache hit"
+
+      - name: Test (false)
+        uses: actions/cache@v3
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: echo "cache miss"
+
+      - name: Create archive
+        run: 7z a -tzip -mx=9 nc-tools.zip ./nc-tools.exe
+
+      # - name: Hash artifacts
+      #   shell: pwsh
+      #   run: |
+      #     $hash = Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256
+      #     "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
 
       - name: Hash artifacts
         shell: pwsh
         run: |
-          $hash = Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256
+          $hash = Get-FileHash -Path ${{ github.workspace }}/nc-tools.zip -Algorithm SHA256
           "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
 
       - name: Create release
@@ -72,4 +99,4 @@ jobs:
           tag_name: ${{ format('v{0}', env.VERSION) }}
           body_path: ${{ github.workspace }}/hash.txt
           fail_on_unmatched_files: true
-          files: ${{ github.workspace }}/artifacts/nc-tools.zip
+          files: ${{ github.workspace }}/nc-tools.zip

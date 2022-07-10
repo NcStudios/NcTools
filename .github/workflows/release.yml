@@ -26,4 +26,4 @@ jobs:
         prerelease: false
         automatic_release_tag: ${{format('v{0}', env.VERSION)}}
         files: |
-          ${{github.workspace}}/nc-tools/nc-tools.exe
+          ${{github.workspace}}/nc-tools.exe

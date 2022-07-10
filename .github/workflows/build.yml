@@ -58,11 +58,18 @@ jobs:
           path: ${{ github.workspace }}/artifacts
           skip_unpack: true
 
+      - name: Generate file hash
+        shell: pwsh
+        run: Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256 > ${{ github.workspace }}/hash.txt
+
       - name: Create release
         uses: softprops/action-gh-release@v1
-        if: inputs.createRelease && github.ref == 'refs/heads/release'
+        # if: inputs.createRelease && github.ref == 'refs/heads/release'
+        if: inputs.createRelease
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ format('v{0}', env.VERSION) }}
           fail_on_unmatched_files: true
-          files: ${{ github.workspace }}/artifacts/nc-tools.zip
+          files: |
+            ${{ github.workspace }}/artifacts/nc-tools.zip
+            ${{ github.workspace }}/hash.txt

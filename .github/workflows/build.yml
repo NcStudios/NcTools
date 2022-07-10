@@ -18,7 +18,7 @@ env:
   VERSION: '0.1.1'
 
 jobs:
-  Windows:
+  Windows-Build:
     runs-on: windows-2022
     steps:
       - name: Checkout Branch
@@ -59,7 +59,7 @@ jobs:
     runs-on: windows-2022
     # if: inputs.createRelease && github.ref == 'refs/heads/release'
     if: inputs.createRelease
-    needs: Build
+    needs: Windows-Build
     steps:
       # - name: Download artifacts
       #   uses: dawidd6/action-download-artifact@v2

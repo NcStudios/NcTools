@@ -2,6 +2,10 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      createRelease:
+        required: true
+        type: boolean
 
 env:
   VERSION: '0.1.1'
@@ -23,7 +27,9 @@ jobs:
 
     - name: Create release
       uses: softprops/action-gh-release@v1
+      if: ${{ inputs.createRelease || github.ref == "refs/heads/release" }}
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: ${{ format('v{0}', env.VERSION) }}
+        fail_on_unmatched_files: true
         files: ${{ github.workspace }}\artifacts\nc-tools.zip

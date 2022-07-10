@@ -20,7 +20,7 @@ jobs:
 
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
- 
+
     - name: Configure
       run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_BUILD_TESTS=ON
 

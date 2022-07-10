@@ -26,5 +26,4 @@ jobs:
         repo_token: "${{secrets.GITHUB_TOKEN}}"
         prerelease: false
         automatic_release_tag: ${{format('v{0}', env.VERSION)}}
-        files: |
-          ${{github.workspace}}/artifacts/nc-tools.exe
+        files: ${{github.workspace}}/artifacts/*

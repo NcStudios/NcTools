@@ -59,26 +59,17 @@ jobs:
           path: ${{ github.workspace }}/artifacts
           skip_unpack: true
 
-      - name: Generate file hash
-        shell: pwsh
-        run: Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256 | Format-List -Property Algorithm, Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
-
-      - name: Cat file
-        shell: pwsh
-        run: cat ${{ github.workspace }}/hash.txt
-      
-      - name: Make Test file
+      - name: Hash artifacts
         shell: pwsh
         run: |
-          "hello" | Out-File -FilePath ${{ github.workspace }}/test.txt
+          $hash = Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256
+          "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
 
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ format('v{0}', env.VERSION) }}
+          body_path: ${{ github.workspace }}/hash.txt
           fail_on_unmatched_files: true
-          files: |
-            ${{ github.workspace }}/artifacts/nc-tools.zip
-            ${{ github.workspace }}/hash.txt
-            ${{ github.workspace }}/test.txt
+          files: ${{ github.workspace }}/artifacts/nc-tools.zip

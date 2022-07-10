@@ -18,6 +18,7 @@ jobs:
         workflow_conclusion: success
         branch: release
         name: nc-tools
+        path: ${{github.workspace}}/artifacts
 
     - name: Create release
       uses: "marvinpinto/action-automatic-releases@latest"
@@ -26,4 +27,4 @@ jobs:
         prerelease: false
         automatic_release_tag: ${{format('v{0}', env.VERSION)}}
         files: |
-          ${{github.workspace}}/nc-tools.exe
+          ${{github.workspace}}/artifacts/nc-tools.exe

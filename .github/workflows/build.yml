@@ -63,6 +63,14 @@ jobs:
         shell: pwsh
         run: Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256 | Format-List -Property Algorithm, Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
 
+      - name: Cat file
+        shell: pwsh
+        run: cat ${{ github.workspace }}/hash.txt
+      
+      - name: Make Test file
+        shell: pwsh
+        run: "hello" | Out-File -FilePath ${{ github.workspace }}/test.txt
+
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -72,3 +80,4 @@ jobs:
           files: |
             ${{ github.workspace }}/artifacts/nc-tools.zip
             ${{ github.workspace }}/hash.txt
+            ${{ github.workspace }}/test.txt

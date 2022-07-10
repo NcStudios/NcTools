@@ -26,4 +26,4 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: ${{ format('v{0}', env.VERSION) }}
-        files: ${{ github.workspace }}\artifacts\nc-tools.exe
+        files: ${{ github.workspace }}\artifacts\nc-tools.zip

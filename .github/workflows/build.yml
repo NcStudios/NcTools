@@ -69,7 +69,8 @@ jobs:
       
       - name: Make Test file
         shell: pwsh
-        run: "hello" | Out-File -FilePath ${{ github.workspace }}/test.txt
+        run: |
+          "hello" | Out-File -FilePath ${{ github.workspace }}/test.txt
 
       - name: Create release
         uses: softprops/action-gh-release@v1

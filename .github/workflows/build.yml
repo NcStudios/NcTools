@@ -1,7 +1,6 @@
 name: Build
 
 on:
-  workflow_dispatch:
   pull_request:
     branches: [ release, vnext ]
     paths-ignore:
@@ -9,30 +8,81 @@ on:
       - '**/*.txt'
       - '**/*.config'
       - '**/*.ini'
+  workflow_dispatch:
+    inputs:
+      createRelease:
+        required: false
+        type: boolean
+
+env:
+  VERSION: '0.1.1'
 
 jobs:
-  Build:
+  Windows-Build:
     runs-on: windows-2022
-
     steps:
-    - name: Checkout Branch
-      uses: actions/checkout@v2
+      - name: Checkout Branch
+        uses: actions/checkout@v2
 
-    - name: Setup MSVC
-      uses: ilammy/msvc-dev-cmd@v1
- 
-    - name: Configure
-      run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_BUILD_TESTS=ON
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config "Release"
+      - name: Setup Artifact Cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/artifacts/nc-tools.exe
+          key: ${{ runner.os }}_cache_key
 
-    - name: Run Tests
-      run: ./nc-tools_tests test/collateral/input.txt
+      - name: Configure
+        run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_BUILD_TESTS=ON
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: nc-tools
-        path: |
-          nc-tools.exe
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config "Release"
+
+      # TODO: Tests are for v2 only. Enable once we start working on it again.
+      # - name: Run Tests
+      #   run: ./nc-tools_tests test/collateral/input.txt
+
+      - name: Copy artifacts to cache
+        if: steps.cache.output.cache-hit != true
+        run: |
+          mkdir ${{ github.workspace }}/artifacts
+          cp ./nc-tools.exe ${{ github.workspace }}/artifacts/
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: nc-tools
+          path: |
+            nc-tools.exe
+
+  CreateRelease:
+    runs-on: windows-2022
+    if: inputs.createRelease && github.ref == 'refs/heads/release'
+    needs: Windows-Build
+    steps:
+      - name: Setup Artifact Cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/artifacts/nc-tools.exe
+          key: ${{ runner.os }}_cache_key
+
+      - name: Create archive
+        run: 7z a -tzip -mx=9 ${{ github.workspace }}/artifacts/nc-tools.zip ${{ github.workspace }}/artifacts/nc-tools.exe
+
+      - name: Hash artifacts
+        shell: pwsh
+        run: |
+          $hash = Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256
+          "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ format('v{0}', env.VERSION) }}
+          body_path: ${{ github.workspace }}/hash.txt
+          fail_on_unmatched_files: true
+          files: ${{ github.workspace }}/artifacts/nc-tools.zip

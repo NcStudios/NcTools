@@ -31,7 +31,7 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/artifacts
+          path: ${{ github.workspace }}/artifacts/nc-tools.exe
           key: ${{ runner.os }}_cache_key
 
       - name: Configure
@@ -75,7 +75,7 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/artifacts
+          path: ${{ github.workspace }}/artifacts/nc-tools.exe
           key: ${{ runner.os }}_cache_key
 
       - name: Test (true)

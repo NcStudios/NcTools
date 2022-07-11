@@ -87,7 +87,7 @@ jobs:
         run: echo "cache miss"
 
       - name: Create archive
-        run: 7z a -tzip -mx=9 artifacts/nc-tools.zip artifacts/nc-tools.exe
+        run: 7z a -tzip -mx=9 ${{ github.workspace }}/artifacts/nc-tools.zip ${{ github.workspace }}/artifacts/nc-tools.exe
 
       # - name: Hash artifacts
       #   shell: pwsh
@@ -108,4 +108,4 @@ jobs:
           tag_name: ${{ format('v{0}', env.VERSION) }}
           body_path: ${{ github.workspace }}/hash.txt
           fail_on_unmatched_files: true
-          files: artifacts/nc-tools.zip
+          files: ${{ github.workspace }}/artifacts/nc-tools.zip

@@ -38,7 +38,6 @@ jobs:
         run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_BUILD_TESTS=ON
 
       - name: Build
-        # if: steps.cache.outputs.cache-hit != true
         run: cmake --build ${{github.workspace}}/build --config "Release"
 
       - name: Run Tests
@@ -46,7 +45,9 @@ jobs:
 
       - name: Copy artifacts to cache
         if: steps.cache.output.cache-hit != true
-        run: cp ./nc-tools.exe ${{ github.workspace }}/artifacts
+        run: |
+          mkdir ${{ github.workspace }}/artifacts
+          cp ./nc-tools.exe ${{ github.workspace }}/artifacts/
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
@@ -98,7 +99,7 @@ jobs:
       - name: Hash artifacts
         shell: pwsh
         run: |
-          $hash = Get-FileHash -Path artifacts/nc-tools.zip -Algorithm SHA256
+          $hash = Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256
           "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
 
       - name: Create release

@@ -58,20 +58,9 @@ jobs:
 
   CreateRelease:
     runs-on: windows-2022
-    # if: inputs.createRelease && github.ref == 'refs/heads/release'
-    if: inputs.createRelease
+    if: inputs.createRelease && github.ref == 'refs/heads/release'
     needs: Windows-Build
     steps:
-      # - name: Download artifacts
-      #   uses: dawidd6/action-download-artifact@v2
-      #   with:
-      #     workflow: build.yml
-      #     workflow_conclusion: success
-      #     branch: release
-      #     name: nc-tools
-      #     path: ${{ github.workspace }}/artifacts
-      #     skip_unpack: true
-
       - name: Setup Artifact Cache
         id: cache
         uses: actions/cache@v3
@@ -79,22 +68,8 @@ jobs:
           path: ${{ github.workspace }}/artifacts/nc-tools.exe
           key: ${{ runner.os }}_cache_key
 
-      - name: Test (true)
-        if: steps.cache.outputs.cache-hit == 'true'
-        run: echo "cache hit"
-
-      - name: Test (false)
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: echo "cache miss"
-
       - name: Create archive
         run: 7z a -tzip -mx=9 ${{ github.workspace }}/artifacts/nc-tools.zip ${{ github.workspace }}/artifacts/nc-tools.exe
-
-      # - name: Hash artifacts
-      #   shell: pwsh
-      #   run: |
-      #     $hash = Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256
-      #     "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
 
       - name: Hash artifacts
         shell: pwsh

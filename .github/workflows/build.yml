@@ -35,7 +35,7 @@ jobs:
           key: ${{ runner.os }}_cache_key
 
       - name: Configure
-        run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_BUILD_TESTS=ON
+        run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_TOOLS_BUILD_TESTS=ON
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config "Release"

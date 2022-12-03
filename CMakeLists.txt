@@ -5,7 +5,7 @@ if(${PROJECT_SOURCE_DIR} EQUAL ${PROJECT_BINARY_DIR})
     message(FATAL_ERROR "Don't be a fool, out-of-source build with your tool.")
 endif()
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -14,7 +14,9 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(WARNING_FLAGS /W3 /WX)
 endif()
 
-option(NC_BUILD_TESTS "Include tests in build" ON)
+option(NC_TOOLS_BUILD_IMPORTER_LIB "Build NcAsset" ON)
+option(NC_TOOLS_BUILD_EXPORTER_CLI "Build nc-tools executable" ON)
+option(NC_TOOLS_BUILD_TESTS "Include tests in build" ON)
 
 # Assimp Options
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
@@ -30,12 +32,17 @@ set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
 
 include(FetchContent)
 
+FetchContent_Declare(NcCommon
+                     GIT_REPOSITORY https://github.com/NcStudios/NcCommon.git
+                     GIT_TAG        39ff59b4027854ad236a046446ecfbb5d91aec5f
+)
+
 FetchContent_Declare(assimp
                      GIT_REPOSITORY https://github.com/NcStudios/assimp.git
                      GIT_TAG        origin/master
 )
 
-FetchContent_MakeAvailable(assimp)
+FetchContent_MakeAvailable(NcCommon assimp)
 
 # nc-tools V1
 # TODO: We still need to build the old version until v2
@@ -94,11 +101,12 @@ target_include_directories(nc-tools-2
 
 target_link_libraries(nc-tools-2
     PRIVATE
+        NcMath
         assimp::assimp
 )
 
 add_subdirectory(source)
 
-if(NC_BUILD_TESTS)
+if(NC_TOOLS_BUILD_TESTS)
     add_subdirectory(test)
 endif()

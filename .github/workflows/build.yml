@@ -40,9 +40,8 @@ jobs:
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config "Release"
 
-      # TODO: Tests are for v2 only. Enable once we start working on it again.
-      # - name: Run Tests
-      #   run: ./nc-tools_tests test/collateral/input.txt
+      - name: Run Tests
+        run: ctest --test-dir build/test -C Release -V
 
       - name: Copy artifacts to cache
         if: steps.cache.output.cache-hit != true

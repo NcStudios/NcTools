@@ -11,27 +11,25 @@ target_compile_options(NcAsset
         ${WARNING_FLAGS}
 )
 
-# maybe disable in release
-target_compile_definitions(NcAsset
-    PRIVATE
-        NC_ASSERT_ENABLED
-)
-
 target_include_directories(NcAsset
     PUBLIC
         $<INSTALL_INTERFACE:include/>
     PRIVATE
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/ncasset>
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source/ncasset>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>
+)
+
+set(NcAsset-common-source ${PROJECT_SOURCE_DIR}/source/common/NcaHeader.cpp
+                          ${PROJECT_SOURCE_DIR}/source/common/RawNcaBuffer.cpp
+                          ${PROJECT_SOURCE_DIR}/source/common/Serialize.cpp
 )
 
 target_sources(NcAsset
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
+        ${NcAsset-common-source}
         ${PROJECT_SOURCE_DIR}/source/ncasset/Import.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncasset/NcaHeader.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncasset/Serialize.cpp
 )
 
 target_link_libraries(NcAsset

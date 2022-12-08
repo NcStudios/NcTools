@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImportedTypes.h"
+#include "AssetTypes.h"
 
 #include <filesystem>
 

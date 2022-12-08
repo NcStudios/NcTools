@@ -15,8 +15,10 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 endif()
 
 option(NC_TOOLS_BUILD_IMPORTER_LIB "Build NcAsset" ON)
-option(NC_TOOLS_BUILD_EXPORTER_CLI "Build nc-tools executable" ON)
+option(NC_TOOLS_BUILD_CONVERTER "Build nc-convert executable" ON)
 option(NC_TOOLS_BUILD_TESTS "Include tests in build" ON)
+
+add_definitions(-DNC_ASSERT_ENABLED)
 
 # Assimp Options
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
@@ -76,32 +78,6 @@ target_sources(nc-tools
 
 target_link_libraries(nc-tools
     PRIVATE
-        assimp::assimp
-)
-
-# nc-tools v2
-# TODO: Drop the '2' suffix once the old version is gone.
-add_executable(nc-tools-2)
-
-set_target_properties(nc-tools-2
-    PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}
-        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}
-)
-
-target_compile_options(nc-tools-2
-    PRIVATE
-        ${WARNING_FLAGS}
-)
-
-target_include_directories(nc-tools-2
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/source
-)
-
-target_link_libraries(nc-tools-2
-    PRIVATE
-        NcMath
         assimp::assimp
 )
 

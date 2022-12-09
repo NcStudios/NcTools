@@ -39,48 +39,7 @@ FetchContent_Declare(NcCommon
                      GIT_TAG        39ff59b4027854ad236a046446ecfbb5d91aec5f
 )
 
-FetchContent_Declare(assimp
-                     GIT_REPOSITORY https://github.com/NcStudios/assimp.git
-                     GIT_TAG        origin/master
-)
-
-FetchContent_MakeAvailable(NcCommon assimp)
-
-# nc-tools V1
-# TODO: We still need to build the old version until v2
-# covers all asset types and can be consumed properly.
-add_executable(nc-tools)
-
-configure_file(${PROJECT_SOURCE_DIR}/source/Version.h.in
-               ${PROJECT_SOURCE_DIR}/source/Version.h
-)
-
-target_compile_options(nc-tools
-    PRIVATE
-        ${WARNING_FLAGS}
-)
-
-target_include_directories(nc-tools
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/source
-)
-
-target_sources(nc-tools
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/source/NcTools_v1.cpp
-)
-
-target_link_libraries(nc-tools
-    PRIVATE
-        assimp::assimp
-)
-
-install(
-    TARGETS
-        nc-tools
-    DESTINATION
-        bin
-)
+FetchContent_MakeAvailable(NcCommon)
 
 add_subdirectory(source)
 

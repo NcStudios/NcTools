@@ -15,10 +15,10 @@ on:
         type: boolean
 
 env:
-  VERSION: '0.1.1'
+  VERSION: '1.0.0'
 
 jobs:
-  Windows-Build:
+  Win-VS-17:
     runs-on: windows-2022
     steps:
       - name: Checkout Branch
@@ -44,7 +44,14 @@ jobs:
         run: cmake --install build/source --config "Release"
 
       - name: Run Tests
-        run: ctest --test-dir build/test -C Release -V
+        run: ctest --test-dir build/test -C Release -V --output-junit TestResults.xml
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Win-MinGW-TestResults
+          path: build/test/TestResults.xml
 
       - name: Copy artifacts to cache
         if: steps.cache.output.cache-hit != true
@@ -58,6 +65,26 @@ jobs:
           name: nc-tools
           path: |
             nc-convert.exe
+
+  Publish-Test-Results:
+    runs-on: ubuntu-latest
+    needs: [Win-VS-17]
+    permissions:
+      checks: write
+      pull-requests: write
+    if: always()
+
+    steps:
+    - name: Download Results
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+
+    - name: Publish Results
+      uses: mikepenz/action-junit-report@v3
+      if: always()
+      with:
+        report_paths: 'artifacts/**/*.xml'
 
   CreateRelease:
     runs-on: windows-2022

@@ -44,13 +44,15 @@ jobs:
         run: cmake --install build/source --config "Release"
 
       - name: Run Tests
-        run: ctest --test-dir build/test -C Release -V --output-junit TestResults.xml
+        run: ctest --test-dir build/test -C Release -V
 
       - name: Copy artifacts to cache
         if: steps.cache.output.cache-hit != true
         run: |
-          mkdir artifacts
-          cp install/bin/nc-convert.exe artifacts/
+          if (!(Test-Path artifacts)) {
+            New-Item artifacts -ItemType Directory
+          }
+          Copy-Item "install/bin/nc-convert.exe" -Destination "artifacts/"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3

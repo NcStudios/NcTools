@@ -15,9 +15,9 @@ target_include_directories(NcAsset
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>
 )
 
-set(NcAsset-common-source ${PROJECT_SOURCE_DIR}/source/common/NcaHeader.cpp
+set(NcAsset-common-source ${PROJECT_SOURCE_DIR}/source/common/Deserialize.cpp
+                          ${PROJECT_SOURCE_DIR}/source/common/NcaHeader.cpp
                           ${PROJECT_SOURCE_DIR}/source/common/RawNcaBuffer.cpp
-                          ${PROJECT_SOURCE_DIR}/source/common/Serialize.cpp
 )
 
 target_sources(NcAsset

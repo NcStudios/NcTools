@@ -64,7 +64,7 @@ jobs:
         with:
           name: nc-tools
           path: |
-            nc-convert.exe
+            artifacts/nc-convert.exe
 
   Publish-Test-Results:
     runs-on: ubuntu-latest

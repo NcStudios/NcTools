@@ -89,7 +89,7 @@ jobs:
   CreateRelease:
     runs-on: windows-2022
     if: inputs.createRelease && github.ref == 'refs/heads/release'
-    needs: Windows-Build
+    needs: Win-VS-17
     steps:
       - name: Setup Artifact Cache
         id: cache

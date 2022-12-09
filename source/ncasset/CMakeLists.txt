@@ -8,8 +8,8 @@ target_compile_options(NcAsset
 target_include_directories(NcAsset
     PUBLIC
         $<INSTALL_INTERFACE:include/>
-    PRIVATE
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PRIVATE
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/ncasset>
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source/ncasset>
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>

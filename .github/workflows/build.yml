@@ -22,7 +22,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout Branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1

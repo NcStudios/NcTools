@@ -55,12 +55,6 @@ configure_file(${PROJECT_SOURCE_DIR}/source/Version.h.in
                ${PROJECT_SOURCE_DIR}/source/Version.h
 )
 
-set_target_properties(nc-tools
-    PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}
-        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}
-)
-
 target_compile_options(nc-tools
     PRIVATE
         ${WARNING_FLAGS}
@@ -79,6 +73,13 @@ target_sources(nc-tools
 target_link_libraries(nc-tools
     PRIVATE
         assimp::assimp
+)
+
+install(
+    TARGETS
+        nc-tools
+    DESTINATION
+        bin
 )
 
 add_subdirectory(source)

@@ -31,14 +31,17 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/artifacts/nc-tools.exe
+          path: artifacts/nc-convert.exe
           key: ${{ runner.os }}_cache_key
 
       - name: Configure
-        run: cmake -S ${{github.workspace}}/ -B ${{github.workspace}}/build -DNC_TOOLS_BUILD_TESTS=ON
+        run: cmake -G "Visual Studio 17 2022" -S ./ -B build -DCMAKE_INSTALL_PREFIX=install
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config "Release"
+        run: cmake --build build --config "Release"
+
+      - name: Install
+        run: cmake --install build/source --config "Release"
 
       - name: Run Tests
         run: ctest --test-dir build/test -C Release -V
@@ -46,15 +49,15 @@ jobs:
       - name: Copy artifacts to cache
         if: steps.cache.output.cache-hit != true
         run: |
-          mkdir ${{ github.workspace }}/artifacts
-          cp ./nc-tools.exe ${{ github.workspace }}/artifacts/
+          mkdir artifacts
+          cp install/bin/nc-convert.exe artifacts/
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: nc-tools
           path: |
-            nc-tools.exe
+            nc-convert.exe
 
   CreateRelease:
     runs-on: windows-2022
@@ -65,23 +68,23 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/artifacts/nc-tools.exe
+          path: artifacts/nc-convert.exe
           key: ${{ runner.os }}_cache_key
 
       - name: Create archive
-        run: 7z a -tzip -mx=9 ${{ github.workspace }}/artifacts/nc-tools.zip ${{ github.workspace }}/artifacts/nc-tools.exe
+        run: 7z a -tzip -mx=9 artifacts/nc-tools.zip artifacts/nc-convert.exe
 
       - name: Hash artifacts
         shell: pwsh
         run: |
-          $hash = Get-FileHash -Path ${{ github.workspace }}/artifacts/nc-tools.zip -Algorithm SHA256
-          "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath ${{ github.workspace }}/hash.txt
+          $hash = Get-FileHash -Path /artifacts/nc-tools.zip -Algorithm SHA256
+          "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath hash.txt
 
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ format('v{0}', env.VERSION) }}
-          body_path: ${{ github.workspace }}/hash.txt
+          body_path: hash.txt
           fail_on_unmatched_files: true
-          files: ${{ github.workspace }}/artifacts/nc-tools.zip
+          files: artifacts/nc-tools.zip

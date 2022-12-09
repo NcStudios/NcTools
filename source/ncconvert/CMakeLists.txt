@@ -1,11 +1,5 @@
 add_executable(nc-convert)
 
-set_target_properties(nc-convert
-    PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}
-        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}
-)
-
 target_compile_options(nc-convert
     PRIVATE
         ${WARNING_FLAGS}
@@ -33,6 +27,13 @@ target_link_libraries(nc-convert
     PRIVATE
         NcMath
         assimp::assimp
+)
+
+install(
+    TARGETS
+        nc-convert
+    DESTINATION
+        bin
 )
 
 add_subdirectory(analysis)

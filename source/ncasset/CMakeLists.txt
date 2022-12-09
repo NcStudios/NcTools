@@ -1,11 +1,5 @@
 add_library(NcAsset STATIC)
 
-set_target_properties(NcAsset
-    PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}
-        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}
-)
-
 target_compile_options(NcAsset
     PRIVATE
         ${WARNING_FLAGS}
@@ -38,6 +32,9 @@ target_link_libraries(NcAsset
         NcUtility
 )
 
-install(DIRECTORY   ${PROJECT_SOURCE_DIR}/include/ncasset
-        DESTINATION include
+install(
+    DIRECTORY
+        ${PROJECT_SOURCE_DIR}/include/ncasset
+    DESTINATION
+        include
 )

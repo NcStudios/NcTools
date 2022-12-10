@@ -13,7 +13,8 @@ namespace
 {
 auto GetOutputName(const std::filesystem::path& inPath, const std::filesystem::path& outDir) -> std::filesystem::path
 {
-    return outDir / inPath.filename();
+    const auto ncaFileName = inPath.filename().replace_extension(".nca");
+    return outDir / ncaFileName;
 }
 
 auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
@@ -31,13 +32,34 @@ void BuildConcaveCollider(const std::filesystem::path& inPath,
                           const std::filesystem::path& outPath,
                           nc::convert::FbxConverter* converter)
 {
+    const auto asset = converter->ImportConcaveCollider(inPath);
+    auto outFile = ::OpenOutFile(outPath);
+    auto assetId = size_t{};
+    nc::asset::Serialize(outFile, asset, assetId);
+}
+
+void BuildHullCollider(const std::filesystem::path& inPath,
+                       const std::filesystem::path& outPath,
+                       nc::convert::FbxConverter* converter)
+{
     const auto asset = converter->ImportHullCollider(inPath);
     auto outFile = ::OpenOutFile(outPath);
     auto assetId = size_t{};
     nc::asset::Serialize(outFile, asset, assetId);
 }
 
-void BuildCubemap(const std::filesystem::path& inPath, const std::filesystem::path& outDirectory)
+void BuildMesh(const std::filesystem::path& inPath,
+               const std::filesystem::path& outPath,
+               nc::convert::FbxConverter* converter)
+{
+    const auto asset = converter->ImportMesh(inPath);
+    auto outFile = ::OpenOutFile(outPath);
+    auto assetId = size_t{};
+    nc::asset::Serialize(outFile, asset, assetId);
+}
+
+void BuildCubemap(const std::filesystem::path& inPath,
+                  const std::filesystem::path& outDirectory)
 {
     nc::convert::ConvertCubemap(inPath, outDirectory);
 }
@@ -67,7 +89,9 @@ auto Builder::Build(const Target& target) -> bool
     switch (target.type)
     {
         case asset::AssetType::AudioClip:
+        {
             throw NcError("not implemented");
+        }
         case asset::AssetType::Cubemap:
         {
             ::BuildCubemap(target.path, m_config.outputDirectory);
@@ -79,13 +103,23 @@ auto Builder::Build(const Target& target) -> bool
             break;
         }
         case asset::AssetType::HullCollider:
-            throw NcError("not implemented");
+        {
+            ::BuildHullCollider(target.path, outPath, m_fbxConverter.get());
+            break;
+        }
         case asset::AssetType::Mesh:
-            throw NcError("not implemented");
+        {
+            ::BuildMesh(target.path, outPath, m_fbxConverter.get());
+            break;
+        }
         case asset::AssetType::Shader:
+        {
             throw NcError("not implemented");
+        }
         case asset::AssetType::Texture:
+        {
             throw NcError("not implemented");
+        }
 
         throw NcError(fmt::format("Unknown AssetType: {} for {}",
             static_cast<int>(target.type), target.path.string()

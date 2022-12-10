@@ -19,6 +19,7 @@ set(nc-convert-common-source ${PROJECT_SOURCE_DIR}/source/common/NcaHeader.cpp
 target_sources(nc-convert
     PRIVATE
         ${PROJECT_SOURCE_DIR}/source/ncconvert/Builder.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/Config.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/Main.cpp
         ${nc-convert-common-source}
 )

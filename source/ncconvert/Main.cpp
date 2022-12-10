@@ -1,18 +1,16 @@
 #include "Builder.h"
+#include "Config.h"
 
-#include <algorithm>
+#include "ncutility/NcError.h"
+
 #include <filesystem>
-#include <fstream>
 #include <iostream>
-#include <optional>
 #include <string>
 
 const auto DefaultAssetTargetFilename = std::string{"targets.txt"};
 
 void Usage();
 bool ParseArgs(int argc, char** argv, nc::convert::Config* config);
-auto GetAssetType(std::string type) -> nc::asset::AssetType;
-auto ReadTargets(const nc::convert::Config& config) -> std::vector<nc::convert::Target>;
 
 int main(int argc, char** argv)
 {
@@ -26,8 +24,10 @@ int main(int argc, char** argv)
     try
     {
         auto builder = nc::convert::Builder{config};
-        for(const auto& target : ReadTargets(config))
+        const auto targets = nc::convert::ReadTargets(config);
+        for(const auto& target : targets)
         {
+            std::cout << "Building asset from: " << target.path << '\n';
             if (!builder.Build(target))
             {
                 std::cerr << "Failed converting: " << target.path.string() << '\n';
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
 void Usage()
 {
-    std::cout << "Usage: build.exe [options]\n"
+    std::cout << "Usage: nc-convert [options]\n"
               << "Options:\n"
               << "  -h or --help            Display this information\n"
               << "  -t <target>             Parse a single asset from <target>\n"
@@ -98,7 +98,7 @@ bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
 
         if(option.compare("-a") == 0)
         {
-            out->singleTargetType = GetAssetType(std::string{argv[current++]});
+            out->singleTargetType = nc::convert::GetAssetType(std::string{argv[current++]});
             continue;
         }
 
@@ -126,64 +126,4 @@ bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
     }
 
     return true;
-}
-
-auto GetAssetType(std::string type) -> nc::asset::AssetType
-{
-    std::ranges::transform(type, type.begin(), [](char c) { return std::tolower(c); });
-
-    if(type == "mesh")
-        return nc::asset::AssetType::Mesh;
-    else if(type == "hull-collider")
-        return nc::asset::AssetType::HullCollider;
-    else if(type == "concave-collider")
-        return nc::asset::AssetType::ConcaveCollider;
-    else if(type == "cubemap")
-        return nc::asset::AssetType::Cubemap;
-
-    throw std::runtime_error("Failed to parse asset type: " + type);
-}
-
-auto ReadTargets(const nc::convert::Config& config) -> std::vector<nc::convert::Target>
-{
-    auto targets = std::vector<nc::convert::Target>{};
-
-    if(config.singleTargetPath)
-    {
-        if(!config.singleTargetType)
-            throw std::runtime_error("Single target must specify asset type with -c");
-
-        targets.emplace_back(config.singleTargetPath.value(), config.singleTargetType.value());
-    }
-
-    if(!config.targetsFilePath)
-        return targets;
-
-    const auto& filePath = config.targetsFilePath.value();
-    std::ifstream file{filePath};
-    if(!file.is_open())
-        throw std::runtime_error("Failure opening file: " + filePath.string());
-
-    constexpr unsigned bufferSize = 512u;
-    char buffer[bufferSize];
-    std::cout << "Reading targets from: " << filePath.string() << '\n';
-
-    while(!file.eof())
-    {
-        if(file.fail())
-            throw std::runtime_error("Failure reading file: " + filePath.string());
-
-        auto newTarget = nc::convert::Target{};
-        file.getline(buffer, bufferSize, ' ');
-        newTarget.type = GetAssetType(std::string{buffer});
-
-        file.getline(buffer, bufferSize, '\n');
-        newTarget.path = buffer;
-        newTarget.path.make_preferred();
-        std::cout << "    " << newTarget.path << '\n';
-        targets.push_back(newTarget);
-    }
-
-    file.close();
-    return targets;
 }

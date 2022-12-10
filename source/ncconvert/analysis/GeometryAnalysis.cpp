@@ -34,11 +34,12 @@ auto GetMaximumVertexInDirection(std::span<const nc::Vector3> data, const nc::Ve
 auto GetMaximumVertexInDirection(std::span<const nc::asset::MeshVertex> data, const nc::Vector3& direction) -> nc::Vector3
 {
     NC_ASSERT(!data.empty(), "Vertex data is empty");
-    auto maxElement = std::ranges::max_element(data, [&direction](auto&& lhs, auto&& rhs)
+    auto directionProjection = [&direction](auto&& lhs, auto&& rhs)
     {
         return nc::Dot(lhs, direction) < nc::Dot(rhs, direction);
-    }, &PositionProjection);
+    };
 
+    auto maxElement = std::ranges::max_element(data, directionProjection, &PositionProjection);
     return maxElement->position;
 }
 
@@ -95,12 +96,7 @@ namespace nc::convert
 auto FindFurthestDistanceFromOrigin(std::span<const Vector3> data) -> float
 {
     NC_ASSERT(!data.empty(), "Vertex data is empty");
-
-    auto maxElement = std::ranges::max_element(data, [](auto&& lhs, auto&& rhs)
-    {
-        return SquareMagnitude(lhs) < SquareMagnitude(rhs);
-    });
-
+    auto maxElement = std::ranges::max_element(data, &CompareSquareMagnitudes);
     return Magnitude(*maxElement);
 }
 

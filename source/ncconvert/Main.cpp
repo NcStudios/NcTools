@@ -1,5 +1,6 @@
-#include "Builder.h"
 #include "Config.h"
+#include "builder/BuildOrchestrator.h"
+#include "utility/EnumConversion.h"
 
 #include "ncutility/NcError.h"
 
@@ -23,16 +24,8 @@ int main(int argc, char** argv)
 
     try
     {
-        auto builder = nc::convert::Builder{config};
-        const auto targets = nc::convert::ReadTargets(config);
-        for(const auto& target : targets)
-        {
-            std::cout << "Building asset from: " << target.path << '\n';
-            if (!builder.Build(target))
-            {
-                std::cerr << "Failed converting: " << target.path.string() << '\n';
-            }
-        }
+        auto builder = nc::convert::BuildOrchestrator{config};
+        builder.RunBuild();
     }
     catch(const std::exception& e)
     {
@@ -98,7 +91,7 @@ bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
 
         if(option.compare("-a") == 0)
         {
-            out->singleTargetType = nc::convert::GetAssetType(std::string{argv[current++]});
+            out->singleTargetType = nc::convert::ToAssetType(std::string{argv[current++]});
             continue;
         }
 

@@ -85,14 +85,14 @@ TODO
 ### Mesh Blob Format
 > Magic Number: 'MESH'
 
-| Name         | Type      | Size |
-|--------------|-----------|------|
-| extents      | Vector3   | 12   |
-| max extent   | float     | 4    |
-| vertex count | u64       | 8    |
-| index count  | u64       | 8    |
-| vertext list | Vector3[] | -    |
-| indices      | int[]     | -    |
+| Name         | Type         | Size |
+|--------------|--------------|------|
+| extents      | Vector3      | 12   |
+| max extent   | float        | 4    |
+| vertex count | u64          | 8    |
+| index count  | u64          | 8    |
+| vertext list | MeshVertex[] | -    |
+| indices      | int[]        | -    |
 
 
 ### Shader Blob Format

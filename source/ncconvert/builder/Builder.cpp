@@ -1,4 +1,6 @@
 #include "Builder.h"
+#include "BuildInstructions.h"
+#include "Target.h"
 #include "converters/FbxConverter.h"
 #include "converters/LegacytCubemapConverter.h"
 #include "common/Serialize.h"
@@ -11,12 +13,6 @@
 
 namespace
 {
-auto GetOutputName(const std::filesystem::path& inPath, const std::filesystem::path& outDir) -> std::filesystem::path
-{
-    const auto ncaFileName = inPath.filename().replace_extension(".nca");
-    return outDir / ncaFileName;
-}
-
 auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
 {
     auto outFile = std::ofstream{outPath, std::ios::binary};
@@ -67,26 +63,16 @@ void BuildCubemap(const std::filesystem::path& inPath,
 
 namespace nc::convert
 {
-Builder::Builder(Config config)
-    : m_config{std::move(config)},
-      m_fbxConverter{std::make_unique<FbxConverter>()}
+Builder::Builder()
+    : m_fbxConverter{std::make_unique<FbxConverter>()}
 {
-    if(!std::filesystem::exists(m_config.outputDirectory))
-    {
-        std::cout << "Creating directory: " << m_config.outputDirectory << '\n';
-        if(!std::filesystem::create_directories(m_config.outputDirectory))
-        {
-            throw NcError("Failed to create output directory: ", m_config.outputDirectory.string());
-        }
-    }
 }
 
 Builder::~Builder() = default;
 
-auto Builder::Build(const Target& target) -> bool
+auto Builder::Build(asset::AssetType type, const Target& target) -> bool
 {
-    const auto outPath = ::GetOutputName(target.path, m_config.outputDirectory);
-    switch (target.type)
+    switch (type)
     {
         case asset::AssetType::AudioClip:
         {
@@ -94,22 +80,22 @@ auto Builder::Build(const Target& target) -> bool
         }
         case asset::AssetType::Cubemap:
         {
-            ::BuildCubemap(target.path, m_config.outputDirectory);
+            ::BuildCubemap(target.sourcePath, target.destinationPath);
             break;
         }
         case asset::AssetType::ConcaveCollider:
         {
-            ::BuildConcaveCollider(target.path, outPath, m_fbxConverter.get());
+            ::BuildConcaveCollider(target.sourcePath, target.destinationPath, m_fbxConverter.get());
             break;
         }
         case asset::AssetType::HullCollider:
         {
-            ::BuildHullCollider(target.path, outPath, m_fbxConverter.get());
+            ::BuildHullCollider(target.sourcePath, target.destinationPath, m_fbxConverter.get());
             break;
         }
         case asset::AssetType::Mesh:
         {
-            ::BuildMesh(target.path, outPath, m_fbxConverter.get());
+            ::BuildMesh(target.sourcePath, target.destinationPath, m_fbxConverter.get());
             break;
         }
         case asset::AssetType::Shader:
@@ -122,7 +108,7 @@ auto Builder::Build(const Target& target) -> bool
         }
 
         throw NcError(fmt::format("Unknown AssetType: {} for {}",
-            static_cast<int>(target.type), target.path.string()
+            static_cast<int>(type), target.sourcePath.string()
         ));
     }
 

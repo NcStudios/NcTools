@@ -30,6 +30,5 @@ class FbxConverter
     private:
         class impl;
         std::unique_ptr<impl> m_impl;
-
 };
 } // namespace nc::convert

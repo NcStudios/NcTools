@@ -1,7 +1,7 @@
 #include "Builder.h"
 #include "BuildInstructions.h"
 #include "Target.h"
-#include "converters/FbxConverter.h"
+#include "converters/GeometryConverter.h"
 #include "converters/LegacytCubemapConverter.h"
 #include "common/Serialize.h"
 
@@ -26,7 +26,7 @@ auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
 
 void BuildConcaveCollider(const std::filesystem::path& inPath,
                           const std::filesystem::path& outPath,
-                          nc::convert::FbxConverter* converter)
+                          nc::convert::GeometryConverter* converter)
 {
     const auto asset = converter->ImportConcaveCollider(inPath);
     auto outFile = ::OpenOutFile(outPath);
@@ -36,7 +36,7 @@ void BuildConcaveCollider(const std::filesystem::path& inPath,
 
 void BuildHullCollider(const std::filesystem::path& inPath,
                        const std::filesystem::path& outPath,
-                       nc::convert::FbxConverter* converter)
+                       nc::convert::GeometryConverter* converter)
 {
     const auto asset = converter->ImportHullCollider(inPath);
     auto outFile = ::OpenOutFile(outPath);
@@ -46,7 +46,7 @@ void BuildHullCollider(const std::filesystem::path& inPath,
 
 void BuildMesh(const std::filesystem::path& inPath,
                const std::filesystem::path& outPath,
-               nc::convert::FbxConverter* converter)
+               nc::convert::GeometryConverter* converter)
 {
     const auto asset = converter->ImportMesh(inPath);
     auto outFile = ::OpenOutFile(outPath);
@@ -64,7 +64,7 @@ void BuildCubemap(const std::filesystem::path& inPath,
 namespace nc::convert
 {
 Builder::Builder()
-    : m_fbxConverter{std::make_unique<FbxConverter>()}
+    : m_GeometryConverter{std::make_unique<GeometryConverter>()}
 {
 }
 
@@ -85,17 +85,17 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::ConcaveCollider:
         {
-            ::BuildConcaveCollider(target.sourcePath, target.destinationPath, m_fbxConverter.get());
+            ::BuildConcaveCollider(target.sourcePath, target.destinationPath, m_GeometryConverter.get());
             break;
         }
         case asset::AssetType::HullCollider:
         {
-            ::BuildHullCollider(target.sourcePath, target.destinationPath, m_fbxConverter.get());
+            ::BuildHullCollider(target.sourcePath, target.destinationPath, m_GeometryConverter.get());
             break;
         }
         case asset::AssetType::Mesh:
         {
-            ::BuildMesh(target.sourcePath, target.destinationPath, m_fbxConverter.get());
+            ::BuildMesh(target.sourcePath, target.destinationPath, m_GeometryConverter.get());
             break;
         }
         case asset::AssetType::Shader:

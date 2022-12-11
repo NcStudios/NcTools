@@ -7,7 +7,7 @@
 namespace nc::convert
 {
 struct Target;
-class FbxConverter;
+class GeometryConverter;
 
 /** @brief Manager that handles nca conversion and serialization. */
 class Builder
@@ -20,6 +20,6 @@ class Builder
         auto Build(asset::AssetType type, const Target& target) -> bool;
 
     private:
-        std::unique_ptr<FbxConverter> m_fbxConverter;
+        std::unique_ptr<GeometryConverter> m_GeometryConverter;
 };
 } // namespace nc::convert

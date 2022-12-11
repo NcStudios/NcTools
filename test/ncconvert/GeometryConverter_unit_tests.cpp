@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "analysis/GeometryAnalysis.h"
-#include "converters/FbxConverter.h"
+#include "converters/GeometryConverter.h"
 #include "ncasset/AssetTypes.h"
 
 #include <algorithm>
@@ -16,7 +16,7 @@ auto operator==(const Triangle& lhs, const Triangle& rhs) -> bool
 }
 }
 
-TEST(FbxConverterTest, ImportConcaveCollider_convertsToNca)
+TEST(GeometryConverterTest, ImportConcaveCollider_convertsToNca)
 {
     constexpr auto possibleTriangles = std::array<nc::Triangle, 2>{
         nc::Triangle{
@@ -31,7 +31,7 @@ TEST(FbxConverterTest, ImportConcaveCollider_convertsToNca)
         }
     };
 
-    auto uut = nc::convert::FbxConverter{};
+    auto uut = nc::convert::GeometryConverter{};
     const auto actual = uut.ImportConcaveCollider(collateralDirectory / "plane.fbx");
 
     EXPECT_EQ(actual.extents, nc::convert::GetMeshVertexExtents(possibleTriangles));
@@ -44,7 +44,7 @@ TEST(FbxConverterTest, ImportConcaveCollider_convertsToNca)
     }
 }
 
-TEST(FbxConverterTest, ImportedHullCollider_convertsToNca)
+TEST(GeometryConverterTest, ImportedHullCollider_convertsToNca)
 {
     constexpr auto possibleVertices = std::array<nc::Vector3, 8>{
         nc::Vector3{ 0.5f,  0.5f,  0.5f}, nc::Vector3{-0.5f,  0.5f,  0.5f},
@@ -53,7 +53,7 @@ TEST(FbxConverterTest, ImportedHullCollider_convertsToNca)
         nc::Vector3{ 0.5f, -0.5f, -0.5f}, nc::Vector3{-0.5f, -0.5f, -0.5f}
     };
 
-    auto uut = nc::convert::FbxConverter{};
+    auto uut = nc::convert::GeometryConverter{};
     const auto actual = uut.ImportHullCollider(collateralDirectory / "cube.fbx");
 
     EXPECT_EQ(actual.extents, nc::convert::GetMeshVertexExtents(possibleVertices));
@@ -66,7 +66,7 @@ TEST(FbxConverterTest, ImportedHullCollider_convertsToNca)
     }
 }
 
-TEST(FbxConverterTest, ImportedMesh_convertsToNca)
+TEST(GeometryConverterTest, ImportedMesh_convertsToNca)
 {
     constexpr auto possibleVertices = std::array<nc::Vector3, 8>{
         nc::Vector3{ 0.5f,  0.5f,  0.5f}, nc::Vector3{-0.5f,  0.5f,  0.5f},
@@ -89,7 +89,7 @@ TEST(FbxConverterTest, ImportedMesh_convertsToNca)
         nc::Vector3::Down()
     };
 
-    auto uut = nc::convert::FbxConverter{};
+    auto uut = nc::convert::GeometryConverter{};
     const auto actual = uut.ImportMesh(collateralDirectory / "cube.fbx");
 
     EXPECT_EQ(actual.extents, nc::convert::GetMeshVertexExtents(possibleVertices));

@@ -1,7 +1,8 @@
-#include "FbxConverter.h"
+#include "GeometryConverter.h"
 #include "analysis/GeometryAnalysis.h"
 #include "analysis/Sanitize.h"
 #include "ncasset/AssetTypes.h"
+#include "utility/Path.h"
 
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
@@ -10,6 +11,7 @@
 #include "ncutility/NcError.h"
 
 #include <algorithm>
+#include <array>
 #include <iostream>
 #include <span>
 
@@ -18,25 +20,15 @@ namespace
 constexpr auto concaveColliderFlags = aiProcess_Triangulate | aiProcess_ConvertToLeftHanded;
 constexpr auto hullColliderFlags = concaveColliderFlags | aiProcess_JoinIdenticalVertices;
 constexpr auto meshFlags = hullColliderFlags | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
-
-void ValidatePath(const std::filesystem::path& path)
-{
-    if (!std::filesystem::is_regular_file(path))
-    {
-        throw nc::NcError("Invalid path: ", path.string());
-    }
-
-    const auto extension = path.extension();
-
-    if (extension.compare(".fbx") && extension.compare(".obj"))
-    {
-        throw nc::NcError("Invalid file extension for geometry: ", path.string());
-    }
-}
+const auto supportedFileExtensions = std::array<std::string, 2> {".fbx", ".obj"};
 
 auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiMesh*
 {
-    ValidatePath(path);
+    if (!nc::convert::ValidateInputFile(path, supportedFileExtensions))
+    {
+        throw nc::NcError("Invalid input file: ", path.string());
+    }
+
     if (!importer->ValidateFlags(flags))
     {
         throw nc::NcError("Unsupported import flags");
@@ -149,7 +141,7 @@ auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVer
 
 namespace nc::convert
 {
-class FbxConverter::impl
+class GeometryConverter::impl
 {
     public:
         auto ImportConcaveCollider(const std::filesystem::path& path) -> asset::ConcaveCollider
@@ -208,24 +200,24 @@ class FbxConverter::impl
         Assimp::Importer m_importer;
 };
 
-FbxConverter::FbxConverter()
-    : m_impl{std::make_unique<FbxConverter::impl>()}
+GeometryConverter::GeometryConverter()
+    : m_impl{std::make_unique<GeometryConverter::impl>()}
 {
 }
 
-FbxConverter::~FbxConverter() = default;
+GeometryConverter::~GeometryConverter() = default;
 
-auto FbxConverter::ImportConcaveCollider(const std::filesystem::path& path) -> asset::ConcaveCollider
+auto GeometryConverter::ImportConcaveCollider(const std::filesystem::path& path) -> asset::ConcaveCollider
 {
     return m_impl->ImportConcaveCollider(path);
 }
 
-auto FbxConverter::ImportHullCollider(const std::filesystem::path& path) -> asset::HullCollider
+auto GeometryConverter::ImportHullCollider(const std::filesystem::path& path) -> asset::HullCollider
 {
     return m_impl->ImportHullCollider(path);
 }
 
-auto FbxConverter::ImportMesh(const std::filesystem::path& path) -> asset::Mesh
+auto GeometryConverter::ImportMesh(const std::filesystem::path& path) -> asset::Mesh
 {
     return m_impl->ImportMesh(path);
 }

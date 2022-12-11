@@ -12,11 +12,11 @@ struct Mesh;
 
 namespace nc::convert
 {
-class FbxConverter
+class GeometryConverter
 {
     public:
-        FbxConverter();
-        ~FbxConverter() noexcept;
+        GeometryConverter();
+        ~GeometryConverter() noexcept;
 
         /** Process an Fbx file as geometry for a concave collider. */
         auto ImportConcaveCollider(const std::filesystem::path& path) -> asset::ConcaveCollider;

@@ -13,7 +13,7 @@
 namespace
 {
 constexpr auto assetTypes = std::array<nc::asset::AssetType, 4>{
-    nc::asset::AssetType::Cubemap,
+    nc::asset::AssetType::CubeMap,
     nc::asset::AssetType::ConcaveCollider,
     nc::asset::AssetType::HullCollider,
     nc::asset::AssetType::Mesh

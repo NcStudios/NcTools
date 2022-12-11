@@ -45,7 +45,7 @@ void Usage()
               << "  -m <manifest>           Parse multiple assets from <manifest>\n"
               << "  -o <dir>                Output assets to <dir>\n\n"
               
-              << "  Valid asset types are 'mesh', 'hull-collider', 'concave-collider', and 'cubemap' and are\n"
+              << "  Valid asset types are 'mesh', 'hull-collider', 'concave-collider', and 'cube-map' and are\n"
               << "  case-insensitive.\n\n"
 
               << "  When using -m, <manifest> should be the path to a newline-separated list of\n"

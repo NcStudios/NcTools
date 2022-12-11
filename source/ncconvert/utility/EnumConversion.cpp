@@ -17,8 +17,8 @@ auto ToAssetType(std::string type) -> asset::AssetType
         return asset::AssetType::HullCollider;
     else if(type == "concave-collider")
         return asset::AssetType::ConcaveCollider;
-    else if(type == "cubemap")
-        return asset::AssetType::Cubemap;
+    else if(type == "cube-map")
+        return asset::AssetType::CubeMap;
 
     throw NcError("Failed to parse asset type from: " + type);
 }
@@ -27,8 +27,8 @@ auto ToString(asset::AssetType type) -> std::string
 {
     switch(type)
     {
-        case asset::AssetType::Cubemap:
-            return "cubemap";
+        case asset::AssetType::CubeMap:
+            return "cube-map";
         case asset::AssetType::ConcaveCollider:
             return "concave-collider";
         case asset::AssetType::HullCollider:

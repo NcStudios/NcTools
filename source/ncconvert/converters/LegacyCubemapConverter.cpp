@@ -19,7 +19,7 @@ auto ToAssetPath(const std::filesystem::path& meshPath, const std::filesystem::p
 
 namespace nc::convert
 {
-void ConvertCubemap(const std::filesystem::path& inPath, const std::filesystem::path& outDirectory)
+void ConvertCubeMap(const std::filesystem::path& inPath, const std::filesystem::path& outDirectory)
 {
     if (!std::filesystem::is_directory(inPath))
     {
@@ -39,7 +39,7 @@ void ConvertCubemap(const std::filesystem::path& inPath, const std::filesystem::
         bool found = false;
     };
 
-    auto skyboxFacePaths = std::array<Entry, 6>{
+    auto cubeMapFacePaths = std::array<Entry, 6>{
         Entry{"front"}, Entry{"back"}, Entry{"up"},
         Entry{"down"}, Entry{"right"}, Entry{"left"}
     };
@@ -51,12 +51,12 @@ void ConvertCubemap(const std::filesystem::path& inPath, const std::filesystem::
         auto facePathExt = facePath.extension().string();
         std::ranges::for_each(facePathName, [](auto& character){character = std::tolower(character);});
 
-        auto pos = std::ranges::find_if(skyboxFacePaths, [facePathName](const auto& entry)
+        auto pos = std::ranges::find_if(cubeMapFacePaths, [facePathName](const auto& entry)
         {
             return entry.face == facePathName;
         });
 
-        if (pos == skyboxFacePaths.end())
+        if (pos == cubeMapFacePaths.end())
         {
             continue;
         }
@@ -76,14 +76,14 @@ void ConvertCubemap(const std::filesystem::path& inPath, const std::filesystem::
         outFile << facePathName << facePathExt << '\n';
     }
 
-    const bool isMissingImage = std::ranges::any_of(skyboxFacePaths, [](const auto& entry)
+    const bool isMissingImage = std::ranges::any_of(cubeMapFacePaths, [](const auto& entry)
     {
         return entry.found == false;
     });
 
     if (isMissingImage)
     {
-        throw NcError("One or more cubemap faces did not get created correctly.");
+        throw NcError("One or more cube map faces did not get created correctly.");
     }
 }
 }

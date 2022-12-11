@@ -10,7 +10,7 @@ namespace nc::asset
 enum class AssetType
 {
     AudioClip,
-    Cubemap,
+    CubeMap,
     ConcaveCollider,
     HullCollider,
     Mesh,
@@ -67,7 +67,7 @@ struct Texture
     std::vector<unsigned char> pixels;
 };
 
-struct Cubemap
+struct CubeMap
 {
     uint32_t size;
     std::array<Texture, 6> pixelArray;

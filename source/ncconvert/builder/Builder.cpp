@@ -54,10 +54,10 @@ void BuildMesh(const std::filesystem::path& inPath,
     nc::asset::Serialize(outFile, asset, assetId);
 }
 
-void BuildCubemap(const std::filesystem::path& inPath,
+void BuildCubeMap(const std::filesystem::path& inPath,
                   const std::filesystem::path& outDirectory)
 {
-    nc::convert::ConvertCubemap(inPath, outDirectory);
+    nc::convert::ConvertCubeMap(inPath, outDirectory);
 }
 } // anonymous namespace
 
@@ -78,9 +78,9 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         {
             throw NcError("not implemented");
         }
-        case asset::AssetType::Cubemap:
+        case asset::AssetType::CubeMap:
         {
-            ::BuildCubemap(target.sourcePath, target.destinationPath);
+            ::BuildCubeMap(target.sourcePath, target.destinationPath);
             break;
         }
         case asset::AssetType::ConcaveCollider:

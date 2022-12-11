@@ -130,9 +130,6 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
         EXPECT_EQ(e, a);
     }
 
-    // EXPECT_TRUE(std::equal(expectedAsset.vertices.cbegin(),
-    //                        expectedAsset.vertices.cend(),
-    //                        actualAsset.vertices.cbegin()));
     EXPECT_TRUE(std::equal(expectedAsset.indices.cbegin(),
                            expectedAsset.indices.cend(),
                            actualAsset.indices.cbegin()));

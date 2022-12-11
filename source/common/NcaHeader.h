@@ -9,7 +9,7 @@ struct MagicNumber
 {
     static constexpr auto audioClip = "CLIP";
     static constexpr auto concaveCollider = "CONC";
-    static constexpr auto cubemap = "CUBE";
+    static constexpr auto cubeMap = "CUBE";
     static constexpr auto hullCollider = "HULL";
     static constexpr auto mesh = "MESH";
     static constexpr auto shader = "SHAD";

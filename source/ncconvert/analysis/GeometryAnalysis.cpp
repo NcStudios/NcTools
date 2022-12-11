@@ -15,6 +15,7 @@ auto CompareSquareMagnitudes(const nc::Vector3& lhs, const nc::Vector3& rhs)
     return nc::SquareMagnitude(lhs) < nc::SquareMagnitude(rhs);
 }
 
+// Views a MeshVertex as just its position. For use with std::ranges projections.
 auto PositionProjection(const nc::asset::MeshVertex& vertex) -> const nc::Vector3&
 {
     return vertex.position;

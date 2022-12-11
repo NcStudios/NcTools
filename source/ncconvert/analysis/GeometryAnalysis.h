@@ -10,7 +10,7 @@ struct Vector3;
 namespace asset
 {
 struct MeshVertex;
-}
+} // namespace asset
 
 namespace convert
 {

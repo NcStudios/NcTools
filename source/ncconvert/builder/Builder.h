@@ -8,6 +8,7 @@ namespace nc::convert
 {
 struct Target;
 class GeometryConverter;
+class TextureConverter;
 
 /** @brief Manager that handles nca conversion and serialization. */
 class Builder
@@ -20,6 +21,7 @@ class Builder
         auto Build(asset::AssetType type, const Target& target) -> bool;
 
     private:
-        std::unique_ptr<GeometryConverter> m_GeometryConverter;
+        std::unique_ptr<GeometryConverter> m_geometryConverter;
+        std::unique_ptr<TextureConverter> m_textureConverter;
 };
 } // namespace nc::convert

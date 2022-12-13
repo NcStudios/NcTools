@@ -26,6 +26,7 @@ BuildInstructions::BuildInstructions(const Config& config)
     m_instructions.emplace(asset::AssetType::ConcaveCollider, std::vector<Target>{});
     m_instructions.emplace(asset::AssetType::HullCollider, std::vector<Target>{});
     m_instructions.emplace(asset::AssetType::Mesh, std::vector<Target>{});
+    m_instructions.emplace(asset::AssetType::Texture, std::vector<Target>{});
     ReadTargets(config);
 }
 

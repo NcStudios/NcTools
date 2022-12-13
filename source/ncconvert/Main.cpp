@@ -45,8 +45,12 @@ void Usage()
               << "  -m <manifest>           Parse multiple assets from <manifest>\n"
               << "  -o <dir>                Output assets to <dir>\n\n"
               
-              << "  Valid asset types are 'mesh', 'hull-collider', 'concave-collider', and 'cube-map' and are\n"
-              << "  case-insensitive.\n\n"
+              << "  Asset types             Supported file types\n"
+              << "  'mesh'                  fbx, obj\n"
+              << "  'hull-collider          fbx, obj\n"
+              << "  'concave-collider'      fbx, obj\n"
+              << "  'texture'               jpeg, png, bitmap\n"
+              << "  'cube-map'              jpeg, png, bitmap\n\n"
 
               << "  When using -m, <manifest> should be the path to a newline-separated list of\n"
               << "  pairs in the form '<asset-type> <path-to-input-file>'.\n\n"

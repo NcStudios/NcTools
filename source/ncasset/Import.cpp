@@ -47,4 +47,11 @@ auto ImportMesh(const std::filesystem::path& ncaPath) -> Mesh
     auto [header, asset] = DeserializeMesh(file);
     return asset;
 }
+
+auto ImportTexture(const std::filesystem::path& ncaPath) -> Texture
+{
+    auto file = ::OpenNca(ncaPath);
+    auto [header, asset] = DeserializeTexture(file);
+    return asset;
+}
 } // namespace nc::asset

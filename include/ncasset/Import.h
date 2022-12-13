@@ -14,4 +14,7 @@ auto ImportConcaveCollider(const std::filesystem::path& ncaPath) -> ConcaveColli
 
 /** @brief Read a Mesh asset from an .nca file. */
 auto ImportMesh(const std::filesystem::path& ncaPath) -> Mesh;
+
+/** @brief Read a Texture asset from an .nca file. */
+auto ImportTexture(const std::filesystem::path& ncaPath) -> Texture;
 } // namespace nc::asset

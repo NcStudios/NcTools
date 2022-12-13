@@ -134,3 +134,32 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                            expectedAsset.indices.cend(),
                            actualAsset.indices.cbegin()));
 }
+
+TEST(SerializationTest, Texture_roundTrip_succeeds)
+{
+    constexpr auto assetId = 1234ull;
+    const auto expectedAsset = nc::asset::Texture{
+        .width = 4, .height = 2,
+        .pixels = std::vector<unsigned char>{
+            0x1, 0x3, 0x5, 0x7,
+            0x0, 0x2, 0x4, 0x6
+        }
+    };
+
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::asset::Serialize(stream, expectedAsset, assetId);
+    const auto [actualHeader, actualAsset] = nc::asset::DeserializeTexture(stream);
+
+    EXPECT_STREQ("TEXT", actualHeader.magicNumber);
+    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(nc::asset::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
+
+    EXPECT_EQ(expectedAsset.width, actualAsset.width);
+    EXPECT_EQ(expectedAsset.height, actualAsset.height);
+    ASSERT_EQ(expectedAsset.pixels.size(), actualAsset.pixels.size());
+
+    EXPECT_TRUE(std::equal(expectedAsset.pixels.cbegin(),
+                           expectedAsset.pixels.cend(),
+                           actualAsset.pixels.cbegin()));
+}

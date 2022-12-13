@@ -41,6 +41,7 @@ struct NcaHeader
 struct ConcaveCollider;
 struct HullCollider;
 struct Mesh;
+struct Texture;
 
 /** @brief Get the serialized size in bytes for a ConcaveCollider. */
 auto GetBlobSize(const ConcaveCollider& asset) -> size_t;
@@ -50,4 +51,7 @@ auto GetBlobSize(const HullCollider& asset) -> size_t;
 
 /** @brief Get the serialized size in bytes for a Mesh. */
 auto GetBlobSize(const Mesh& asset) -> size_t;
+
+/** @brief Get the serialized size in bytes for a Texture. */
+auto GetBlobSize(const Texture& asset) -> size_t;
 } // namespace nc::asset

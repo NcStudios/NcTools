@@ -60,4 +60,13 @@ void Serialize(std::ostream& stream, const Mesh& data, size_t assetId)
     ::Write(stream, data.vertices.data(), data.vertices.size() * sizeof(MeshVertex));
     ::Write(stream, data.indices.data(), data.indices.size() * sizeof(uint32_t));
 }
+
+void Serialize(std::ostream& stream, const Texture& data, size_t assetId)
+{
+    const auto assetSize = GetBlobSize(data);
+    ::WriteHeader(stream, MagicNumber::texture, assetId, assetSize);
+    ::Write(stream, data.width);
+    ::Write(stream, data.height);
+    ::Write(stream, data.pixels.data(), data.pixels.size());
+}
 } // namespace nc::asset

@@ -49,12 +49,12 @@ TEST(TextureConverterTest, ImportTexture_png_convertsToNca)
 
     EXPECT_EQ(rgb_corners::width, actual.width);
     EXPECT_EQ(rgb_corners::height, actual.height);
-    ASSERT_EQ(rgb_corners::numBytes, actual.pixels.size());
+    ASSERT_EQ(rgb_corners::numBytes, actual.pixelData.size());
 
     for (auto pixelIndex = 0u; pixelIndex < rgb_corners::numPixels; ++pixelIndex)
     {
         const auto expectedPixel = rgb_corners::pixels[pixelIndex];
-        const auto actualPixel = ReadPixel(actual.pixels.data(), pixelIndex * 4);
+        const auto actualPixel = ReadPixel(actual.pixelData.data(), pixelIndex * 4);
         EXPECT_EQ(expectedPixel, actualPixel);
     }
 }
@@ -66,7 +66,7 @@ TEST(TextureConverterTest, ImportTexture_jpg_convertsToNca)
 
     EXPECT_EQ(rgb_corners::width, actual.width);
     EXPECT_EQ(rgb_corners::height, actual.height);
-    ASSERT_EQ(rgb_corners::numBytes, actual.pixels.size());
+    ASSERT_EQ(rgb_corners::numBytes, actual.pixelData.size());
 
     // Not testing pixels because jpeg
 }
@@ -78,12 +78,12 @@ TEST(TextureConverterTest, ImportTexture_bmp_convertsToNca)
 
     EXPECT_EQ(rgb_corners::width, actual.width);
     EXPECT_EQ(rgb_corners::height, actual.height);
-    ASSERT_EQ(rgb_corners::numBytes, actual.pixels.size());
+    ASSERT_EQ(rgb_corners::numBytes, actual.pixelData.size());
 
     for (auto pixelIndex = 0u; pixelIndex < rgb_corners::numPixels; ++pixelIndex)
     {
         const auto expectedPixel = rgb_corners::pixels[pixelIndex];
-        const auto actualPixel = ReadPixel(actual.pixels.data(), pixelIndex * 4);
+        const auto actualPixel = ReadPixel(actual.pixelData.data(), pixelIndex * 4);
         EXPECT_EQ(expectedPixel, actualPixel);
     }
 }

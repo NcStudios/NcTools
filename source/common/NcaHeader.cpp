@@ -28,6 +28,6 @@ auto GetBlobSize(const Texture& asset) -> size_t
 {
     // width + height
     constexpr auto baseSize = sizeof(uint32_t) + sizeof(uint32_t);
-    return baseSize + asset.pixels.size();
+    return baseSize + asset.pixelData.size();
 }
 } // namsepace nc::asset

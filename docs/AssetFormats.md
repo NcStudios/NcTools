@@ -103,8 +103,8 @@ TODO
 ### Texture Blob Format
 > Magic Number: 'TEXT'
 
-| Name   | Type            | Size               | Note 
-|--------|-----------------|--------------------|------
-| width  | u32             | 4                  |
-| height | u32             | 4                  |
-| pixels | unsigned char[] | width * height * 4 | Always forced to 4 8-bit channels
+| Name      | Type            | Size               | Note 
+|-----------|-----------------|--------------------|------
+| width     | u32             | 4                  |
+| height    | u32             | 4                  |
+| pixelData | unsigned char[] | width * height * 4 | Always forced to 4 8-bit channels

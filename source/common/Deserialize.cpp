@@ -105,9 +105,9 @@ auto DeserializeTexture(std::istream& stream) -> DeserializedResult<Texture>
     auto asset = Texture{};
     bytes.Read(&asset.width);
     bytes.Read(&asset.height);
-    const auto nPixels = asset.width * asset.height;
-    asset.pixels.resize(nPixels);
-    bytes.Read(asset.pixels.data(), nPixels);
+    const auto nBytes = asset.width * asset.height * 4u;
+    asset.pixelData.resize(nBytes);
+    bytes.Read(asset.pixelData.data(), nBytes);
 
     if (bytes.RemainingByteCount() != 0)
     {

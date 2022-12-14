@@ -67,6 +67,6 @@ void Serialize(std::ostream& stream, const Texture& data, size_t assetId)
     ::WriteHeader(stream, MagicNumber::texture, assetId, assetSize);
     ::Write(stream, data.width);
     ::Write(stream, data.height);
-    ::Write(stream, data.pixels.data(), data.pixels.size());
+    ::Write(stream, data.pixelData.data(), data.pixelData.size());
 }
 } // namespace nc::asset

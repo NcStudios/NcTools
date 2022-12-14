@@ -139,9 +139,9 @@ TEST(SerializationTest, Texture_roundTrip_succeeds)
 {
     constexpr auto assetId = 1234ull;
     const auto expectedAsset = nc::asset::Texture{
-        .width = 4, .height = 2,
-        .pixels = std::vector<unsigned char>{
-            0xA1, 0xA3, 0xA5, 0xA7,  0xB2, 0xB4, 0xB6, 0xB8,
+        .width = 2, .height = 2,
+        .pixelData = std::vector<unsigned char>{
+            0xA1, 0xA2, 0xA3, 0xA4,  0xB5, 0xB6, 0xB7, 0xB8,
             0xCA, 0xCB, 0xCC, 0xCD,  0xD0, 0xD1, 0xD2, 0xD3
         }
     };
@@ -157,9 +157,9 @@ TEST(SerializationTest, Texture_roundTrip_succeeds)
 
     EXPECT_EQ(expectedAsset.width, actualAsset.width);
     EXPECT_EQ(expectedAsset.height, actualAsset.height);
-    ASSERT_EQ(expectedAsset.pixels.size(), actualAsset.pixels.size());
+    ASSERT_EQ(expectedAsset.pixelData.size(), actualAsset.pixelData.size());
 
-    EXPECT_TRUE(std::equal(expectedAsset.pixels.cbegin(),
-                           expectedAsset.pixels.cend(),
-                           actualAsset.pixels.cbegin()));
+    EXPECT_TRUE(std::equal(expectedAsset.pixelData.cbegin(),
+                           expectedAsset.pixelData.cend(),
+                           actualAsset.pixelData.cbegin()));
 }

@@ -2,7 +2,7 @@
 #include "BuildInstructions.h"
 #include "Target.h"
 #include "converters/GeometryConverter.h"
-#include "converters/LegacytCubemapConverter.h"
+#include "converters/LegacyCubemapConverter.h"
 #include "converters/TextureConverter.h"
 #include "common/Serialize.h"
 

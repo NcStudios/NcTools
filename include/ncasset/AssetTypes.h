@@ -62,6 +62,8 @@ struct Shader
 
 struct Texture
 {
+    static constexpr uint32_t numChannels = 4u;
+
     uint32_t width;
     uint32_t height;
     std::vector<unsigned char> pixelData;

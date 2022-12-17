@@ -1,4 +1,4 @@
-#include "LegacytCubemapConverter.h"
+#include "LegacyCubemapConverter.h"
 
 #include "ncutility/NcError.h"
 

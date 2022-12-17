@@ -36,7 +36,7 @@ auto TextureConverter::ImportTexture(const std::filesystem::path& path) -> asset
     }
 
     auto pixels = std::vector<unsigned char>{};
-    const auto nBytes = width * height * 4; // ignore nChannels because we force to 4 8-bit channels
+    const auto nBytes = width * height * asset::Texture::numChannels; // ignore nChannels because we force to 4 8-bit channels
     pixels.reserve(nBytes);
     std::copy(rawPixels, rawPixels + nBytes, std::back_inserter(pixels));
     ::free(rawPixels);

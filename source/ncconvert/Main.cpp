@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     if(!ParseArgs(argc, argv, &config))
     {
         Usage();
-        return 0;
+        return 1;
     }
 
     try
@@ -30,6 +30,7 @@ int main(int argc, char** argv)
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
+        return 1;
     }
 
     return 0;
@@ -45,8 +46,12 @@ void Usage()
               << "  -m <manifest>           Parse multiple assets from <manifest>\n"
               << "  -o <dir>                Output assets to <dir>\n\n"
               
-              << "  Valid asset types are 'mesh', 'hull-collider', 'concave-collider', and 'cube-map' and are\n"
-              << "  case-insensitive.\n\n"
+              << "  Asset types             Supported file types\n"
+              << "  'mesh'                  fbx, obj\n"
+              << "  'hull-collider          fbx, obj\n"
+              << "  'concave-collider'      fbx, obj\n"
+              << "  'texture'               jpg, png, bmp\n"
+              << "  'cube-map'              jpg, png, bmp\n\n"
 
               << "  When using -m, <manifest> should be the path to a newline-separated list of\n"
               << "  pairs in the form '<asset-type> <path-to-input-file>'.\n\n"

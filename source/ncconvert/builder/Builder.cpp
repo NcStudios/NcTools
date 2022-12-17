@@ -2,7 +2,8 @@
 #include "BuildInstructions.h"
 #include "Target.h"
 #include "converters/GeometryConverter.h"
-#include "converters/LegacytCubemapConverter.h"
+#include "converters/LegacyCubemapConverter.h"
+#include "converters/TextureConverter.h"
 #include "common/Serialize.h"
 
 #include "fmt/format.h"
@@ -59,12 +60,23 @@ void BuildCubeMap(const std::filesystem::path& inPath,
 {
     nc::convert::ConvertCubeMap(inPath, outDirectory);
 }
+
+void BuildTexture(const std::filesystem::path& inPath,
+                  const std::filesystem::path& outPath,
+                  nc::convert::TextureConverter* converter)
+{
+    const auto asset = converter->ImportTexture(inPath);
+    auto outFile = ::OpenOutFile(outPath);
+    auto assetId = size_t{};
+    nc::asset::Serialize(outFile, asset, assetId);
+}
 } // anonymous namespace
 
 namespace nc::convert
 {
 Builder::Builder()
-    : m_GeometryConverter{std::make_unique<GeometryConverter>()}
+    : m_geometryConverter{std::make_unique<GeometryConverter>()},
+      m_textureConverter{std::make_unique<TextureConverter>()}
 {
 }
 
@@ -85,17 +97,17 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::ConcaveCollider:
         {
-            ::BuildConcaveCollider(target.sourcePath, target.destinationPath, m_GeometryConverter.get());
+            ::BuildConcaveCollider(target.sourcePath, target.destinationPath, m_geometryConverter.get());
             break;
         }
         case asset::AssetType::HullCollider:
         {
-            ::BuildHullCollider(target.sourcePath, target.destinationPath, m_GeometryConverter.get());
+            ::BuildHullCollider(target.sourcePath, target.destinationPath, m_geometryConverter.get());
             break;
         }
         case asset::AssetType::Mesh:
         {
-            ::BuildMesh(target.sourcePath, target.destinationPath, m_GeometryConverter.get());
+            ::BuildMesh(target.sourcePath, target.destinationPath, m_geometryConverter.get());
             break;
         }
         case asset::AssetType::Shader:
@@ -104,7 +116,8 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::Texture:
         {
-            throw NcError("not implemented");
+            ::BuildTexture(target.sourcePath, target.destinationPath, m_textureConverter.get());
+            break;
         }
 
         throw NcError(fmt::format("Unknown AssetType: {} for {}",

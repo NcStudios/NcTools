@@ -9,6 +9,7 @@ target_include_directories(nc-convert
     PRIVATE
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/source
+        ${PROJECT_SOURCE_DIR}/source/external
         ${PROJECT_SOURCE_DIR}/source/ncconvert
 )
 

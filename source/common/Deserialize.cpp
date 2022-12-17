@@ -97,4 +97,23 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
 
     return {header, asset};
 }
+
+auto DeserializeTexture(std::istream& stream) -> DeserializedResult<Texture>
+{
+    const auto header = ::ReadNcaHeader(stream, MagicNumber::texture);
+    auto bytes = RawNcaBuffer{stream, header.size};
+    auto asset = Texture{};
+    bytes.Read(&asset.width);
+    bytes.Read(&asset.height);
+    const auto nBytes = asset.width * asset.height * asset::Texture::numChannels;
+    asset.pixelData.resize(nBytes);
+    bytes.Read(asset.pixelData.data(), nBytes);
+
+    if (bytes.RemainingByteCount() != 0)
+    {
+        throw NcError("Not all data was read from RawNcaBuffer");
+    }
+
+    return {header, asset};
+}
 } // namespace nc::asset

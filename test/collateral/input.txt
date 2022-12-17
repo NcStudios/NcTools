@@ -1,3 +1,0 @@
-mesh              test/collateral/cube.fbx   test/collateral/cube_mesh.nca
-hull-collider     test/collateral/coin.fbx   test/collateral/coin_hull.nca
-concave-collider  test/collateral/plane.fbx  test/collateral/plane_concave.nca

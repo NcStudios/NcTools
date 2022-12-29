@@ -18,7 +18,6 @@ TEST(EnumConversionTest, ToAssetType_badString_throws)
     EXPECT_THROW(nc::convert::ToAssetType("not-an-asset"), nc::NcError);
 }
 
-
 TEST(EnumConversionTest, ToString_fromAssetType_succeeds)
 {
     EXPECT_EQ(nc::convert::ToString(nc::asset::AssetType::AudioClip), "audio-clip");

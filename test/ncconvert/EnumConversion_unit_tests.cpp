@@ -5,6 +5,7 @@
 
 TEST(EnumConversionTest, ToAssetType_fromString_succeeds)
 {
+    EXPECT_EQ(nc::convert::ToAssetType("audio-clip"), nc::asset::AssetType::AudioClip);
     EXPECT_EQ(nc::convert::ToAssetType("concave-collider"), nc::asset::AssetType::ConcaveCollider);
     EXPECT_EQ(nc::convert::ToAssetType("cube-map"), nc::asset::AssetType::CubeMap);
     EXPECT_EQ(nc::convert::ToAssetType("hull-collider"), nc::asset::AssetType::HullCollider);
@@ -19,6 +20,7 @@ TEST(EnumConversionTest, ToAssetType_badString_throws)
 
 TEST(EnumConversionTest, ToString_fromAssetType_succeeds)
 {
+    EXPECT_EQ(nc::convert::ToString(nc::asset::AssetType::AudioClip), "audio-clip");
     EXPECT_EQ(nc::convert::ToString(nc::asset::AssetType::ConcaveCollider), "concave-collider");
     EXPECT_EQ(nc::convert::ToString(nc::asset::AssetType::CubeMap), "cube-map");
     EXPECT_EQ(nc::convert::ToString(nc::asset::AssetType::HullCollider), "hull-collider");

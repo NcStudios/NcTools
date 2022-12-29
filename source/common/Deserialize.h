@@ -15,6 +15,9 @@ struct DeserializedResult
     AssetType asset;
 };
 
+/** @brief Construct an AudioClip from data in a binary stream. */
+auto DeserializeAudioClip(std::istream& stream) -> DeserializedResult<AudioClip>;
+
 /** @brief Construct a ConcaveCollider from data in a binary stream. */
 auto DeserializeConcaveCollider(std::istream& stream) -> DeserializedResult<ConcaveCollider>;
 

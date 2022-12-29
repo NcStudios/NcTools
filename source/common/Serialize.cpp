@@ -29,6 +29,15 @@ void Write(std::ostream& stream, const T* data, size_t size)
 
 namespace nc::asset
 {
+void Serialize(std::ostream& stream, const AudioClip& data, size_t assetId)
+{
+    const auto assetSize = GetBlobSize(data);
+    ::WriteHeader(stream, MagicNumber::audioClip, assetId, assetSize);
+    ::Write(stream, data.samplesPerChannel);
+    ::Write(stream, data.leftChannel.data(), data.leftChannel.size() * sizeof(double));
+    ::Write(stream, data.rightChannel.data(), data.rightChannel.size() * sizeof(double));
+}
+
 void Serialize(std::ostream& stream, const ConcaveCollider& data, size_t assetId)
 {
     const auto assetSize = GetBlobSize(data);

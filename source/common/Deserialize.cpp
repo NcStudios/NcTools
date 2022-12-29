@@ -34,6 +34,25 @@ auto ReadNcaHeader(std::istream& stream, const char* expectedMagicNumber) -> nc:
 
 namespace nc::asset
 {
+auto DeserializeAudioClip(std::istream& stream) -> DeserializedResult<AudioClip>
+{
+    const auto header = ::ReadNcaHeader(stream, MagicNumber::audioClip);
+    auto bytes = RawNcaBuffer{stream, header.size};
+    auto asset = AudioClip{};
+    bytes.Read(&asset.samplesPerChannel);
+    asset.leftChannel.resize(asset.samplesPerChannel);
+    bytes.Read(asset.leftChannel.data(), asset.samplesPerChannel * sizeof(double));
+    asset.rightChannel.resize(asset.samplesPerChannel);
+    bytes.Read(asset.rightChannel.data(), asset.samplesPerChannel * sizeof(double));
+
+    if (bytes.RemainingByteCount() != 0)
+    {
+        throw NcError("Not all AudioClip data was read from RawNcaBuffer");
+    }
+
+    return {header, asset};
+}
+
 auto DeserializeConcaveCollider(std::istream& stream) -> DeserializedResult<ConcaveCollider>
 {
     const auto header = ::ReadNcaHeader(stream, MagicNumber::concaveCollider);
@@ -48,7 +67,7 @@ auto DeserializeConcaveCollider(std::istream& stream) -> DeserializedResult<Conc
 
     if (bytes.RemainingByteCount() != 0)
     {
-        throw NcError("Not all data was read from RawNcaBuffer");
+        throw NcError("Not all ConcaveCollider data was read from RawNcaBuffer");
     }
 
     return {header, asset};
@@ -68,7 +87,7 @@ auto DeserializeHullCollider(std::istream& stream) -> DeserializedResult<HullCol
 
     if (bytes.RemainingByteCount() != 0)
     {
-        throw NcError("Not all data was read from RawNcaBuffer");
+        throw NcError("Not all HullCollider data was read from RawNcaBuffer");
     }
 
     return {header, asset};
@@ -92,7 +111,7 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
 
     if (bytes.RemainingByteCount() != 0)
     {
-        throw NcError("Not all data was read from RawNcaBuffer");
+        throw NcError("Not all Mesh data was read from RawNcaBuffer");
     }
 
     return {header, asset};
@@ -111,7 +130,7 @@ auto DeserializeTexture(std::istream& stream) -> DeserializedResult<Texture>
 
     if (bytes.RemainingByteCount() != 0)
     {
-        throw NcError("Not all data was read from RawNcaBuffer");
+        throw NcError("Not all Texture data was read from RawNcaBuffer");
     }
 
     return {header, asset};

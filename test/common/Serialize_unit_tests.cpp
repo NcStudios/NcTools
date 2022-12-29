@@ -163,3 +163,32 @@ TEST(SerializationTest, Texture_roundTrip_succeeds)
                            expectedAsset.pixelData.cend(),
                            actualAsset.pixelData.cbegin()));
 }
+
+TEST(SerializationTest, AudioClip_roundTrip_succeeds)
+{
+    constexpr auto assetId = 1234ull;
+    const auto expectedAsset = nc::asset::AudioClip{
+        .samplesPerChannel = 4ull,
+        .leftChannel = std::vector<double>{0.0f, 0.5f, 1.0f, 0.5f},
+        .rightChannel = std::vector<double>{0.0f, 0.25f, 0.75f, 1.0f}
+    };
+
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::asset::Serialize(stream, expectedAsset, assetId);
+    const auto [actualHeader, actualAsset] = nc::asset::DeserializeAudioClip(stream);
+
+    EXPECT_STREQ("CLIP", actualHeader.magicNumber);
+    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(nc::asset::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
+
+    EXPECT_EQ(expectedAsset.samplesPerChannel, actualAsset.samplesPerChannel);
+    ASSERT_EQ(expectedAsset.leftChannel.size(), actualAsset.leftChannel.size());
+    ASSERT_EQ(expectedAsset.rightChannel.size(), actualAsset.rightChannel.size());
+    EXPECT_TRUE(std::equal(expectedAsset.leftChannel.cbegin(),
+                           expectedAsset.leftChannel.cend(),
+                           actualAsset.leftChannel.cbegin()));
+    EXPECT_TRUE(std::equal(expectedAsset.rightChannel.cbegin(),
+                           expectedAsset.rightChannel.cend(),
+                           actualAsset.rightChannel.cbegin()));
+}

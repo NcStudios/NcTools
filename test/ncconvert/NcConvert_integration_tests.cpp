@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "CollateralAudio.h"
 #include "CollateralGeometry.h"
 #include "CollateralTexture.h"
 #include "GeometryTestUtility.h"
@@ -134,4 +135,26 @@ TEST_F(NcConvertIntegration, Mesh_from_fbx)
     // just verifying all indices point to a valid vertex
     const auto nVertices = asset.vertices.size();
     EXPECT_TRUE(std::ranges::all_of(asset.indices, [&nVertices](auto i){ return i < nVertices; }));
+}
+
+TEST_F(NcConvertIntegration, AudioClip_from_wav)
+{
+    namespace test_data = collateral::sine;
+    const auto inFile = test_data::filePath;
+    const auto outFile = ncaTestOutDirectory / "sine.nca";
+    const auto target = nc::convert::Target(inFile, outFile);
+    auto builder = nc::convert::Builder{};
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::AudioClip, target));
+
+    const auto asset = nc::asset::ImportAudioClip(outFile);
+
+    EXPECT_EQ(asset.samplesPerChannel, test_data::samplesPerChannel);
+    ASSERT_EQ(asset.leftChannel.size(), test_data::leftChannel.size());
+    ASSERT_EQ(asset.rightChannel.size(), test_data::rightChannel.size());
+    EXPECT_TRUE(std::equal(asset.leftChannel.cbegin(),
+                           asset.leftChannel.cend(),
+                           test_data::leftChannel.cbegin()));
+    EXPECT_TRUE(std::equal(asset.rightChannel.cbegin(),
+                           asset.rightChannel.cend(),
+                           test_data::rightChannel.cbegin()));
 }

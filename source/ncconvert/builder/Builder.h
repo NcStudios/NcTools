@@ -7,6 +7,7 @@
 namespace nc::convert
 {
 struct Target;
+class AudioConverter;
 class GeometryConverter;
 class TextureConverter;
 
@@ -21,6 +22,7 @@ class Builder
         auto Build(asset::AssetType type, const Target& target) -> bool;
 
     private:
+        std::unique_ptr<AudioConverter> m_audioConverter;
         std::unique_ptr<GeometryConverter> m_geometryConverter;
         std::unique_ptr<TextureConverter> m_textureConverter;
 };

@@ -22,6 +22,7 @@ namespace nc::convert
 BuildInstructions::BuildInstructions(const Config& config)
     : m_instructions{}
 {
+    m_instructions.emplace(asset::AssetType::AudioClip, std::vector<Target>{});
     m_instructions.emplace(asset::AssetType::CubeMap, std::vector<Target>{});
     m_instructions.emplace(asset::AssetType::ConcaveCollider, std::vector<Target>{});
     m_instructions.emplace(asset::AssetType::HullCollider, std::vector<Target>{});

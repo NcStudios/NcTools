@@ -55,7 +55,11 @@ An asset package is one or more assets bundled together. It consists of a header
 ### AudioClip Blob Format
 > Magic Number: 'CLIP'
 
-TODO
+| Name                | Type     | Size                    |
+|---------------------|----------|-------------------------|
+| samples per channel | u64      | 8                       |
+| left channel        | double[] | 8 * samples per channel |
+| right channel       | double[] | 8 * samples per channel |
 
 ### ConcaveCollider Blob Format
 > Magic Number: 'CONC'

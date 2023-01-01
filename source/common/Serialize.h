@@ -6,6 +6,9 @@
 
 namespace nc::asset
 {
+/** @brief Write an AudioClip to a binary stream. */
+void Serialize(std::ostream& stream, const AudioClip& data, size_t assetId);
+
 /** @brief Write a ConcaveCollider to a binary stream. */
 void Serialize(std::ostream& stream, const ConcaveCollider& data, size_t assetId);
 

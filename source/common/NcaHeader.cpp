@@ -3,6 +3,13 @@
 
 namespace nc::asset
 {
+auto GetBlobSize(const AudioClip& asset) -> size_t
+{
+    // samplesPerChannel
+    constexpr auto baseSize = sizeof(size_t);
+    return baseSize + asset.samplesPerChannel * sizeof(double) * 2ull;
+}
+
 auto GetBlobSize(const HullCollider& asset) -> size_t
 {
     // extents + maxExtent + vertexCount

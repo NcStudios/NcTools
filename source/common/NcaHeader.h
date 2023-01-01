@@ -38,10 +38,14 @@ struct NcaHeader
     size_t size = 0;
 };
 
+struct AudioClip;
 struct ConcaveCollider;
 struct HullCollider;
 struct Mesh;
 struct Texture;
+
+/** @brief Get the serialized size in bytes for an AudioClip. */
+auto GetBlobSize(const AudioClip& asset) -> size_t;
 
 /** @brief Get the serialized size in bytes for a ConcaveCollider. */
 auto GetBlobSize(const ConcaveCollider& asset) -> size_t;

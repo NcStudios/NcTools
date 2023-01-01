@@ -11,7 +11,9 @@ auto ToAssetType(std::string type) -> asset::AssetType
 {
     std::ranges::transform(type, type.begin(), [](char c) { return std::tolower(c); });
 
-    if(type == "concave-collider")
+    if(type == "audio-clip")
+        return asset::AssetType::AudioClip;
+    else if(type == "concave-collider")
         return asset::AssetType::ConcaveCollider;
     else if(type == "cube-map")
         return asset::AssetType::CubeMap;
@@ -29,6 +31,8 @@ auto ToString(asset::AssetType type) -> std::string
 {
     switch(type)
     {
+        case asset::AssetType::AudioClip:
+            return "audio-clip";
         case asset::AssetType::CubeMap:
             return "cube-map";
         case asset::AssetType::ConcaveCollider:

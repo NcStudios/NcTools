@@ -51,7 +51,8 @@ void Usage()
               << "  'hull-collider          fbx, obj\n"
               << "  'concave-collider'      fbx, obj\n"
               << "  'texture'               jpg, png, bmp\n"
-              << "  'cube-map'              jpg, png, bmp\n\n"
+              << "  'cube-map'              jpg, png, bmp\n"
+              << "  'audio-clip'            wav\n\n"
 
               << "  When using -m, <manifest> should be the path to a newline-separated list of\n"
               << "  pairs in the form '<asset-type> <path-to-input-file>'.\n\n"

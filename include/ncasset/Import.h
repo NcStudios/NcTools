@@ -6,6 +6,9 @@
 
 namespace nc::asset
 {
+/** @brief Read an AudioClip asset from an .nca file. */
+auto ImportAudioClip(const std::filesystem::path& ncaPath) -> AudioClip;
+
 /** @brief Read a HullCollider asset from an .nca file. */
 auto ImportHullCollider(const std::filesystem::path& ncaPath) -> HullCollider;
 

@@ -27,6 +27,13 @@ auto OpenNca(const std::filesystem::path& ncaPath) -> std::ifstream
 
 namespace nc::asset
 {
+auto ImportAudioClip(const std::filesystem::path& ncaPath) -> AudioClip
+{
+    auto file = ::OpenNca(ncaPath);
+    auto [header, asset] = DeserializeAudioClip(file);
+    return asset;
+}
+
 auto ImportConcaveCollider(const std::filesystem::path& ncaPath) -> ConcaveCollider
 {
     auto file = ::OpenNca(ncaPath);

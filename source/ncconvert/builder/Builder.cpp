@@ -1,6 +1,7 @@
 #include "Builder.h"
 #include "BuildInstructions.h"
 #include "Target.h"
+#include "converters/AudioConverter.h"
 #include "converters/GeometryConverter.h"
 #include "converters/LegacyCubemapConverter.h"
 #include "converters/TextureConverter.h"
@@ -23,6 +24,16 @@ auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
     }
 
     return outFile;
+}
+
+void BuildAudioClip(const std::filesystem::path& inPath,
+                    const std::filesystem::path& outPath,
+                    nc::convert::AudioConverter* converter)
+{
+    const auto asset = converter->ImportAudioClip(inPath);
+    auto outFile = ::OpenOutFile(outPath);
+    auto assetId = size_t{};
+    nc::asset::Serialize(outFile, asset, assetId);
 }
 
 void BuildConcaveCollider(const std::filesystem::path& inPath,
@@ -75,7 +86,8 @@ void BuildTexture(const std::filesystem::path& inPath,
 namespace nc::convert
 {
 Builder::Builder()
-    : m_geometryConverter{std::make_unique<GeometryConverter>()},
+    : m_audioConverter{std::make_unique<AudioConverter>()},
+      m_geometryConverter{std::make_unique<GeometryConverter>()},
       m_textureConverter{std::make_unique<TextureConverter>()}
 {
 }
@@ -88,7 +100,8 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
     {
         case asset::AssetType::AudioClip:
         {
-            throw NcError("not implemented");
+            ::BuildAudioClip(target.sourcePath, target.destinationPath, m_audioConverter.get());
+            break;
         }
         case asset::AssetType::CubeMap:
         {

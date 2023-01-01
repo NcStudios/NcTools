@@ -74,7 +74,12 @@ An asset package is one or more assets bundled together. It consists of a header
 ### Cubemap Blob Format
 > Magic Number: 'CUBE'
 
-TODO
+| Name             | Type            | Size                         | Note 
+|------------------|-----------------|------------------------------|------
+| face side length | u32             | 4                            |
+| pixel data       | unsigned char[] | face side length ^ 2 * 4 * 6 | 6 faces with 4 8-bit channels packed together
+
+CubeMap faces in pixel data array are ordered: front, back, up, down, right, left.
 
 ### HullCollider Blob Format
 > Magic number: 'HULL'

@@ -57,3 +57,71 @@ TEST(TextureConverterTest, ImportTexture_bmp_convertsToNca)
         EXPECT_EQ(expectedPixel, actualPixel);
     }
 }
+
+TEST(TextureConverterTest, ImportCubeMap_horizontalArray_convertsToNca)
+{
+    namespace test_data = collateral::cube_map;
+    auto uut = nc::convert::TextureConverter{};
+    const auto actual = uut.ImportCubeMap(test_data::horizontalArrayFilePath);
+
+    EXPECT_EQ(test_data::faceSideLength, actual.faceSideLength);
+    ASSERT_EQ(test_data::numBytes, actual.pixelData.size());
+
+    for (auto pixelIndex = 0u; pixelIndex < test_data::numPixels; ++pixelIndex)
+    {
+        const auto expectedPixel = test_data::pixels[pixelIndex];
+        const auto actualPixel = ReadPixel(actual.pixelData.data(), pixelIndex * 4);
+        EXPECT_EQ(expectedPixel, actualPixel);
+    }
+}
+
+TEST(TextureConverterTest, ImportCubeMap_verticalArray_convertsToNca)
+{
+    namespace test_data = collateral::cube_map;
+    auto uut = nc::convert::TextureConverter{};
+    const auto actual = uut.ImportCubeMap(test_data::verticalArrayFilePath);
+
+    EXPECT_EQ(test_data::faceSideLength, actual.faceSideLength);
+    ASSERT_EQ(test_data::numBytes, actual.pixelData.size());
+
+    for (auto pixelIndex = 0u; pixelIndex < test_data::numPixels; ++pixelIndex)
+    {
+        const auto expectedPixel = test_data::pixels[pixelIndex];
+        const auto actualPixel = ReadPixel(actual.pixelData.data(), pixelIndex * 4);
+        EXPECT_EQ(expectedPixel, actualPixel);
+    }
+}
+
+TEST(TextureConverterTest, ImportCubeMap_horizontalCross_convertsToNca)
+{
+    namespace test_data = collateral::cube_map;
+    auto uut = nc::convert::TextureConverter{};
+    const auto actual = uut.ImportCubeMap(test_data::horizontalCrossFilePath);
+
+    EXPECT_EQ(test_data::faceSideLength, actual.faceSideLength);
+    ASSERT_EQ(test_data::numBytes, actual.pixelData.size());
+
+    for (auto pixelIndex = 0u; pixelIndex < test_data::numPixels; ++pixelIndex)
+    {
+        const auto expectedPixel = test_data::pixels[pixelIndex];
+        const auto actualPixel = ReadPixel(actual.pixelData.data(), pixelIndex * 4);
+        EXPECT_EQ(expectedPixel, actualPixel);
+    }
+}
+
+TEST(TextureConverterTest, ImportCubeMap_verticalCross_convertsToNca)
+{
+    namespace test_data = collateral::cube_map;
+    auto uut = nc::convert::TextureConverter{};
+    const auto actual = uut.ImportCubeMap(test_data::verticalCrossFilePath);
+
+    EXPECT_EQ(test_data::faceSideLength, actual.faceSideLength);
+    ASSERT_EQ(test_data::numBytes, actual.pixelData.size());
+
+    for (auto pixelIndex = 0u; pixelIndex < test_data::numPixels; ++pixelIndex)
+    {
+        const auto expectedPixel = test_data::pixels[pixelIndex];
+        const auto actualPixel = ReadPixel(actual.pixelData.data(), pixelIndex * 4);
+        EXPECT_EQ(expectedPixel, actualPixel);
+    }
+}

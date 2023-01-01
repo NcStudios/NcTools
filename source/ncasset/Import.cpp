@@ -41,6 +41,13 @@ auto ImportConcaveCollider(const std::filesystem::path& ncaPath) -> ConcaveColli
     return asset;
 }
 
+auto ImportCubeMap(const std::filesystem::path& ncaPath) -> CubeMap
+{
+    auto file = ::OpenNca(ncaPath);
+    auto [header, asset] = DeserializeCubeMap(file);
+    return asset;
+}
+
 auto ImportHullCollider(const std::filesystem::path& ncaPath) -> HullCollider
 {
     auto file = ::OpenNca(ncaPath);

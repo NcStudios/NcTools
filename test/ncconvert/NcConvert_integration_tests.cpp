@@ -158,3 +158,25 @@ TEST_F(NcConvertIntegration, AudioClip_from_wav)
                            asset.rightChannel.cend(),
                            test_data::rightChannel.cbegin()));
 }
+
+TEST_F(NcConvertIntegration, CubeMap_from_png)
+{
+    namespace test_data = collateral::cube_map;
+    const auto inFile = test_data::horizontalCrossFilePath;
+    const auto outFile = ncaTestOutDirectory / "cube_map.nca";
+    const auto target = nc::convert::Target(inFile, outFile);
+    auto builder = nc::convert::Builder{};
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::CubeMap, target));
+
+    const auto asset = nc::asset::ImportCubeMap(outFile);
+
+    EXPECT_EQ(asset.faceSideLength, test_data::faceSideLength);
+    ASSERT_EQ(asset.pixelData.size(), test_data::numBytes);
+
+    for (auto pixelIndex = 0u; pixelIndex < test_data::numPixels; ++pixelIndex)
+    {
+        const auto expectedPixel = test_data::pixels[pixelIndex];
+        const auto actualPixel = ReadPixel(asset.pixelData.data(), pixelIndex * 4);
+        EXPECT_EQ(expectedPixel, actualPixel);
+    }
+}

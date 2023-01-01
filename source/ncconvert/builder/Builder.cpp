@@ -3,7 +3,6 @@
 #include "Target.h"
 #include "converters/AudioConverter.h"
 #include "converters/GeometryConverter.h"
-#include "converters/LegacyCubemapConverter.h"
 #include "converters/TextureConverter.h"
 #include "common/Serialize.h"
 
@@ -25,62 +24,6 @@ auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
 
     return outFile;
 }
-
-void BuildAudioClip(const std::filesystem::path& inPath,
-                    const std::filesystem::path& outPath,
-                    nc::convert::AudioConverter* converter)
-{
-    const auto asset = converter->ImportAudioClip(inPath);
-    auto outFile = ::OpenOutFile(outPath);
-    auto assetId = size_t{};
-    nc::asset::Serialize(outFile, asset, assetId);
-}
-
-void BuildConcaveCollider(const std::filesystem::path& inPath,
-                          const std::filesystem::path& outPath,
-                          nc::convert::GeometryConverter* converter)
-{
-    const auto asset = converter->ImportConcaveCollider(inPath);
-    auto outFile = ::OpenOutFile(outPath);
-    auto assetId = size_t{};
-    nc::asset::Serialize(outFile, asset, assetId);
-}
-
-void BuildHullCollider(const std::filesystem::path& inPath,
-                       const std::filesystem::path& outPath,
-                       nc::convert::GeometryConverter* converter)
-{
-    const auto asset = converter->ImportHullCollider(inPath);
-    auto outFile = ::OpenOutFile(outPath);
-    auto assetId = size_t{};
-    nc::asset::Serialize(outFile, asset, assetId);
-}
-
-void BuildMesh(const std::filesystem::path& inPath,
-               const std::filesystem::path& outPath,
-               nc::convert::GeometryConverter* converter)
-{
-    const auto asset = converter->ImportMesh(inPath);
-    auto outFile = ::OpenOutFile(outPath);
-    auto assetId = size_t{};
-    nc::asset::Serialize(outFile, asset, assetId);
-}
-
-void BuildCubeMap(const std::filesystem::path& inPath,
-                  const std::filesystem::path& outDirectory)
-{
-    nc::convert::ConvertCubeMap(inPath, outDirectory);
-}
-
-void BuildTexture(const std::filesystem::path& inPath,
-                  const std::filesystem::path& outPath,
-                  nc::convert::TextureConverter* converter)
-{
-    const auto asset = converter->ImportTexture(inPath);
-    auto outFile = ::OpenOutFile(outPath);
-    auto assetId = size_t{};
-    nc::asset::Serialize(outFile, asset, assetId);
-}
 } // anonymous namespace
 
 namespace nc::convert
@@ -96,32 +39,40 @@ Builder::~Builder() = default;
 
 auto Builder::Build(asset::AssetType type, const Target& target) -> bool
 {
+    auto outFile = ::OpenOutFile(target.destinationPath);
+    const auto assetId = size_t{};
+
     switch (type)
     {
         case asset::AssetType::AudioClip:
         {
-            ::BuildAudioClip(target.sourcePath, target.destinationPath, m_audioConverter.get());
-            break;
+            const auto asset = m_audioConverter->ImportAudioClip(target.sourcePath);
+            asset::Serialize(outFile, asset, assetId);
+            return true;
         }
         case asset::AssetType::CubeMap:
         {
-            ::BuildCubeMap(target.sourcePath, target.destinationPath);
-            break;
+            const auto asset = m_textureConverter->ImportCubeMap(target.sourcePath);
+            asset::Serialize(outFile, asset, assetId);
+            return true;
         }
         case asset::AssetType::ConcaveCollider:
         {
-            ::BuildConcaveCollider(target.sourcePath, target.destinationPath, m_geometryConverter.get());
-            break;
+            const auto asset = m_geometryConverter->ImportConcaveCollider(target.sourcePath);
+            asset::Serialize(outFile, asset, assetId);
+            return true;
         }
         case asset::AssetType::HullCollider:
         {
-            ::BuildHullCollider(target.sourcePath, target.destinationPath, m_geometryConverter.get());
-            break;
+            const auto asset = m_geometryConverter->ImportHullCollider(target.sourcePath);
+            asset::Serialize(outFile, asset, assetId);
+            return true;
         }
         case asset::AssetType::Mesh:
         {
-            ::BuildMesh(target.sourcePath, target.destinationPath, m_geometryConverter.get());
-            break;
+            const auto asset = m_geometryConverter->ImportMesh(target.sourcePath);
+            asset::Serialize(outFile, asset, assetId);
+            return true;
         }
         case asset::AssetType::Shader:
         {
@@ -129,15 +80,14 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::Texture:
         {
-            ::BuildTexture(target.sourcePath, target.destinationPath, m_textureConverter.get());
-            break;
+            const auto asset = m_textureConverter->ImportTexture(target.sourcePath);
+            asset::Serialize(outFile, asset, assetId);
+            return true;
         }
-
-        throw NcError(fmt::format("Unknown AssetType: {} for {}",
-            static_cast<int>(type), target.sourcePath.string()
-        ));
     }
 
-    return true;
+    throw NcError(fmt::format("Unknown AssetType: {} for {}",
+        static_cast<int>(type), target.sourcePath.string()
+    ));
 }
 } // namespace nc::convert

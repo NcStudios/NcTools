@@ -39,6 +39,7 @@ struct NcaHeader
 };
 
 struct AudioClip;
+struct CubeMap;
 struct ConcaveCollider;
 struct HullCollider;
 struct Mesh;
@@ -49,6 +50,9 @@ auto GetBlobSize(const AudioClip& asset) -> size_t;
 
 /** @brief Get the serialized size in bytes for a ConcaveCollider. */
 auto GetBlobSize(const ConcaveCollider& asset) -> size_t;
+
+/** @brief Get the serialized size in bytes for a CubeMap. */
+auto GetBlobSize(const CubeMap& asset) -> size_t;
 
 /** @brief Get the serialized size in bytes for a HullCollider. */
 auto GetBlobSize(const HullCollider& asset) -> size_t;

@@ -48,6 +48,14 @@ void Serialize(std::ostream& stream, const ConcaveCollider& data, size_t assetId
     ::Write(stream, data.triangles.data(), data.triangles.size() * sizeof(Triangle));
 }
 
+void Serialize(std::ostream& stream, const CubeMap& data, size_t assetId)
+{
+    const auto assetSize = GetBlobSize(data);
+    ::WriteHeader(stream, MagicNumber::cubeMap, assetId, assetSize);
+    ::Write(stream, data.faceSideLength);
+    ::Write(stream, data.pixelData.data(), data.pixelData.size());
+}
+
 void Serialize(std::ostream& stream, const HullCollider& data, size_t assetId)
 {
     const auto assetSize = GetBlobSize(data);

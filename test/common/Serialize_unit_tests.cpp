@@ -192,3 +192,35 @@ TEST(SerializationTest, AudioClip_roundTrip_succeeds)
                            expectedAsset.rightChannel.cend(),
                            actualAsset.rightChannel.cbegin()));
 }
+
+TEST(SerializationTest, CubeMap_roundTrip_succeeds)
+{
+    constexpr auto assetId = 1234ull;
+    const auto expectedAsset = nc::asset::CubeMap{
+        .faceSideLength = 1,
+        .pixelData = std::vector<unsigned char>{
+            0xA1, 0xA2, 0xA3, 0xA4, // front
+            0xB1, 0xB2, 0xB3, 0xB4, // back
+            0xC1, 0xC2, 0xC3, 0xC4, // up
+            0xD1, 0xD2, 0xD3, 0xD4, // down
+            0xE1, 0xE2, 0xE3, 0xE4, // right
+            0xF1, 0xF2, 0xF3, 0xF4,  // left
+        }
+    };
+
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::asset::Serialize(stream, expectedAsset, assetId);
+    const auto [actualHeader, actualAsset] = nc::asset::DeserializeCubeMap(stream);
+
+    EXPECT_STREQ("CUBE", actualHeader.magicNumber);
+    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(nc::asset::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
+
+    EXPECT_EQ(expectedAsset.faceSideLength, actualAsset.faceSideLength);
+    ASSERT_EQ(expectedAsset.pixelData.size(), actualAsset.pixelData.size());
+
+    EXPECT_TRUE(std::equal(expectedAsset.pixelData.cbegin(),
+                           expectedAsset.pixelData.cend(),
+                           actualAsset.pixelData.cbegin()));
+}

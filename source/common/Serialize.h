@@ -12,6 +12,9 @@ void Serialize(std::ostream& stream, const AudioClip& data, size_t assetId);
 /** @brief Write a ConcaveCollider to a binary stream. */
 void Serialize(std::ostream& stream, const ConcaveCollider& data, size_t assetId);
 
+/** @brief Write a CubeMap to a binary stream. */
+void Serialize(std::ostream& stream, const CubeMap& data, size_t assetId);
+
 /** @brief Write a HullCollider to a binary stream. */
 void Serialize(std::ostream& stream, const HullCollider& data, size_t assetId);
 

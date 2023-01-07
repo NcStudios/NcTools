@@ -2,7 +2,6 @@
 
 #include "ncmath/Geometry.h"
 
-#include <array>
 #include <vector>
 
 namespace nc::asset
@@ -71,7 +70,9 @@ struct Texture
 
 struct CubeMap
 {
-    uint32_t size;
-    std::array<Texture, 6> pixelArray;
+    static constexpr uint32_t numChannels = 4u;
+
+    uint32_t faceSideLength;
+    std::vector<unsigned char> pixelData;
 };
 } // namespace nc::asset

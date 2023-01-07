@@ -9,11 +9,14 @@ namespace nc::asset
 /** @brief Read an AudioClip asset from an .nca file. */
 auto ImportAudioClip(const std::filesystem::path& ncaPath) -> AudioClip;
 
-/** @brief Read a HullCollider asset from an .nca file. */
-auto ImportHullCollider(const std::filesystem::path& ncaPath) -> HullCollider;
-
 /** @brief Read a ConcaveCollider asset from an .nca file. */
 auto ImportConcaveCollider(const std::filesystem::path& ncaPath) -> ConcaveCollider;
+
+/** @brief Read a CubeMap asset from an .nca file. */
+auto ImportCubeMap(const std::filesystem::path& ncaPath) -> CubeMap;
+
+/** @brief Read a HullCollider asset from an .nca file. */
+auto ImportHullCollider(const std::filesystem::path& ncaPath) -> HullCollider;
 
 /** @brief Read a Mesh asset from an .nca file. */
 auto ImportMesh(const std::filesystem::path& ncaPath) -> Mesh;

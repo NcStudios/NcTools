@@ -39,10 +39,10 @@ target_sources(NcConvert_integration_tests
         ${PROJECT_SOURCE_DIR}/source/ncasset/Import.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/GeometryAnalysis.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/Sanitize.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/TextureAnalysis.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Builder.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/AudioConverter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/GeometryConverter.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/LegacyCubeMapConverter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/TextureConverter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/EnumConversion.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/Path.cpp
@@ -191,6 +191,35 @@ target_link_libraries(GeometryAnalysis_unit_tests
 
 add_test(GeometryAnalysis_unit_tests GeometryAnalysis_unit_tests)
 
+## TextureAnalysis Tests ###
+add_executable(TextureAnalysis_unit_tests
+    TextureAnalysis_unit_tests.cpp
+)
+
+target_compile_options(TextureAnalysis_unit_tests
+    PUBLIC
+        ${WARNING_FLAGS}
+)
+
+target_include_directories(TextureAnalysis_unit_tests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/source/ncconvert
+)
+
+target_sources(TextureAnalysis_unit_tests
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/TextureAnalysis.cpp
+)
+
+target_link_libraries(TextureAnalysis_unit_tests
+    PRIVATE
+        gtest_main
+        NcMath
+)
+
+add_test(TextureAnalysis_unit_tests TextureAnalysis_unit_tests)
+
 ## TextureConverter Tests ###
 add_executable(TextureConverter_unit_tests
     TextureConverter_unit_tests.cpp
@@ -216,6 +245,7 @@ target_include_directories(TextureConverter_unit_tests
 
 target_sources(TextureConverter_unit_tests
     PRIVATE
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/TextureAnalysis.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/TextureConverter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/Path.cpp
 )

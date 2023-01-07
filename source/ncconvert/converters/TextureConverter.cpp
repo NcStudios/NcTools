@@ -1,4 +1,5 @@
 #include "TextureConverter.h"
+#include "analysis/TextureAnalysis.h"
 #include "ncasset/AssetTypes.h"
 #include "utility/Path.h"
 
@@ -14,10 +15,48 @@
 namespace
 {
 const auto supportedFileExtensions = std::array<std::string, 4>{".png", ".jpg", ".jpeg", ".bmp"};
+
+auto ReadTextureFromAtlas(const nc::asset::Texture& atlas, unsigned char* dest, nc::convert::SubTexturePos pos, uint32_t sideLength) -> size_t
+{
+    const auto source = atlas.pixelData.data();
+    const auto xByteOffset = pos.x * nc::asset::Texture::numChannels;
+    const auto scanLineByteSize = atlas.width * nc::asset::Texture::numChannels;
+    const auto readSize = sideLength * nc::asset::Texture::numChannels;
+    auto bytesRead = 0ull;
+    for (auto scanLine = pos.y; scanLine < pos.y + sideLength; ++scanLine)
+    {
+        const auto offset = scanLine * scanLineByteSize + xByteOffset;
+        std::memcpy(dest + bytesRead, source + offset, readSize);
+        bytesRead += readSize;
+    }
+
+    return bytesRead;
 }
+} // anonymous namespace
 
 namespace nc::convert
 {
+auto TextureConverter::ImportCubeMap(const std::filesystem::path& path) -> asset::CubeMap
+{
+    auto atlas = ImportTexture(path);
+    const auto atlasInfo = GetSubTextureInfo(atlas);
+    const auto sideLen = atlasInfo.sideLength;
+    const auto nBytesPerFace = sideLen * sideLen * asset::Texture::numChannels;
+    auto pixels = std::vector<unsigned char>(nBytesPerFace * 6u);
+    auto curPos = 0ull;
+    curPos += ::ReadTextureFromAtlas(atlas, pixels.data() + curPos, atlasInfo.frontPosition, sideLen);
+    curPos += ::ReadTextureFromAtlas(atlas, pixels.data() + curPos, atlasInfo.backPosition, sideLen);
+    curPos += ::ReadTextureFromAtlas(atlas, pixels.data() + curPos, atlasInfo.topPosition, sideLen);
+    curPos += ::ReadTextureFromAtlas(atlas, pixels.data() + curPos, atlasInfo.bottomPosition, sideLen);
+    curPos += ::ReadTextureFromAtlas(atlas, pixels.data() + curPos, atlasInfo.rightPosition, sideLen);
+    curPos += ::ReadTextureFromAtlas(atlas, pixels.data() + curPos, atlasInfo.leftPosition, sideLen);
+
+    return nc::asset::CubeMap{
+        sideLen,
+        std::move(pixels)
+    };
+}
+
 auto TextureConverter::ImportTexture(const std::filesystem::path& path) -> asset::Texture
 {
     if (!ValidateInputFile(path, supportedFileExtensions))

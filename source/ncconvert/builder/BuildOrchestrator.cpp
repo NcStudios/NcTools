@@ -7,6 +7,7 @@
 
 #include "ncutility/NcError.h"
 
+#include <array>
 #include <fstream>
 #include <iostream>
 

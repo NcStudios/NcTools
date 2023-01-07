@@ -21,6 +21,9 @@ auto DeserializeAudioClip(std::istream& stream) -> DeserializedResult<AudioClip>
 /** @brief Construct a ConcaveCollider from data in a binary stream. */
 auto DeserializeConcaveCollider(std::istream& stream) -> DeserializedResult<ConcaveCollider>;
 
+/** @brief Construct a CubeMap from data in a binary stream. */
+auto DeserializeCubeMap(std::istream& stream) -> DeserializedResult<CubeMap>;
+
 /** @brief Construct a HullCollider from data in a binary stream. */
 auto DeserializeHullCollider(std::istream& stream) -> DeserializedResult<HullCollider>;
 

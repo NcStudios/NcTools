@@ -73,6 +73,25 @@ auto DeserializeConcaveCollider(std::istream& stream) -> DeserializedResult<Conc
     return {header, asset};
 }
 
+auto DeserializeCubeMap(std::istream& stream) -> DeserializedResult<CubeMap>
+{
+    const auto header = ::ReadNcaHeader(stream, MagicNumber::cubeMap);
+    auto bytes = RawNcaBuffer{stream, header.size};
+    auto asset = CubeMap{};
+    bytes.Read(&asset.faceSideLength);
+    constexpr auto faceCount = 6ull;
+    const auto nBytes = asset.faceSideLength * asset.faceSideLength * faceCount * asset::CubeMap::numChannels;
+    asset.pixelData.resize(nBytes);
+    bytes.Read(asset.pixelData.data(), nBytes);
+
+    if (bytes.RemainingByteCount() != 0)
+    {
+        throw NcError("Not all CubeMap data was read from RawNcaBuffer");
+    }
+
+    return {header, asset};
+}
+
 auto DeserializeHullCollider(std::istream& stream) -> DeserializedResult<HullCollider>
 {
     const auto header = ::ReadNcaHeader(stream, MagicNumber::hullCollider);

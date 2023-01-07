@@ -38,12 +38,12 @@ auto GetSubTextureInfo(const nc::asset::Texture& texture) -> CubeMapAtlasSubText
             const auto sideLength = texture.height;
             return CubeMapAtlasSubTextureInfo{
                 .sideLength = sideLength,
-                .frontPosition = SubTexturePos{0, 0},
-                .backPosition = SubTexturePos{sideLength, 0},
+                .frontPosition = SubTexturePos{sideLength * 4, 0},
+                .backPosition = SubTexturePos{sideLength * 5, 0},
                 .topPosition = SubTexturePos{sideLength * 2, 0},
                 .bottomPosition = SubTexturePos{sideLength * 3, 0},
-                .rightPosition = SubTexturePos{sideLength * 4, 0},
-                .leftPosition = SubTexturePos{sideLength * 5, 0}
+                .rightPosition = SubTexturePos{0, 0},
+                .leftPosition = SubTexturePos{sideLength, 0}
             };
         }
         case CubeMapAtlasLayout::VerticalArray:
@@ -51,12 +51,12 @@ auto GetSubTextureInfo(const nc::asset::Texture& texture) -> CubeMapAtlasSubText
             const auto sideLength = texture.width;
             return CubeMapAtlasSubTextureInfo{
                 .sideLength = sideLength,
-                .frontPosition = SubTexturePos{0, 0},
-                .backPosition = SubTexturePos{0, sideLength},
+                .frontPosition = SubTexturePos{0, sideLength * 4},
+                .backPosition = SubTexturePos{0, sideLength * 5},
                 .topPosition = SubTexturePos{0, sideLength * 2},
                 .bottomPosition = SubTexturePos{0, sideLength * 3},
-                .rightPosition = SubTexturePos{0, sideLength * 4},
-                .leftPosition = SubTexturePos{0, sideLength * 5}
+                .rightPosition = SubTexturePos{0, 0},
+                .leftPosition = SubTexturePos{0, sideLength}
             };
         }
         case CubeMapAtlasLayout::HorizontalCross:
@@ -77,12 +77,12 @@ auto GetSubTextureInfo(const nc::asset::Texture& texture) -> CubeMapAtlasSubText
             const auto sideLength = texture.width / 3u;
             return CubeMapAtlasSubTextureInfo{
                 .sideLength = sideLength,
-                .frontPosition = SubTexturePos{0, sideLength},
-                .backPosition = SubTexturePos{sideLength * 2, sideLength},
+                .frontPosition = SubTexturePos{sideLength, sideLength},
+                .backPosition = SubTexturePos{sideLength, sideLength * 3},
                 .topPosition = SubTexturePos{sideLength, 0},
                 .bottomPosition = SubTexturePos{sideLength, sideLength * 2},
-                .rightPosition = SubTexturePos{sideLength, sideLength},
-                .leftPosition = SubTexturePos{sideLength, sideLength * 3}
+                .rightPosition = SubTexturePos{sideLength * 2, sideLength},
+                .leftPosition = SubTexturePos{0, sideLength}
             };
         }
         default:

@@ -76,7 +76,7 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::Shader:
         {
-            throw NcError("not implemented");
+            throw NcError("Not implemented");
         }
         case asset::AssetType::Texture:
         {

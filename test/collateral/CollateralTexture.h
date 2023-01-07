@@ -49,18 +49,18 @@ constexpr auto numPixels = faceSideLength * faceSideLength * 6u;
 constexpr auto numBytes = numPixels * 4u;
 // This is the final CubeMap representation, not what is appears in the file
 constexpr auto pixels = std::array<uint32_t, 24>{
-    red,   red,   red,   red,
-    green, green, green, green,
+    white, white, white, white,
+    black, black, black, black,
     blue,  blue,  blue,  blue,
     clear, clear, clear, clear,
-    white, white, white, white,
-    black, black, black, black
+    red,   red,   red,   red,
+    green, green, green, green
 };
-constexpr auto frontFacePixels = std::array<uint32_t, 4>{red, red, red, red};
-constexpr auto backFacePixels = std::array<uint32_t, 4>{green, green, green, green};
+constexpr auto frontFacePixels = std::array<uint32_t, 4>{white, white, white, white};
+constexpr auto backFacePixels = std::array<uint32_t, 4>{black, black, black, black};
 constexpr auto topFacePixels = std::array<uint32_t, 4>{blue, blue, blue, blue};
 constexpr auto bottomFacePixels = std::array<uint32_t, 4>{clear, clear, clear, clear};
-constexpr auto rightFacePixels = std::array<uint32_t, 4>{white, white, white, white};
-constexpr auto leftFacePixels = std::array<uint32_t, 4>{black, black, black, black};
+constexpr auto rightFacePixels = std::array<uint32_t, 4>{red, red, red, red};
+constexpr auto leftFacePixels = std::array<uint32_t, 4>{green, green, green, green};
 } // namespace cube_map
 } // namespace collateral

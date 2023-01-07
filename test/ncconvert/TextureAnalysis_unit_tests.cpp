@@ -106,12 +106,12 @@ TEST(TextureAnalysisTest, GetCubeMapAtlasLayout_invalidDimensions_throws)
 TEST(TextureAnalysisTest, GetSubTextureInfo_horizontalArray)
 {
     constexpr auto expectedSideLength = 1u;
-    constexpr auto expectedFrontPos = nc::convert::SubTexturePos{0, 0};
-    constexpr auto expectedBackPos = nc::convert::SubTexturePos{1, 0};
+    constexpr auto expectedFrontPos = nc::convert::SubTexturePos{4, 0};
+    constexpr auto expectedBackPos = nc::convert::SubTexturePos{5, 0};
     constexpr auto expectedTopPos = nc::convert::SubTexturePos{2, 0};
     constexpr auto expectedBottomPos = nc::convert::SubTexturePos{3, 0};
-    constexpr auto expectedRightPos = nc::convert::SubTexturePos{4, 0};
-    constexpr auto expectedLeftPos = nc::convert::SubTexturePos{5, 0};
+    constexpr auto expectedRightPos = nc::convert::SubTexturePos{0, 0};
+    constexpr auto expectedLeftPos = nc::convert::SubTexturePos{1, 0};
 
     const auto actual = nc::convert::GetSubTextureInfo(horizontalArrayAtlas);
     EXPECT_EQ(expectedSideLength, actual.sideLength);
@@ -126,12 +126,12 @@ TEST(TextureAnalysisTest, GetSubTextureInfo_horizontalArray)
 TEST(TextureAnalysisTest, GetSubTextureInfo_verticalArray)
 {
     constexpr auto expectedSideLength = 1u;
-    constexpr auto expectedFrontPos = nc::convert::SubTexturePos{0, 0};
-    constexpr auto expectedBackPos = nc::convert::SubTexturePos{0, 1};
+    constexpr auto expectedFrontPos = nc::convert::SubTexturePos{0, 4};
+    constexpr auto expectedBackPos = nc::convert::SubTexturePos{0, 5};
     constexpr auto expectedTopPos = nc::convert::SubTexturePos{0, 2};
     constexpr auto expectedBottomPos = nc::convert::SubTexturePos{0, 3};
-    constexpr auto expectedRightPos = nc::convert::SubTexturePos{0, 4};
-    constexpr auto expectedLeftPos = nc::convert::SubTexturePos{0, 5};
+    constexpr auto expectedRightPos = nc::convert::SubTexturePos{0, 0};
+    constexpr auto expectedLeftPos = nc::convert::SubTexturePos{0, 1};
 
     const auto actual = nc::convert::GetSubTextureInfo(verticalArrayAtlas);
     EXPECT_EQ(expectedSideLength, actual.sideLength);
@@ -166,12 +166,12 @@ TEST(TextureAnalysisTest, GetSubTextureInfo_horizontalCross)
 TEST(TextureAnalysisTest, GetSubTextureInfo_verticalCross)
 {
     constexpr auto expectedSideLength = 1u;
-    constexpr auto expectedFrontPos = nc::convert::SubTexturePos{0, 1};
-    constexpr auto expectedBackPos = nc::convert::SubTexturePos{2, 1};
+    constexpr auto expectedFrontPos = nc::convert::SubTexturePos{1, 1};
+    constexpr auto expectedBackPos = nc::convert::SubTexturePos{1, 3};
     constexpr auto expectedTopPos = nc::convert::SubTexturePos{1, 0};
     constexpr auto expectedBottomPos = nc::convert::SubTexturePos{1, 2};
-    constexpr auto expectedRightPos = nc::convert::SubTexturePos{1, 1};
-    constexpr auto expectedLeftPos = nc::convert::SubTexturePos{1, 3};
+    constexpr auto expectedRightPos = nc::convert::SubTexturePos{2, 1};
+    constexpr auto expectedLeftPos = nc::convert::SubTexturePos{0, 1};
 
     const auto actual = nc::convert::GetSubTextureInfo(verticalCrossAtlas);
     EXPECT_EQ(expectedSideLength, actual.sideLength);

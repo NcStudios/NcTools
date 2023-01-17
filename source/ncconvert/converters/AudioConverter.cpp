@@ -27,6 +27,15 @@ auto AudioConverter::ImportAudioClip(const std::filesystem::path& path) -> asset
         throw NcError("Failure opening audio file: ", path.string());
     }
 
+    if (rawAsset.samples.size() == 1)
+    {
+        return asset::AudioClip{
+            rawAsset.samples.at(0).size(),
+            rawAsset.samples.at(0),
+            std::move(rawAsset.samples.at(0))
+        };
+    }
+
     return asset::AudioClip{
         rawAsset.samples.at(0).size(),
         std::move(rawAsset.samples.at(0)),

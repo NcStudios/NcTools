@@ -1,8 +1,34 @@
-# CubeMap Conversion
+Source File Requirements
+========================
 
-CubeMaps can be converted from a single texture containing all six faces. The layout of
-the faces within the texture must match one of the supported layouts below. The aspect
-ratio of the input texture is used to determine how faces should be read.
+## Audio Conversion
+> Supported file types: wav
+
+Audio clips can be converted from any stereo or mono WAV file.
+
+## Geometry Conversion
+> Supported file types: .fbx, .obj
+
+`concave-collider`, `hull-collider`, and `mesh` asset types all work on geometry
+input, and therefore have similar requirements on input data. Currently, only the
+first mesh in an input file will be processed, and and non-geometry data is ignored.
+
+It is usually recommended for the input geometry to be centered around the origin.
+This makes `Transform` operations within NcEngine less surprising. Additionally,
+NcEngine will treat the origin as the object's center of mass for physics calculations.
+
+Geometry used for `hull-collider` generation should be convex.
+
+## Image Conversion
+> Supported file types: .png, .jpg, .bmp
+
+`cube-map` and `texture` asset types both operate on images containing any number
+of RGBA channels. Any components not present will be filled with 'empty' values (
+e.g. opaque values for alpha channel).
+
+A `cube-map` requires a single image containing all six faces. The layout of
+the faces within the image must match one of the supported layouts below. The
+aspect ratio of the input image is used to determine how faces should be read.
 
 Horizontal array layout (6:1):
 ```

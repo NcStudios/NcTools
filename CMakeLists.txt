@@ -12,10 +12,6 @@ option(NC_TOOLS_BUILD_CONVERTER "Build nc-convert executable" ON)
 option(NC_TOOLS_BUILD_TESTS "Include tests in build" ON)
 option(NC_TOOLS_STATIC_ANALYSIS "Enable static analysis (MSVC Only" OFF)
 
-set(NC_TOOLS_COMPILE_OPTIONS
-    $<CXX_COMPILER_ID:MSVC>
-)
-
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(NC_TOOLS_COMPILE_OPTIONS
         -Werror
@@ -29,7 +25,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     )
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(NC_TOOLS_COMPILE_OPTIONS
-        /W3
+        /W4
         /WX
         /MP
     )

@@ -2,15 +2,15 @@
 [![Tests](https://github.com/NcStudios/NcTools/actions/workflows/build.yml/badge.svg)](https://github.com/NcStudios/NcTools/actions?query=workflow%3ABuild)
 [![License](https://img.shields.io/github/license/NcStudios/NcTools.svg)](https://github.com/NcStudios/NcTools/blob/main/LICENSE)
 
-Tools for working with NcEngine asset and package files.
+A collection of tools for managing and converting NcEngine assets, or .nca files.
 
 NcTools consists of two projects: the `NcAsset` library for importing .nca
 asset files, and the `nc-convert` command line utility for converting asset
 files to the .nca format.
 
 ## NcAsset Overview
-Using `NcAsset` is straight forward - just call the appropriate import
-function with the path to an .nca file:
+To use `NcAsset`, simply call the appropriate import function, and provide the
+path to the .nca file you want to import:
 ```cpp
 #include "ncasset/Import.h"
 
@@ -18,9 +18,8 @@ auto myTexture = nc::asset::ImportTexture("path/to/texture.nca");
 ```
 
 ## nc-convert Overview
-Importing with `NcAsset` requires files in .nca format. `nc-convert` can be used
-to generate files in this format from input files of various types, such as .wav,
-.png, .fbx, and so on. An example of building a single .nca:
+`nc-convert` is used to convert various file types to the .nca format, which is
+required by `NcAsset`. Here's an example of converting a single file to an .nca:
 ```
 > nc-convert -t mesh -s path/to/input.fbx -n myMesh -o outDir
 ```
@@ -31,6 +30,8 @@ with -o.
 
 Usually, many assets will need to be built at the same time. To accomplish this,
 a json manifest can be supplied with -m flag:
+
+You can use a JSON manifest file to specify how to convert many files at once:
 
 ```json
 // manifest.json
@@ -53,8 +54,7 @@ a json manifest can be supplied with -m flag:
 > nc-convert -m manifest.json
 ```
 
-In manifest mode, `nc-convert` has the additional benefit of skipping conversions
-when the .nca already exists and is up-to-date relative to its associated input file.
+`nc-convert` will skipt files that are already up-to-date when using a manifest.
 
 For more information, see the help text for `nc-convert` and the docs on [input file
 requirements](docs/SourceFileRequirements.md) and [.nca formats](docs/AssetFormats.md)
@@ -65,7 +65,7 @@ requirements](docs/SourceFileRequirements.md) and [.nca formats](docs/AssetForma
 -----------------
 #### NC_TOOLS_BUILD_CONVERTER
     Default: OFF
-    Build nc-convert executable.
+    Build the nc-convert executable.
 
 #### NC_TOOLS_BUILD_TESTS
     Default: OFF

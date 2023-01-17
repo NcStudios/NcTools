@@ -11,6 +11,10 @@
 
 namespace
 {
+const auto jsonAssetArrayTags = std::array<std::string, 6> {
+    "audio-clip", "concave-collider", "cube-map", "hull-collider", "mesh", "texture"
+};
+
 struct GlobalManifestOptions
 {
     std::filesystem::path outputDirectory = "./";
@@ -70,23 +74,31 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
     auto options = json.value("globalOptions", ::GlobalManifestOptions{});
     ::ProcessOptions(options);
 
-    for (const auto& asset : json.at("assets"))
+    for (const auto& typeTag : ::jsonAssetArrayTags)
     {
-        auto target = ::BuildTarget(asset, options.outputDirectory);
-        if (!std::filesystem::is_regular_file(target.sourcePath))
+        if (!json.contains(typeTag))
         {
-            throw nc::NcError("Invalid source file: ", target.sourcePath.string());
-        }
-
-        if (::IsUpToDate(target))
-        {
-            LOG("Up-to-date: {}", target.destinationPath.string());
             continue;
         }
 
-        LOG("Adding build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
-        const auto type = ToAssetType(asset.at("type"));
-        instructions.at(type).push_back(std::move(target));
+        const auto type = ToAssetType(typeTag);
+        for (const auto& asset : json.at(typeTag))
+        {
+            auto target = ::BuildTarget(asset, options.outputDirectory);
+            if (!std::filesystem::is_regular_file(target.sourcePath))
+            {
+                throw nc::NcError("Invalid source file: ", target.sourcePath.string());
+            }
+
+            if (::IsUpToDate(target))
+            {
+                LOG("Up-to-date: {}", target.destinationPath.string());
+                continue;
+            }
+
+            LOG("Adding build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
+            instructions.at(type).push_back(std::move(target));
+        }
     }
 }
 } // namespace nc::convert

@@ -7,6 +7,7 @@
 #include "common/Serialize.h"
 
 #include "fmt/format.h"
+#include "ncutility/Hash.h"
 #include "ncutility/NcError.h"
 
 #include <fstream>
@@ -24,6 +25,12 @@ auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
 
     return outFile;
 }
+
+auto GetAssetId(const std::filesystem::path& outPath) -> size_t
+{
+    const auto ncaName = outPath.filename();
+    return nc::utility::Fnv1a(ncaName.string());
+}
 } // anonymous namespace
 
 namespace nc::convert
@@ -40,7 +47,7 @@ Builder::~Builder() = default;
 auto Builder::Build(asset::AssetType type, const Target& target) -> bool
 {
     auto outFile = ::OpenOutFile(target.destinationPath);
-    const auto assetId = size_t{};
+    const auto assetId = ::GetAssetId(target.destinationPath);
 
     switch (type)
     {

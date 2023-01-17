@@ -1,8 +1,5 @@
-if(NC_TOOLS_BUILD_IMPORTER_LIB)
-    add_subdirectory(ncasset)
-endif()
+add_subdirectory(ncasset)
 
 if(NC_TOOLS_BUILD_CONVERTER)
     add_subdirectory(ncconvert)
-    add_subdirectory(v1)
 endif()

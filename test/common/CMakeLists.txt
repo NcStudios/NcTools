@@ -5,7 +5,7 @@ add_executable(Serialize_unit_tests
 
 target_compile_options(Serialize_unit_tests
     PUBLIC
-        ${WARNING_FLAGS}
+        ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
 target_include_directories(Serialize_unit_tests

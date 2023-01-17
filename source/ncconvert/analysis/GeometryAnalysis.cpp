@@ -1,11 +1,11 @@
 #include "GeometryAnalysis.h"
 #include "ncasset/AssetTypes.h"
+#include "utility/Log.h"
 
 #include "ncutility/NcError.h"
 
 #include <algorithm>
 #include <concepts>
-#include <iostream>
 #include <type_traits>
 
 namespace
@@ -84,8 +84,7 @@ auto GetMeshVertexExtents(std::span<const T> data) -> nc::Vector3
 
     if(minX.x > 0.0f || maxX.x < 0.0f || minY.y > 0.0f || maxY.y < 0.0f || minZ.z > 0.0f || maxZ.z < 0.0f)
     {
-        std::cerr << "Warning: Hull collider mesh does not contain the origin. "
-                  << "The origin is assumed to be the center of mass.\n";
+        LOG("Warning: Mesh does not contain the origin. The origin is assumed to be the center of mass.");
     }
 
     return nc::Vector3{ maxX.x - minX.x, maxY.y - minY.y, maxZ.z - minZ.z};

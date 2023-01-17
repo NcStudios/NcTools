@@ -6,7 +6,6 @@
 #include "ncutility/NcError.h"
 #include "nlohmann/json.hpp"
 
-#include <iostream>
 #include <fstream>
 
 namespace
@@ -25,6 +24,7 @@ void from_json(const nlohmann::json& json, GlobalManifestOptions& options)
 
 void ProcessOptions(const GlobalManifestOptions& options)
 {
+    LOG("Setting working directory: {}", options.workingDirectory.string());
     std::filesystem::current_path(options.workingDirectory);
     if(!std::filesystem::exists(options.outputDirectory))
     {
@@ -80,7 +80,6 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
         auto target = ::BuildTarget(asset, options.outputDirectory);
         if (!std::filesystem::is_regular_file(target.sourcePath))
         {
-            std::cerr << "sourcePath: " << target.sourcePath << '\n';
             throw nc::NcError("Invalid source file: ", target.sourcePath.string());
         }
 

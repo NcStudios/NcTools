@@ -11,7 +11,6 @@
 #include "ncutility/NcError.h"
 
 #include <fstream>
-#include <iostream>
 
 namespace
 {

@@ -10,7 +10,6 @@
 
 #include <array>
 #include <fstream>
-#include <iostream>
 
 namespace
 {
@@ -54,8 +53,7 @@ void BuildOrchestrator::RunBuild()
             LOG("Building {}: {}", ToString(type), target.destinationPath.string());
             if (!m_builder->Build(type, target))
             {
-                std::cerr << "Failed building: " << target.destinationPath << '\n';
-
+                LOG("Failed building: {}", target.destinationPath.string());
             }
         }
     }

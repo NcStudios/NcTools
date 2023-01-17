@@ -28,10 +28,7 @@ The asset type, source file, and output asset name must be supplied with the -t,
 -s, and -n flags, respectively. Optionally, and output directory may be given
 with -o.
 
-Usually, many assets will need to be built at the same time. To accomplish this,
-a json manifest can be supplied with -m flag:
-
-You can use a JSON manifest file to specify how to convert many files at once:
+You can also use a JSON manifest file to convert many files at once:
 
 ```json
 // manifest.json
@@ -45,6 +42,11 @@ You can use a JSON manifest file to specify how to convert many files at once:
             "type": "mesh",
             "sourcePath": "path/to/mesh.fbx",
             "assetName": "myMesh"
+        },
+        {
+            "type": "texture",
+            "sourcePath": "path/to/texture.png",
+            "assetName": "myTexture"
         }
     ]
 }

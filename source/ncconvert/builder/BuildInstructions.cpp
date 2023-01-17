@@ -3,6 +3,7 @@
 #include "Manifest.h"
 #include "Target.h"
 #include "utility/Log.h"
+#include "utility/Path.h"
 
 #include "ncutility/NcError.h"
 
@@ -20,12 +21,6 @@ auto BuildTargetMap() -> std::unordered_map<nc::asset::AssetType, std::vector<nc
     out.emplace(nc::asset::AssetType::Mesh, std::vector<nc::convert::Target>{});
     out.emplace(nc::asset::AssetType::Texture, std::vector<nc::convert::Target>{});
     return out;
-}
-
-auto ToOutputName(const std::filesystem::path& inPath, const std::filesystem::path& outDir) -> std::filesystem::path
-{
-    const auto ncaFileName = inPath.filename().replace_extension(".nca");
-    return outDir / ncaFileName;
 }
 } // anonymous namespace
 
@@ -48,14 +43,14 @@ void BuildInstructions::ReadTargets(const Config& config)
     if(config.targetPath)
     {
         LOG("Running in single target mode");
-        if(!config.targetType)
+        if(!config.targetType || !config.assetName)
         {
-            throw nc::NcError("Single target mode must specify asset type with -a");
+            throw nc::NcError("Single target mode must specify asset type and name with -a and -n");
         }
 
         auto& collection = m_instructions.at(config.targetType.value());
         auto sourcePath = config.targetPath.value();
-        auto destinationPath = ::ToOutputName(sourcePath, config.outputDirectory);
+        auto destinationPath = AssetNameToNcaPath(config.assetName.value(), config.outputDirectory);
         LOG("Adding build target: {} -> {}", sourcePath.string(), destinationPath.string());
         collection.emplace_back(std::move(sourcePath), std::move(destinationPath));
         return;

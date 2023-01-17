@@ -24,7 +24,7 @@ const auto supportedFileExtensions = std::array<std::string, 2> {".fbx", ".obj"}
 
 auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiMesh*
 {
-    if (!nc::convert::ValidateInputFile(path, supportedFileExtensions))
+    if (!nc::convert::ValidateInputFileExtension(path, supportedFileExtensions))
     {
         throw nc::NcError("Invalid input file: ", path.string());
     }

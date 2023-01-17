@@ -16,7 +16,7 @@ namespace nc::convert
 {
 auto AudioConverter::ImportAudioClip(const std::filesystem::path& path) -> asset::AudioClip
 {
-    if (!ValidateInputFile(path, supportedFileExtensions))
+    if (!ValidateInputFileExtension(path, supportedFileExtensions))
     {
         throw NcError("Invalid input file: ", path.string());
     }

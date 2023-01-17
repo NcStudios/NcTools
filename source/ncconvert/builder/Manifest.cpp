@@ -2,6 +2,7 @@
 #include "Target.h"
 #include "utility/EnumConversion.h"
 #include "utility/Log.h"
+#include "utility/Path.h"
 
 #include "ncutility/NcError.h"
 #include "nlohmann/json.hpp"
@@ -36,17 +37,11 @@ void ProcessOptions(const GlobalManifestOptions& options)
     }
 }
 
-auto ToOutputName(const std::filesystem::path& inPath, const std::filesystem::path& outDir) -> std::filesystem::path
-{
-    const auto ncaFileName = inPath.filename().replace_extension(".nca");
-    return outDir / ncaFileName;
-}
-
 auto BuildTarget(const nlohmann::json& json, const std::filesystem::path& outputDirectory) -> nc::convert::Target
 {
     return nc::convert::Target{
         json.at("sourcePath"),
-        ::ToOutputName(json.at("assetName"), outputDirectory)
+        nc::convert::AssetNameToNcaPath(json.at("assetName"), outputDirectory)
     };
 }
 

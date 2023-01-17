@@ -16,6 +16,15 @@ namespace
 {
 auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
 {
+    if (!std::filesystem::exists(outPath) && outPath.has_parent_path())
+    {
+        const auto parentPath = outPath.parent_path();
+        if (!std::filesystem::exists(parentPath) && !std::filesystem::create_directories(parentPath))
+        {
+            throw nc::NcError("Could not create parent directories for: ", outPath.string());
+        }
+    }
+
     auto outFile = std::ofstream{outPath, std::ios::binary};
     if (!outFile.is_open())
     {

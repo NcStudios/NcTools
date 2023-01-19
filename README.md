@@ -60,12 +60,12 @@ You can also use a JSON manifest file to convert many files at once:
 > nc-convert -m manifest.json
 ```
 
-`nc-convert` will skipt files that are already up-to-date when using a manifest.
+`nc-convert` will skip files that are already up-to-date when using a manifest.
 
 For more information, see the help text for `nc-convert` and the docs on [input file
 requirements](docs/SourceFileRequirements.md) and [.nca formats](docs/AssetFormats.md)
 
-[NcCommon]() is a public dependency of NcAsset. The following third-party libraries are used internally by nc-convert: [Assimp](), [AudioFile](), and [stb_image]().
+[NcCommon]() is a public dependency of NcAsset. The following third-party libraries are used internally by nc-convert: [Assimp](https://github.com/assimp/assimp), [AudioFile](https://github.com/adamstark/AudioFile), and [stb](https://github.com/nothings/stb).
 
 ## Build Options
 -----------------

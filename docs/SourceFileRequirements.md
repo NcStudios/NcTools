@@ -2,7 +2,7 @@ Source File Requirements
 ========================
 
 ## Audio Conversion
-> Supported file types: wav
+> Supported file types: .wav
 
 Audio clips can be converted from any stereo or mono WAV file.
 

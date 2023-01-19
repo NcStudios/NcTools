@@ -4,13 +4,15 @@
 
 #include "ncutility/NcError.h"
 
+#include <algorithm>
+#include <cctype>
 #include <filesystem>
 #include <iostream>
 #include <string>
 
 constexpr auto usageMessage = 
 R"(Usage: nc-convert [options]
-Options:
+Options
   -h                      Display this information.
   -t <asset type>         Specify asset type for a single target.
   -s <source>             Parse a single asset from <source>.
@@ -33,19 +35,28 @@ Asset names
   a unique name.
 
 Json Manifest
-  A provided manifest should be a json file containing an 'assets' array with
-  one or more conversion specifications, and an optional 'globalOptions' object
-  defining global settings. Example:
+  A provided manifest should be a json file containing an array of conversion
+  specifications for each required asset type, and an optional 'globalOptions'
+  object defining global settings. Example:
   {
       "globalOptions": {
-          "outputDirectory": "outDir", // default: "./"
-          "workingDirectory": "./"     // default: "./"
+          "outputDirectory": "./", // default: "./"
+          "workingDirectory": "./" // default: "./"
       },
-      "assets": [
+      "mesh": [
           {
-              "type": "mesh",
-              "sourcePath": "path/to/mesh.fbx",
-              "assetName": "myMesh"
+              "sourcePath": "path/to/mesh1.fbx",
+              "assetName": "myMesh1"
+          },
+          {
+              "sourcePath": "path/to/mesh2.fbx",
+              "assetName": "myMesh2"
+          }
+      ],
+      "texture": [
+          {
+              "sourcePath": "path/to/texture.png",
+              "assetName": "myTexture"
           }
       ]
   }
@@ -93,6 +104,10 @@ bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
     while (current < argc)
     {
         option = argv[current];
+        std::transform(option.begin(), option.end(), option.begin(), [](auto&& c)
+        {
+            return std::tolower(c);
+        });
 
         if (option == "-h")
         {

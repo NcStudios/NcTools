@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 option(NC_TOOLS_BUILD_CONVERTER "Build nc-convert executable" ON)
 option(NC_TOOLS_BUILD_TESTS "Include tests in build" ON)
-option(NC_TOOLS_STATIC_ANALYSIS "Enable static analysis (MSVC Only" OFF)
+option(NC_TOOLS_STATIC_ANALYSIS "Enable static analysis (MSVC Only)" OFF)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(NC_TOOLS_COMPILE_OPTIONS

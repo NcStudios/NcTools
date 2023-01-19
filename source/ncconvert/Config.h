@@ -17,25 +17,25 @@ struct Config
 
     /**
      * @brief A path to a raw asset file to be converted to .nca format.
-     * @note Specific to Mode::Target
+     * @note Specific to single target mode
      */
     std::optional<std::filesystem::path> targetPath;
 
     /**
      * @brief The name of the output .nca file.
-     * @note Specific to Mode::Target
+     * @note Specific to single target mode
      */
     std::optional<std::string> assetName;
 
     /**
      * @brief The type of the asset to convert.
-     * @note Specific to Mode::Target.
+     * @note Specific to single target mode.
      */
     std::optional<asset::AssetType> targetType;
 
     /**
      * @brief A path to a manifest containing .nca conversion instructions.
-     * @note Specific to Mode::Manifest.
+     * @note Specific to manifest mode.
      */
     std::optional<std::filesystem::path> manifestPath;
 };

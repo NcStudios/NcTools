@@ -1,0 +1,13 @@
+{
+    "globalOptions": {
+        "outputDirectory": "outDir",
+        "workingDirectory": "./"
+    },
+    "assets": [
+        {
+            "type": "mesh",
+            "sourcePath": "./cube.fbx",
+            "assetName": "cubeMesh"
+        }
+    ]
+}

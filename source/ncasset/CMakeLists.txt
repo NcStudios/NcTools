@@ -2,7 +2,7 @@ add_library(NcAsset STATIC)
 
 target_compile_options(NcAsset
     PRIVATE
-        ${WARNING_FLAGS}
+        ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
 target_include_directories(NcAsset

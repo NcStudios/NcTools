@@ -6,5 +6,6 @@
 
 namespace nc::convert
 {
-auto ValidateInputFile(const std::filesystem::path& path, std::span<const std::string> validExtensions) -> bool;
+auto ValidateInputFileExtension(const std::filesystem::path& path, std::span<const std::string> validExtensions) -> bool;
+auto AssetNameToNcaPath(std::string assetName, const std::filesystem::path& outDir) -> std::filesystem::path;
 }

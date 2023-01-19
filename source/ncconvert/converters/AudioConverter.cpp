@@ -16,7 +16,7 @@ namespace nc::convert
 {
 auto AudioConverter::ImportAudioClip(const std::filesystem::path& path) -> asset::AudioClip
 {
-    if (!ValidateInputFile(path, supportedFileExtensions))
+    if (!ValidateInputFileExtension(path, supportedFileExtensions))
     {
         throw NcError("Invalid input file: ", path.string());
     }
@@ -25,6 +25,15 @@ auto AudioConverter::ImportAudioClip(const std::filesystem::path& path) -> asset
     if(!rawAsset.load(path.string()))
     {
         throw NcError("Failure opening audio file: ", path.string());
+    }
+
+    if (rawAsset.samples.size() == 1)
+    {
+        return asset::AudioClip{
+            rawAsset.samples.at(0).size(),
+            rawAsset.samples.at(0),
+            std::move(rawAsset.samples.at(0))
+        };
     }
 
     return asset::AudioClip{

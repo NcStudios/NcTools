@@ -3,6 +3,7 @@
 #include "analysis/Sanitize.h"
 #include "ncasset/AssetTypes.h"
 #include "utility/Path.h"
+#include "utility/Log.h"
 
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
@@ -12,7 +13,6 @@
 
 #include <algorithm>
 #include <array>
-#include <iostream>
 #include <span>
 
 namespace
@@ -24,7 +24,7 @@ const auto supportedFileExtensions = std::array<std::string, 2> {".fbx", ".obj"}
 
 auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiMesh*
 {
-    if (!nc::convert::ValidateInputFile(path, supportedFileExtensions))
+    if (!nc::convert::ValidateInputFileExtension(path, supportedFileExtensions))
     {
         throw nc::NcError("Invalid input file: ", path.string());
     }
@@ -48,8 +48,7 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
     }
     else if (scene->mNumMeshes > 1)
     {
-        std::cerr << "Fbx has " << scene->mNumMeshes << " meshes. Only the first will be parsed.\n"
-                  << "    file: " << path.string();
+        LOG("Fbx {} has {} meshes. Only the first will be parsed.", path.string(), scene->mNumMeshes);
     }
 
     if (scene->mMeshes[0]->mNumVertices == 0)
@@ -150,8 +149,7 @@ class GeometryConverter::impl
             auto triangles = ::ConvertToTriangles(::ViewFaces(mesh), ::ViewVertices(mesh));
             if(auto count = Sanitize(triangles))
             {
-                std::cerr << "    Warning: Bad values detected in mesh data. "
-                          <<  count << " values have been set to 0.\n";
+                LOG("Warning: Bad values detected in mesh. {} values have been set to 0.", count);
             }
 
             return asset::ConcaveCollider{
@@ -167,8 +165,7 @@ class GeometryConverter::impl
             auto convertedVertices = ::ConvertToVertices(::ViewVertices(mesh));
             if(auto count = Sanitize(convertedVertices))
             {
-                std::cerr << "    Warning: Bad values detected in mesh data. "
-                          << count << " values have been set to 0.\n";
+                LOG("Warning: Bad values detected in mesh. {} values have been set to 0.", count);
             }
 
             return asset::HullCollider{
@@ -184,8 +181,7 @@ class GeometryConverter::impl
             auto convertedVertices = ::ConvertToMeshVertices(mesh);
             if(auto count = Sanitize(convertedVertices))
             {
-                std::cerr << "    Warning: Bad values detected in mesh data. "
-                          << count << " values have been set to 0.\n";
+                LOG("Warning: Bad values detected in mesh. {} values have been set to 0.", count);
             }
 
             return asset::Mesh{

@@ -7,15 +7,24 @@
 #include "common/Serialize.h"
 
 #include "fmt/format.h"
+#include "ncutility/Hash.h"
 #include "ncutility/NcError.h"
 
 #include <fstream>
-#include <iostream>
 
 namespace
 {
 auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
 {
+    if (!std::filesystem::exists(outPath) && outPath.has_parent_path())
+    {
+        const auto parentPath = outPath.parent_path();
+        if (!std::filesystem::exists(parentPath) && !std::filesystem::create_directories(parentPath))
+        {
+            throw nc::NcError("Could not create parent directories for: ", outPath.string());
+        }
+    }
+
     auto outFile = std::ofstream{outPath, std::ios::binary};
     if (!outFile.is_open())
     {
@@ -23,6 +32,12 @@ auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
     }
 
     return outFile;
+}
+
+auto GetAssetId(const std::filesystem::path& outPath) -> size_t
+{
+    const auto ncaName = outPath.filename();
+    return nc::utility::Fnv1a(ncaName.string());
 }
 } // anonymous namespace
 
@@ -40,7 +55,7 @@ Builder::~Builder() = default;
 auto Builder::Build(asset::AssetType type, const Target& target) -> bool
 {
     auto outFile = ::OpenOutFile(target.destinationPath);
-    const auto assetId = size_t{};
+    const auto assetId = ::GetAssetId(target.destinationPath);
 
     switch (type)
     {

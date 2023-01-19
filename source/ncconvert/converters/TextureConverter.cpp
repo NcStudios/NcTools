@@ -59,7 +59,7 @@ auto TextureConverter::ImportCubeMap(const std::filesystem::path& path) -> asset
 
 auto TextureConverter::ImportTexture(const std::filesystem::path& path) -> asset::Texture
 {
-    if (!ValidateInputFile(path, supportedFileExtensions))
+    if (!ValidateInputFileExtension(path, supportedFileExtensions))
     {
         throw NcError("Invalid input file: ", path.string());
     }

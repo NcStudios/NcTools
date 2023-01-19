@@ -4,12 +4,12 @@
 #include "Target.h"
 #include "ncasset/AssetTypes.h"
 #include "utility/EnumConversion.h"
+#include "utility/Log.h"
 
 #include "ncutility/NcError.h"
 
 #include <array>
 #include <fstream>
-#include <iostream>
 
 namespace
 {
@@ -37,7 +37,7 @@ void BuildOrchestrator::RunBuild()
 {
     if(!std::filesystem::exists(m_config.outputDirectory))
     {
-        std::cout << "Creating directory: " << m_config.outputDirectory << '\n';
+        LOG("Creating directory: {}", m_config.outputDirectory.string());
         if(!std::filesystem::create_directories(m_config.outputDirectory))
         {
             throw NcError("Failed to create output directory: ", m_config.outputDirectory.string());
@@ -45,17 +45,15 @@ void BuildOrchestrator::RunBuild()
     }
 
     const auto instructions = BuildInstructions{m_config};
-
+    LOG("--Building Assets--");
     for (auto type : assetTypes)
     {
         for (const auto& target : instructions.GetTargetsForType(type))
         {
-            std::cout << "Building asset: " << target.destinationPath << '\n';
-
+            LOG("Building {}: {}", ToString(type), target.destinationPath.string());
             if (!m_builder->Build(type, target))
             {
-                std::cerr << "Failed building: " << target.destinationPath << '\n';
-
+                LOG("Failed building: {}", target.destinationPath.string());
             }
         }
     }

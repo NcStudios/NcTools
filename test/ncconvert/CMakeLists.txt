@@ -7,7 +7,7 @@ add_executable(NcConvert_integration_tests
 
 target_compile_options(NcConvert_integration_tests
     PUBLIC
-        ${WARNING_FLAGS}
+        ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
 target_compile_definitions(NcConvert_integration_tests
@@ -22,12 +22,16 @@ target_include_directories(NcConvert_integration_tests
         ${PROJECT_SOURCE_DIR}/include/ncasset
         ${PROJECT_SOURCE_DIR}/source
         ${PROJECT_SOURCE_DIR}/source/common
-        ${PROJECT_SOURCE_DIR}/source/external
         ${PROJECT_SOURCE_DIR}/source/ncconvert
         ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder
         ${PROJECT_SOURCE_DIR}/source/ncconvert/converters
         ${PROJECT_SOURCE_DIR}/source/ncconvert/utility
+)
+
+target_include_directories(NcConvert_integration_tests
+    SYSTEM PRIVATE
+        ${PROJECT_SOURCE_DIR}/source/external
 )
 
 target_sources(NcConvert_integration_tests
@@ -64,7 +68,7 @@ add_executable(AudioConverter_unit_tests
 
 target_compile_options(AudioConverter_unit_tests
     PUBLIC
-        ${WARNING_FLAGS}
+        ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
 target_compile_definitions(AudioConverter_unit_tests
@@ -77,6 +81,10 @@ target_include_directories(AudioConverter_unit_tests
         ${PROJECT_SOURCE_DIR}/test/collateral
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/source/ncconvert
+)
+
+target_include_directories(AudioConverter_unit_tests
+    SYSTEM PRIVATE
         ${PROJECT_SOURCE_DIR}/source/external
 )
 
@@ -101,7 +109,7 @@ add_executable(EnumConversion_unit_tests
 
 target_compile_options(EnumConversion_unit_tests
     PUBLIC
-        ${WARNING_FLAGS}
+        ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
 target_include_directories(EnumConversion_unit_tests
@@ -130,7 +138,7 @@ add_executable(GeometryConverter_unit_tests
 
 target_compile_options(GeometryConverter_unit_tests
     PUBLIC
-        ${WARNING_FLAGS}
+        ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
 target_compile_definitions(GeometryConverter_unit_tests
@@ -169,7 +177,7 @@ add_executable(GeometryAnalysis_unit_tests
 
 target_compile_options(GeometryAnalysis_unit_tests
     PUBLIC
-        ${WARNING_FLAGS}
+        ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
 target_include_directories(GeometryAnalysis_unit_tests
@@ -198,7 +206,7 @@ add_executable(TextureAnalysis_unit_tests
 
 target_compile_options(TextureAnalysis_unit_tests
     PUBLIC
-        ${WARNING_FLAGS}
+        ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
 target_include_directories(TextureAnalysis_unit_tests
@@ -227,7 +235,7 @@ add_executable(TextureConverter_unit_tests
 
 target_compile_options(TextureConverter_unit_tests
     PUBLIC
-        ${WARNING_FLAGS}
+        ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
 target_compile_definitions(TextureConverter_unit_tests
@@ -240,6 +248,11 @@ target_include_directories(TextureConverter_unit_tests
         ${PROJECT_SOURCE_DIR}/test/collateral
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/source/ncconvert
+
+)
+
+target_include_directories(TextureConverter_unit_tests
+    SYSTEM PRIVATE
         ${PROJECT_SOURCE_DIR}/source/external
 )
 

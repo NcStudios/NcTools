@@ -40,8 +40,8 @@ Json Manifest
   object defining global settings. Example:
   {
       "globalOptions": {
-          "outputDirectory": "./", // default: "./"
-          "workingDirectory": "./" // default: "./"
+          "outputDirectory": "./", // default: working directory
+          "workingDirectory": "./" // default: manifest parent directory
       },
       "mesh": [
           {

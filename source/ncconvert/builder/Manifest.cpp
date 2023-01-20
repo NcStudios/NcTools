@@ -29,17 +29,12 @@ void from_json(const nlohmann::json& json, GlobalManifestOptions& options)
 
 void ProcessOptions(const GlobalManifestOptions& options, const std::filesystem::path& manifestPath)
 {
-    if (options.workingDirectory.empty())
-    {
-        const auto parentPath = std::filesystem::absolute(manifestPath.parent_path());
-        LOG("Setting working directory: {}", parentPath.string());
-        std::filesystem::current_path(parentPath);
-    }
-    else
-    {
-        LOG("Setting working directory: {}", options.workingDirectory.string());
-        std::filesystem::current_path(options.workingDirectory);
-    }
+    auto&& workingDirectory = options.workingDirectory.empty() ?
+        std::filesystem::absolute(manifestPath.parent_path())
+        : options.workingDirectory;
+
+    LOG("Setting working directory: {}", workingDirectory.string());
+    std::filesystem::current_path(workingDirectory);
 
     if(!std::filesystem::exists(options.outputDirectory))
     {

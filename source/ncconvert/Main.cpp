@@ -37,7 +37,8 @@ Asset names
 Json Manifest
   A provided manifest should be a json file containing an array of conversion
   specifications for each required asset type, and an optional 'globalOptions'
-  object defining global settings. Example:
+  object defining global settings. Relative paths within `globalOptions` will
+  be interpreted relative to the manifest. Example:
   {
       "globalOptions": {
           "outputDirectory": "./", // default: "./"

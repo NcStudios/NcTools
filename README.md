@@ -31,7 +31,6 @@ with -o.
 You can also use a JSON manifest file to convert many files at once:
 
 ```json
-// manifest.json
 {
     "globalOptions": {
         "outputDirectory": "./",
@@ -61,6 +60,7 @@ You can also use a JSON manifest file to convert many files at once:
 ```
 
 `nc-convert` will skip files that are already up-to-date when using a manifest.
+Relative paths within `globalOptions` are interpreted relative to the manifest.
 
 For more information, see the help text for `nc-convert` and the docs on [input file
 requirements](docs/SourceFileRequirements.md) and [.nca formats](docs/AssetFormats.md)

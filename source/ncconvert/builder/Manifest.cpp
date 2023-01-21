@@ -17,8 +17,8 @@ const auto jsonAssetArrayTags = std::array<std::string, 6> {
 
 struct GlobalManifestOptions
 {
-    std::filesystem::path outputDirectory = "./";
-    std::filesystem::path workingDirectory = "./";
+    std::filesystem::path outputDirectory;
+    std::filesystem::path workingDirectory;
 };
 
 void from_json(const nlohmann::json& json, GlobalManifestOptions& options)
@@ -27,10 +27,25 @@ void from_json(const nlohmann::json& json, GlobalManifestOptions& options)
     options.workingDirectory = json.value("workingDirectory", "./");
 }
 
-void ProcessOptions(const GlobalManifestOptions& options)
+void ProcessOptions(GlobalManifestOptions& options, const std::filesystem::path& manifestPath)
 {
+    options.outputDirectory.make_preferred();
+    options.workingDirectory.make_preferred();
+    auto&& parentPath = std::filesystem::absolute(manifestPath.parent_path());
+
+    if (options.workingDirectory.is_relative())
+    {
+        options.workingDirectory = parentPath / options.workingDirectory;
+    }
+
+    if (options.outputDirectory.is_relative())
+    {
+        options.outputDirectory = parentPath / options.outputDirectory;
+    }
+
     LOG("Setting working directory: {}", options.workingDirectory.string());
     std::filesystem::current_path(options.workingDirectory);
+
     if(!std::filesystem::exists(options.outputDirectory))
     {
         LOG("Creating directory: {}", options.outputDirectory.string());
@@ -72,7 +87,7 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
 
     auto json = nlohmann::json::parse(file);
     auto options = json.value("globalOptions", ::GlobalManifestOptions{});
-    ::ProcessOptions(options);
+    ::ProcessOptions(options, manifestPath);
 
     for (const auto& typeTag : ::jsonAssetArrayTags)
     {

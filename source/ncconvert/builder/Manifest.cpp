@@ -24,17 +24,27 @@ struct GlobalManifestOptions
 void from_json(const nlohmann::json& json, GlobalManifestOptions& options)
 {
     options.outputDirectory = json.value("outputDirectory", "./");
-    options.workingDirectory = json.value("workingDirectory", std::filesystem::path{});
+    options.workingDirectory = json.value("workingDirectory", "./");
 }
 
-void ProcessOptions(const GlobalManifestOptions& options, const std::filesystem::path& manifestPath)
+void ProcessOptions(GlobalManifestOptions& options, const std::filesystem::path& manifestPath)
 {
-    auto&& workingDirectory = options.workingDirectory.empty() ?
-        std::filesystem::absolute(manifestPath.parent_path())
-        : options.workingDirectory;
+    options.outputDirectory.make_preferred();
+    options.workingDirectory.make_preferred();
+    auto&& parentPath = std::filesystem::absolute(manifestPath.parent_path());
 
-    LOG("Setting working directory: {}", workingDirectory.string());
-    std::filesystem::current_path(workingDirectory);
+    if (options.workingDirectory.is_relative())
+    {
+        options.workingDirectory = parentPath / options.workingDirectory;
+    }
+
+    if (options.outputDirectory.is_relative())
+    {
+        options.outputDirectory = parentPath / options.outputDirectory;
+    }
+
+    LOG("Setting working directory: {}", options.workingDirectory.string());
+    std::filesystem::current_path(options.workingDirectory);
 
     if(!std::filesystem::exists(options.outputDirectory))
     {

@@ -17,7 +17,7 @@ auto ReadNcaHeader(std::istream& stream, std::string_view expectedMagicNumber) -
     bytes.Read(&header.magicNumber, 4); // not null-terminated in file
 
     // Verify we're reading the expected type of data
-    if (std::string_view{header.magicNumber} == expectedMagicNumber)
+    if (std::string_view{header.magicNumber} != expectedMagicNumber)
     {
         throw nc::NcError(fmt::format(
             "Magic number mismatch actual: '{}' expected: '{}' ",

@@ -1,5 +1,5 @@
 #include "Import.h"
-#include "common/Deserialize.h"
+#include "Deserialize.h"
 
 #include "ncutility/NcError.h"
 
@@ -27,45 +27,75 @@ auto OpenNca(const std::filesystem::path& ncaPath) -> std::ifstream
 
 namespace nc::asset
 {
+auto ImportAudioClip(std::istream& data) -> AudioClip
+{
+    auto [header, asset] = DeserializeAudioClip(data);
+    return asset;
+}
+
 auto ImportAudioClip(const std::filesystem::path& ncaPath) -> AudioClip
 {
     auto file = ::OpenNca(ncaPath);
-    auto [header, asset] = DeserializeAudioClip(file);
+    return ImportAudioClip(file);
+}
+
+auto ImportConcaveCollider(std::istream& data) -> ConcaveCollider
+{
+    auto [header, asset] = DeserializeConcaveCollider(data);
     return asset;
 }
 
 auto ImportConcaveCollider(const std::filesystem::path& ncaPath) -> ConcaveCollider
 {
     auto file = ::OpenNca(ncaPath);
-    auto [header, asset] = DeserializeConcaveCollider(file);
+    return ImportConcaveCollider(file);
+}
+
+auto ImportCubeMap(std::istream& data) -> CubeMap
+{
+    auto [header, asset] = DeserializeCubeMap(data);
     return asset;
 }
 
 auto ImportCubeMap(const std::filesystem::path& ncaPath) -> CubeMap
 {
     auto file = ::OpenNca(ncaPath);
-    auto [header, asset] = DeserializeCubeMap(file);
+    return ImportCubeMap(file);
+}
+
+auto ImportHullCollider(std::istream& data) -> HullCollider
+{
+    auto [header, asset] = DeserializeHullCollider(data);
     return asset;
 }
 
 auto ImportHullCollider(const std::filesystem::path& ncaPath) -> HullCollider
 {
     auto file = ::OpenNca(ncaPath);
-    auto [header, asset] = DeserializeHullCollider(file);
+    return ImportHullCollider(file);
+}
+
+auto ImportMesh(std::istream& data) -> Mesh
+{
+    auto [header, asset] = DeserializeMesh(data);
     return asset;
 }
 
 auto ImportMesh(const std::filesystem::path& ncaPath) -> Mesh
 {
     auto file = ::OpenNca(ncaPath);
-    auto [header, asset] = DeserializeMesh(file);
+    return ImportMesh(file);
+}
+
+auto ImportTexture(std::istream& data) -> Texture
+{
+    auto [header, asset] = DeserializeTexture(data);
     return asset;
 }
 
 auto ImportTexture(const std::filesystem::path& ncaPath) -> Texture
 {
     auto file = ::OpenNca(ncaPath);
-    auto [header, asset] = DeserializeTexture(file);
-    return asset;
+    return ImportTexture(file);
 }
 } // namespace nc::asset

@@ -1,23 +1,23 @@
 #include "Deserialize.h"
 #include "RawNcaBuffer.h"
+#include "ncasset/Assets.h"
 
 #include "ncutility/NcError.h"
 #include "fmt/format.h"
 
-#include <cstring>
 #include <istream>
 #include <vector>
 
 namespace
 {
-auto ReadNcaHeader(std::istream& stream, const char* expectedMagicNumber) -> nc::asset::NcaHeader
+auto ReadNcaHeader(std::istream& stream, std::string_view expectedMagicNumber) -> nc::asset::NcaHeader
 {
     auto bytes = nc::asset::RawNcaBuffer{stream, nc::asset::NcaHeader::binarySize};
     auto header = nc::asset::NcaHeader{};
     bytes.Read(&header.magicNumber, 4); // not null-terminated in file
 
     // Verify we're reading the expected type of data
-    if (strcmp(header.magicNumber, expectedMagicNumber))
+    if (std::string_view{header.magicNumber} == expectedMagicNumber)
     {
         throw nc::NcError(fmt::format(
             "Magic number mismatch actual: '{}' expected: '{}' ",

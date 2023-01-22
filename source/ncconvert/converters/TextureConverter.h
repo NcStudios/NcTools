@@ -1,12 +1,8 @@
 #pragma once
 
-#include <filesystem>
+#include "ncasset/AssetsFwd.h"
 
-namespace nc::asset
-{
-struct CubeMap;
-struct Texture;
-} // namesapce nc::asset
+#include <filesystem>
 
 namespace nc::convert
 {

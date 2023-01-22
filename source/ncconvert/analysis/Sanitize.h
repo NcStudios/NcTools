@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
 
 #include <span>
 

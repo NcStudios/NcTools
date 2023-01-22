@@ -5,7 +5,8 @@
 #include "GeometryTestUtility.h"
 #include "TextureTestUtility.h"
 
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
+#include "ncasset/AssetType.h"
 #include "ncasset/Import.h"
 #include "ncconvert/builder/Builder.h"
 #include "ncconvert/builder/Target.h"

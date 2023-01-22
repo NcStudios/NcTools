@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "CollateralAudio.h"
 #include "converters/AudioConverter.h"
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
 
 #include <algorithm>
 

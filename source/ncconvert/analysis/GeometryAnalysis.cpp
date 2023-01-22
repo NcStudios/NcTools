@@ -1,5 +1,5 @@
 #include "GeometryAnalysis.h"
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
 #include "utility/Log.h"
 
 #include "ncutility/NcError.h"

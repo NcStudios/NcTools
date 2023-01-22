@@ -1,5 +1,5 @@
 #include "AudioConverter.h"
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
 #include "utility/Path.h"
 
 #include "audio_file/AudioFile.h"

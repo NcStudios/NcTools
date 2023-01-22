@@ -4,4 +4,5 @@ target_sources(nc-convert
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BuildInstructions.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BuildOrchestrator.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Manifest.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
 )

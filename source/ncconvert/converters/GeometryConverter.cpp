@@ -1,7 +1,7 @@
 #include "GeometryConverter.h"
 #include "analysis/GeometryAnalysis.h"
 #include "analysis/Sanitize.h"
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
 #include "utility/Path.h"
 #include "utility/Log.h"
 

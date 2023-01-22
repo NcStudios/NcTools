@@ -2,7 +2,7 @@
 #include "Builder.h"
 #include "BuildInstructions.h"
 #include "Target.h"
-#include "ncasset/AssetTypes.h"
+#include "ncasset/AssetType.h"
 #include "utility/EnumConversion.h"
 #include "utility/Log.h"
 

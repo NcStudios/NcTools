@@ -3,7 +3,7 @@
 #include "TextureTestUtility.h"
 
 #include "converters/TextureConverter.h"
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
 
 #include <algorithm>
 #include <array>

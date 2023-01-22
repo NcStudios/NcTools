@@ -1,10 +1,12 @@
 #include "Builder.h"
 #include "BuildInstructions.h"
+#include "Serialize.h"
 #include "Target.h"
 #include "converters/AudioConverter.h"
 #include "converters/GeometryConverter.h"
 #include "converters/TextureConverter.h"
-#include "common/Serialize.h"
+
+#include "ncasset/Assets.h"
 
 #include "fmt/format.h"
 #include "ncutility/Hash.h"
@@ -62,31 +64,31 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         case asset::AssetType::AudioClip:
         {
             const auto asset = m_audioConverter->ImportAudioClip(target.sourcePath);
-            asset::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, assetId);
             return true;
         }
         case asset::AssetType::CubeMap:
         {
             const auto asset = m_textureConverter->ImportCubeMap(target.sourcePath);
-            asset::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, assetId);
             return true;
         }
         case asset::AssetType::ConcaveCollider:
         {
             const auto asset = m_geometryConverter->ImportConcaveCollider(target.sourcePath);
-            asset::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, assetId);
             return true;
         }
         case asset::AssetType::HullCollider:
         {
             const auto asset = m_geometryConverter->ImportHullCollider(target.sourcePath);
-            asset::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, assetId);
             return true;
         }
         case asset::AssetType::Mesh:
         {
             const auto asset = m_geometryConverter->ImportMesh(target.sourcePath);
-            asset::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, assetId);
             return true;
         }
         case asset::AssetType::Shader:
@@ -96,7 +98,7 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         case asset::AssetType::Texture:
         {
             const auto asset = m_textureConverter->ImportTexture(target.sourcePath);
-            asset::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, assetId);
             return true;
         }
     }

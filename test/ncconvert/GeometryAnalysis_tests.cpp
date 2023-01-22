@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "analysis/GeometryAnalysis.h"
 
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
 
 #include <array>
 

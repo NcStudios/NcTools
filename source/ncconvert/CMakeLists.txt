@@ -27,8 +27,6 @@ target_compile_options(nc-convert
 
 target_include_directories(nc-convert
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/source
         ${PROJECT_SOURCE_DIR}/source/ncconvert
 )
 
@@ -44,6 +42,7 @@ target_sources(nc-convert
 
 target_link_libraries(nc-convert
     PRIVATE
+        NcAsset
         NcMath
         NcUtility
         assimp::assimp

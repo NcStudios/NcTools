@@ -1,8 +1,8 @@
 #include "TextureConverter.h"
 #include "analysis/TextureAnalysis.h"
-#include "ncasset/Assets.h"
 #include "utility/Path.h"
 
+#include "ncasset/Assets.h"
 #include "ncutility/NcError.h"
 
 #define STB_IMAGE_IMPLEMENTATION

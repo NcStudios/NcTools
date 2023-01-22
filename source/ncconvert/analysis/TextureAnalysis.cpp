@@ -1,6 +1,6 @@
 #include "TextureAnalysis.h"
-#include "ncasset/Assets.h"
 
+#include "ncasset/Assets.h"
 #include "ncutility/NcError.h"
 
 namespace nc::convert

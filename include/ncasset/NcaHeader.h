@@ -1,19 +1,22 @@
 #pragma once
 
+#include "AssetType.h"
+
 #include <cstddef>
+#include <string_view>
 
 namespace nc::asset
 {
 /** @brief Identifiers for asset blobs in .nca files. */
 struct MagicNumber
 {
-    static constexpr auto audioClip = "CLIP";
-    static constexpr auto concaveCollider = "CONC";
-    static constexpr auto cubeMap = "CUBE";
-    static constexpr auto hullCollider = "HULL";
-    static constexpr auto mesh = "MESH";
-    static constexpr auto shader = "SHAD";
-    static constexpr auto texture = "TEXT";
+    static constexpr auto audioClip = std::string_view{"CLIP"};
+    static constexpr auto concaveCollider = std::string_view{"CONC"};
+    static constexpr auto cubeMap = std::string_view{"CUBE"};
+    static constexpr auto hullCollider = std::string_view{"HULL"};
+    static constexpr auto mesh = std::string_view{"MESH"};
+    static constexpr auto shader = std::string_view{"SHAD"};
+    static constexpr auto texture = std::string_view{"TEXT"};
 };
 
 /** @brief Common file header for all asset types. */
@@ -38,28 +41,6 @@ struct NcaHeader
     size_t size = 0;
 };
 
-struct AudioClip;
-struct CubeMap;
-struct ConcaveCollider;
-struct HullCollider;
-struct Mesh;
-struct Texture;
-
-/** @brief Get the serialized size in bytes for an AudioClip. */
-auto GetBlobSize(const AudioClip& asset) -> size_t;
-
-/** @brief Get the serialized size in bytes for a ConcaveCollider. */
-auto GetBlobSize(const ConcaveCollider& asset) -> size_t;
-
-/** @brief Get the serialized size in bytes for a CubeMap. */
-auto GetBlobSize(const CubeMap& asset) -> size_t;
-
-/** @brief Get the serialized size in bytes for a HullCollider. */
-auto GetBlobSize(const HullCollider& asset) -> size_t;
-
-/** @brief Get the serialized size in bytes for a Mesh. */
-auto GetBlobSize(const Mesh& asset) -> size_t;
-
-/** @brief Get the serialized size in bytes for a Texture. */
-auto GetBlobSize(const Texture& asset) -> size_t;
+/** @brief Get the AssetType for an NcaHeader. */
+auto GetAssetType(const NcaHeader& header) -> AssetType;
 } // namespace nc::asset

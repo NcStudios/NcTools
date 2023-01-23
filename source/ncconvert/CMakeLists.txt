@@ -27,8 +27,6 @@ target_compile_options(nc-convert
 
 target_include_directories(nc-convert
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/source
         ${PROJECT_SOURCE_DIR}/source/ncconvert
 )
 
@@ -37,18 +35,14 @@ target_include_directories(nc-convert
         ${PROJECT_SOURCE_DIR}/source/external
 )
 
-set(nc-convert-common-source ${PROJECT_SOURCE_DIR}/source/common/NcaHeader.cpp
-                             ${PROJECT_SOURCE_DIR}/source/common/Serialize.cpp
-)
-
 target_sources(nc-convert
     PRIVATE
         ${PROJECT_SOURCE_DIR}/source/ncconvert/Main.cpp
-        ${nc-convert-common-source}
 )
 
 target_link_libraries(nc-convert
     PRIVATE
+        NcAsset
         NcMath
         NcUtility
         assimp::assimp

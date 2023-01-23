@@ -7,8 +7,6 @@
 
 #include "ncutility/NcError.h"
 
-#include <fstream>
-
 namespace
 {
 auto BuildTargetMap() -> std::unordered_map<nc::asset::AssetType, std::vector<nc::convert::Target>>

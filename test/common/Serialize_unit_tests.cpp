@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "Deserialize.h"
-#include "Serialize.h"
+#include "builder/Serialize.h"
+#include "utility/BlobSize.h"
+#include "ncasset/Assets.h"
 
 #include <algorithm>
 #include <sstream>
@@ -30,12 +32,12 @@ TEST(SerializationTest, HullCollider_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::asset::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, assetId);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeHullCollider(stream);
 
     EXPECT_STREQ("HULL", actualHeader.magicNumber);
     EXPECT_EQ(assetId, actualHeader.assetId);
-    EXPECT_EQ(nc::asset::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
     EXPECT_EQ(expectedAsset.extents, actualAsset.extents);
@@ -59,12 +61,12 @@ TEST(SerializationTest, ConcaveCollider_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::asset::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, assetId);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeConcaveCollider(stream);
 
     EXPECT_STREQ("CONC", actualHeader.magicNumber);
     EXPECT_EQ(assetId, actualHeader.assetId);
-    EXPECT_EQ(nc::asset::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
     EXPECT_EQ(expectedAsset.extents, actualAsset.extents);
@@ -110,12 +112,12 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::asset::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, assetId);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeMesh(stream);
 
     EXPECT_STREQ("MESH", actualHeader.magicNumber);
     EXPECT_EQ(assetId, actualHeader.assetId);
-    EXPECT_EQ(nc::asset::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
     EXPECT_EQ(expectedAsset.extents, actualAsset.extents);
@@ -147,12 +149,12 @@ TEST(SerializationTest, Texture_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::asset::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, assetId);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeTexture(stream);
 
     EXPECT_STREQ("TEXT", actualHeader.magicNumber);
     EXPECT_EQ(assetId, actualHeader.assetId);
-    EXPECT_EQ(nc::asset::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
     EXPECT_EQ(expectedAsset.width, actualAsset.width);
@@ -174,12 +176,12 @@ TEST(SerializationTest, AudioClip_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::asset::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, assetId);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeAudioClip(stream);
 
     EXPECT_STREQ("CLIP", actualHeader.magicNumber);
     EXPECT_EQ(assetId, actualHeader.assetId);
-    EXPECT_EQ(nc::asset::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
     EXPECT_EQ(expectedAsset.samplesPerChannel, actualAsset.samplesPerChannel);
@@ -209,12 +211,12 @@ TEST(SerializationTest, CubeMap_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::asset::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, assetId);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeCubeMap(stream);
 
     EXPECT_STREQ("CUBE", actualHeader.magicNumber);
     EXPECT_EQ(assetId, actualHeader.assetId);
-    EXPECT_EQ(nc::asset::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
     EXPECT_EQ(expectedAsset.faceSideLength, actualAsset.faceSideLength);

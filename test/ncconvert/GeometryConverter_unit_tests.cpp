@@ -4,7 +4,7 @@
 
 #include "analysis/GeometryAnalysis.h"
 #include "converters/GeometryConverter.h"
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
 
 #include <algorithm>
 #include <array>

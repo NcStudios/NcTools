@@ -2,10 +2,10 @@
 #include "Builder.h"
 #include "BuildInstructions.h"
 #include "Target.h"
-#include "ncasset/AssetTypes.h"
 #include "utility/EnumConversion.h"
 #include "utility/Log.h"
 
+#include "ncasset/AssetType.h"
 #include "ncutility/NcError.h"
 
 #include <array>

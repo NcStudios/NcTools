@@ -1,7 +1,6 @@
 #include "GeometryConverter.h"
 #include "analysis/GeometryAnalysis.h"
 #include "analysis/Sanitize.h"
-#include "ncasset/AssetTypes.h"
 #include "utility/Path.h"
 #include "utility/Log.h"
 
@@ -9,6 +8,7 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 #include "fmt/format.h"
+#include "ncasset/Assets.h"
 #include "ncutility/NcError.h"
 
 #include <algorithm>

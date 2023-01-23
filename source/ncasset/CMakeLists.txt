@@ -12,18 +12,14 @@ target_include_directories(NcAsset
     PRIVATE
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/ncasset>
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source/ncasset>
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>
-)
-
-set(NcAsset-common-source ${PROJECT_SOURCE_DIR}/source/common/Deserialize.cpp
-                          ${PROJECT_SOURCE_DIR}/source/common/NcaHeader.cpp
-                          ${PROJECT_SOURCE_DIR}/source/common/RawNcaBuffer.cpp
 )
 
 target_sources(NcAsset
     PRIVATE
-        ${NcAsset-common-source}
+        ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/Import.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncasset/NcaHeader.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
 )
 
 target_link_libraries(NcAsset

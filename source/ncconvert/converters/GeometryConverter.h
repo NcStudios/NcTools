@@ -1,14 +1,9 @@
 #pragma once
 
+#include "ncasset/AssetsFwd.h"
+
 #include <filesystem>
 #include <memory>
-
-namespace nc::asset
-{
-struct ConcaveCollider;
-struct HullCollider;
-struct Mesh;
-}
 
 namespace nc::convert
 {

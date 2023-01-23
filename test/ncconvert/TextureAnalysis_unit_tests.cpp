@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "analysis/TextureAnalysis.h"
-#include "ncasset/AssetTypes.h"
+#include "ncasset/Assets.h"
 
 #include "ncutility/NcError.h"
 

@@ -1,7 +1,7 @@
 #include "GeometryAnalysis.h"
-#include "ncasset/AssetTypes.h"
 #include "utility/Log.h"
 
+#include "ncasset/Assets.h"
 #include "ncutility/NcError.h"
 
 #include <algorithm>

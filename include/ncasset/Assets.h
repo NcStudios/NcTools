@@ -6,17 +6,6 @@
 
 namespace nc::asset
 {
-enum class AssetType
-{
-    AudioClip,
-    CubeMap,
-    ConcaveCollider,
-    HullCollider,
-    Mesh,
-    Shader,
-    Texture
-};
-
 struct AudioClip
 {
     size_t samplesPerChannel;

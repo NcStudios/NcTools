@@ -36,18 +36,18 @@ target_include_directories(NcConvert_integration_tests
 
 target_sources(NcConvert_integration_tests
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/source/common/Deserialize.cpp
-        ${PROJECT_SOURCE_DIR}/source/common/NcaHeader.cpp
-        ${PROJECT_SOURCE_DIR}/source/common/RawNcaBuffer.cpp
-        ${PROJECT_SOURCE_DIR}/source/common/Serialize.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/Import.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/GeometryAnalysis.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/Sanitize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/TextureAnalysis.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Builder.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/AudioConverter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/GeometryConverter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/TextureConverter.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/BlobSize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/EnumConversion.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/Path.cpp
 )

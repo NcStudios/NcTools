@@ -1,11 +1,8 @@
 #pragma once
 
-#include <filesystem>
+#include "ncasset/AssetsFwd.h"
 
-namespace nc::asset
-{
-struct AudioClip;
-} // namespace nc::asset
+#include <filesystem>
 
 namespace nc::convert
 {

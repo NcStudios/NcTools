@@ -1,7 +1,8 @@
 #pragma once
 
-#include "NcaHeader.h"
-#include "ncasset/AssetTypes.h"
+#include "ncasset/NcaHeader.h"
+#include "ncasset/AssetsFwd.h"
+#include "ncasset/AssetType.h"
 
 #include <iosfwd>
 

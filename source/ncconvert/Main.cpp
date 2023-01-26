@@ -1,4 +1,5 @@
 #include "Config.h"
+#include "ReturnCodes.h"
 #include "builder/BuildOrchestrator.h"
 #include "utility/EnumConversion.h"
 
@@ -18,7 +19,8 @@ Options
   -s <source>             Parse a single asset from <source>.
   -n <name>               Specify the asset name for a single target.
   -o <dir>                Output assets to <dir>.
-  -m <manifest>           Perform conversions specified in <manifest>
+  -m <manifest>           Perform conversions specified in <manifest>.
+  -i <assetPath>          Print details about an existing asset file.
 
 Asset types               Supported file types
   mesh                    fbx, obj
@@ -62,6 +64,10 @@ Json Manifest
       ]
   }
 
+Return Values
+  Success: 0
+  RuntimeError: 1
+  ArgumentError: 2
 )";
 
 bool ParseArgs(int argc, char** argv, nc::convert::Config* config);
@@ -72,7 +78,7 @@ int main(int argc, char** argv)
     if(!ParseArgs(argc, argv, &config))
     {
         std::cout << usageMessage;
-        return 1;
+        return ResultCode::ArgumentError;
     }
 
     try
@@ -83,14 +89,15 @@ int main(int argc, char** argv)
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-        return 1;
+        return ResultCode::RuntimeError;
     }
     catch(...)
     {
         std::cerr << "Unknown exception\n";
+        return ResultCode::RuntimeError;
     }
 
-    return 0;
+    return ResultCode::Success;
 }
 
 bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
@@ -120,6 +127,7 @@ bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
         }
         else if (option == "-s")
         {
+            out->mode = nc::convert::OperationMode::SingleTarget;
             out->targetPath = std::filesystem::path(argv[current++]);
             out->targetPath.value().make_preferred();
         }
@@ -133,6 +141,7 @@ bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
         }
         else if (option == "-m")
         {
+            out->mode = nc::convert::OperationMode::Manifest;
             out->manifestPath = std::filesystem::path(argv[current++]);
             out->manifestPath.value().make_preferred();
         }
@@ -141,21 +150,37 @@ bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
             out->outputDirectory = std::filesystem::path(argv[current++]);
             out->outputDirectory.make_preferred();
         }
+        else if (option == "-i")
+        {
+            out->mode = nc::convert::OperationMode::Inspect;
+            out->targetPath = std::filesystem::path(argv[current++]);
+            out->targetPath.value().make_preferred();
+        }
         else
         {
             return false;
         }
     }
 
-    if (out->targetPath && (!out->assetName || !out->targetType))
+    switch (out->mode)
     {
-        return false;
+        case nc::convert::OperationMode::Unspecified:
+        {
+            return false;
+        }
+        case nc::convert::OperationMode::SingleTarget:
+        {
+            return out->targetPath.has_value() && out->targetType.has_value() && out->assetName.has_value();
+        }
+        case nc::convert::OperationMode::Manifest:
+        {
+            return out->manifestPath.has_value();
+        }
+        case nc::convert::OperationMode::Inspect:
+        {
+            return out->targetPath.has_value();
+        }
     }
 
-    if(!out->targetPath && !out->manifestPath)
-    {
-        return false;
-    }
-
-    return true;
+    return false;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Assets.h"
+#include "NcaHeader.h"
 
 #include <filesystem>
 #include <iosfwd>
@@ -42,4 +43,10 @@ auto ImportTexture(const std::filesystem::path& ncaPath) -> Texture;
 
 /** @brief Read a Texture asset from a binary stream */
 auto ImportTexture(std::istream& data) -> Texture;
+
+/** @brief Read the header from an .nca file. */
+auto ImportNcaHeader(const std::filesystem::path& ncaPath) -> NcaHeader;
+
+/** @brief Read the header from an asset in a binary stream. */
+auto ImportNcaHeader(std::istream& data) -> NcaHeader;
 } // namespace nc::asset

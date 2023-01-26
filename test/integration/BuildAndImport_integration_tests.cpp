@@ -15,7 +15,7 @@
 
 const auto ncaTestOutDirectory = std::filesystem::path{"./test_temp_dir"};
 
-class NcConvertIntegration : public ::testing::Test
+class BuildAndImportTest : public ::testing::Test
 {
     public:
         static void SetUpTestSuite()
@@ -35,7 +35,7 @@ class NcConvertIntegration : public ::testing::Test
         }
 };
 
-TEST_F(NcConvertIntegration, Texture_from_png)
+TEST_F(BuildAndImportTest, Texture_from_png)
 {
     namespace test_data = collateral::rgb_corners;
     const auto inFile = test_data::pngFilePath;
@@ -58,7 +58,7 @@ TEST_F(NcConvertIntegration, Texture_from_png)
     }
 }
 
-TEST_F(NcConvertIntegration, ConcaveCollider_from_fbx)
+TEST_F(BuildAndImportTest, ConcaveCollider_from_fbx)
 {
     namespace test_data = collateral::plane_fbx;
     const auto inFile = test_data::filePath;
@@ -80,7 +80,7 @@ TEST_F(NcConvertIntegration, ConcaveCollider_from_fbx)
     }
 }
 
-TEST_F(NcConvertIntegration, HullCollider_from_fbx)
+TEST_F(BuildAndImportTest, HullCollider_from_fbx)
 {
     namespace test_data = collateral::cube_fbx;
     const auto inFile = test_data::filePath;
@@ -102,7 +102,7 @@ TEST_F(NcConvertIntegration, HullCollider_from_fbx)
     }
 }
 
-TEST_F(NcConvertIntegration, Mesh_from_fbx)
+TEST_F(BuildAndImportTest, Mesh_from_fbx)
 {
     namespace test_data = collateral::cube_fbx;
     const auto inFile = test_data::filePath;
@@ -138,7 +138,7 @@ TEST_F(NcConvertIntegration, Mesh_from_fbx)
     EXPECT_TRUE(std::ranges::all_of(asset.indices, [&nVertices](auto i){ return i < nVertices; }));
 }
 
-TEST_F(NcConvertIntegration, AudioClip_from_wav)
+TEST_F(BuildAndImportTest, AudioClip_from_wav)
 {
     namespace test_data = collateral::sine;
     const auto inFile = test_data::filePath;
@@ -160,7 +160,7 @@ TEST_F(NcConvertIntegration, AudioClip_from_wav)
                            test_data::rightChannel.cbegin()));
 }
 
-TEST_F(NcConvertIntegration, CubeMap_from_png)
+TEST_F(BuildAndImportTest, CubeMap_from_png)
 {
     namespace test_data = collateral::cube_map;
     const auto inFile = test_data::horizontalCrossFilePath;

@@ -13,5 +13,6 @@ FetchContent_MakeAvailable(googletest)
 
 include(GoogleTest)
 
+add_subdirectory(integration)
+add_subdirectory(ncasset)
 add_subdirectory(ncconvert)
-add_subdirectory(common)

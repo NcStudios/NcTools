@@ -1,9 +1,5 @@
-target_sources(nc-tools-2
-    PRIVATE
-        Builders.cpp
-        Main.cpp
-        MeshAnalysis.cpp
-        NcaFile.cpp
-        Serialize.cpp
-        Validation.cpp
-)
+add_subdirectory(ncasset)
+
+if(NC_TOOLS_BUILD_CONVERTER)
+    add_subdirectory(ncconvert)
+endif()

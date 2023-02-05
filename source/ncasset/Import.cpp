@@ -27,6 +27,17 @@ auto OpenNca(const std::filesystem::path& ncaPath) -> std::ifstream
 
 namespace nc::asset
 {
+auto ImportNcaHeader(std::istream& data) -> NcaHeader
+{
+    return DeserializeHeader(data);
+}
+
+auto ImportNcaHeader(const std::filesystem::path& ncaPath) -> NcaHeader
+{
+    auto file = ::OpenNca(ncaPath);
+    return ImportNcaHeader(file);
+}
+
 auto ImportAudioClip(std::istream& data) -> AudioClip
 {
     auto [header, asset] = DeserializeAudioClip(data);

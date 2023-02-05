@@ -1,0 +1,41 @@
+{
+    "globalOptions" : {
+        "outputDirectory": "./test_temp_dir"
+    },
+    "audio-clip": [
+        {
+            "sourcePath": "sine_c_e.wav",
+            "assetName": "myAudioClip"
+        }
+    ],
+    "concave-collider": [
+        {
+            "sourcePath": "plane.fbx",
+            "assetName": "myConcaveCollider"
+        }
+    ],
+    "cube-map": [
+        {
+            "sourcePath": "cube_map_horizontal_cross.png",
+            "assetName": "myCubeMap"
+        }
+    ],
+    "hull-collider": [
+        {
+            "sourcePath": "cube.fbx",
+            "assetName": "myHullCollider"
+        }
+    ],
+    "mesh": [
+        {
+            "sourcePath": "cube.fbx",
+            "assetName": "myMesh"
+        }
+    ],
+    "texture": [
+        {
+            "sourcePath": "rgb_corners_4x8.png",
+            "assetName": "myTexture"
+        }
+    ]
+}

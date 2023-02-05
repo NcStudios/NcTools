@@ -16,6 +16,9 @@ struct DeserializedResult
     AssetType asset;
 };
 
+/** @brief Read an NcaHeader from a binary stream. */
+auto DeserializeHeader(std::istream& stream) -> NcaHeader;
+
 /** @brief Construct an AudioClip from data in a binary stream. */
 auto DeserializeAudioClip(std::istream& stream) -> DeserializedResult<AudioClip>;
 

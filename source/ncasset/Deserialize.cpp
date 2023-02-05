@@ -10,13 +10,8 @@
 
 namespace
 {
-auto ReadNcaHeader(std::istream& stream, std::string_view expectedMagicNumber) -> nc::asset::NcaHeader
+void ValidateHeader(const nc::asset::NcaHeader& header, std::string_view expectedMagicNumber)
 {
-    auto bytes = nc::asset::RawNcaBuffer{stream, nc::asset::NcaHeader::binarySize};
-    auto header = nc::asset::NcaHeader{};
-    bytes.Read(&header.magicNumber, 4); // not null-terminated in file
-
-    // Verify we're reading the expected type of data
     if (std::string_view{header.magicNumber} != expectedMagicNumber)
     {
         throw nc::NcError(fmt::format(
@@ -25,18 +20,33 @@ auto ReadNcaHeader(std::istream& stream, std::string_view expectedMagicNumber) -
         );
     }
 
-    bytes.Read(&header.compressionAlgorithm, 4); // not null-terminated in file
-    bytes.Read(&header.assetId);
-    bytes.Read(&header.size);
-    return header;
+    if (std::string_view{header.compressionAlgorithm} != "NONE")
+    {
+        throw nc::NcError(fmt::format(
+            "Unsupported compression algorithm: '{}'",
+            header.compressionAlgorithm
+        ));
+    }
 }
 } // anonymous namespace
 
 namespace nc::asset
 {
+auto DeserializeHeader(std::istream& stream) -> NcaHeader
+{
+    auto bytes = nc::asset::RawNcaBuffer{stream, nc::asset::NcaHeader::binarySize};
+    auto header = nc::asset::NcaHeader{};
+    bytes.Read(&header.magicNumber, 4); // not null-terminated in file
+    bytes.Read(&header.compressionAlgorithm, 4); // not null-terminated in file
+    bytes.Read(&header.assetId);
+    bytes.Read(&header.size);
+    return header;
+}
+
 auto DeserializeAudioClip(std::istream& stream) -> DeserializedResult<AudioClip>
 {
-    const auto header = ::ReadNcaHeader(stream, MagicNumber::audioClip);
+    const auto header = DeserializeHeader(stream);
+    ::ValidateHeader(header, MagicNumber::audioClip);
     auto bytes = RawNcaBuffer{stream, header.size};
     auto asset = AudioClip{};
     bytes.Read(&asset.samplesPerChannel);
@@ -55,7 +65,8 @@ auto DeserializeAudioClip(std::istream& stream) -> DeserializedResult<AudioClip>
 
 auto DeserializeConcaveCollider(std::istream& stream) -> DeserializedResult<ConcaveCollider>
 {
-    const auto header = ::ReadNcaHeader(stream, MagicNumber::concaveCollider);
+    const auto header = DeserializeHeader(stream);
+    ::ValidateHeader(header, MagicNumber::concaveCollider);
     auto bytes = RawNcaBuffer{stream, header.size};
     auto asset = ConcaveCollider{};
     auto triCount = size_t{};
@@ -75,7 +86,8 @@ auto DeserializeConcaveCollider(std::istream& stream) -> DeserializedResult<Conc
 
 auto DeserializeCubeMap(std::istream& stream) -> DeserializedResult<CubeMap>
 {
-    const auto header = ::ReadNcaHeader(stream, MagicNumber::cubeMap);
+    const auto header = DeserializeHeader(stream);
+    ::ValidateHeader(header, MagicNumber::cubeMap);
     auto bytes = RawNcaBuffer{stream, header.size};
     auto asset = CubeMap{};
     bytes.Read(&asset.faceSideLength);
@@ -94,7 +106,8 @@ auto DeserializeCubeMap(std::istream& stream) -> DeserializedResult<CubeMap>
 
 auto DeserializeHullCollider(std::istream& stream) -> DeserializedResult<HullCollider>
 {
-    const auto header = ::ReadNcaHeader(stream, MagicNumber::hullCollider);
+    const auto header = DeserializeHeader(stream);
+    ::ValidateHeader(header, MagicNumber::hullCollider);
     auto bytes = RawNcaBuffer{stream, header.size};
     auto asset = HullCollider{};
     auto vertexCount = size_t{};
@@ -114,7 +127,8 @@ auto DeserializeHullCollider(std::istream& stream) -> DeserializedResult<HullCol
 
 auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
 {
-    const auto header = ::ReadNcaHeader(stream, MagicNumber::mesh);
+    const auto header = DeserializeHeader(stream);
+    ::ValidateHeader(header, MagicNumber::mesh);
     auto bytes = RawNcaBuffer{stream, header.size};
     auto asset = Mesh{};
     auto vertexCount = size_t{};
@@ -138,7 +152,8 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
 
 auto DeserializeTexture(std::istream& stream) -> DeserializedResult<Texture>
 {
-    const auto header = ::ReadNcaHeader(stream, MagicNumber::texture);
+    const auto header = DeserializeHeader(stream);
+    ::ValidateHeader(header, MagicNumber::texture);
     auto bytes = RawNcaBuffer{stream, header.size};
     auto asset = Texture{};
     bytes.Read(&asset.width);

@@ -38,28 +38,29 @@ auto BuildInstructions::GetTargetsForType(asset::AssetType type) const -> const 
 void BuildInstructions::ReadTargets(const Config& config)
 {
     LOG("--Generating Build Targets--");
-    if(config.targetPath)
+    switch (config.mode)
     {
-        LOG("Running in single target mode");
-        if(!config.targetType || !config.assetName)
+        case OperationMode::SingleTarget:
         {
-            throw nc::NcError("Single target mode must specify asset type and name with -a and -n");
+            LOG("Running in single target mode");
+            auto& collection = m_instructions.at(config.targetType.value());
+            auto sourcePath = config.targetPath.value();
+            auto destinationPath = AssetNameToNcaPath(config.assetName.value(), config.outputDirectory);
+            LOG("Adding build target: {} -> {}", sourcePath.string(), destinationPath.string());
+            collection.emplace_back(std::move(sourcePath), std::move(destinationPath));
+            break;
         }
-
-        auto& collection = m_instructions.at(config.targetType.value());
-        auto sourcePath = config.targetPath.value();
-        auto destinationPath = AssetNameToNcaPath(config.assetName.value(), config.outputDirectory);
-        LOG("Adding build target: {} -> {}", sourcePath.string(), destinationPath.string());
-        collection.emplace_back(std::move(sourcePath), std::move(destinationPath));
-        return;
+        case OperationMode::Manifest:
+        {
+            LOG("Running in manifest mode");
+            ReadManifest(config.manifestPath.value(), m_instructions);
+            break;
+        }
+        default:
+        {
+            LOG("Unknown OperationMode. Not reading targets");
+            break;
+        }
     }
-
-    if(!config.manifestPath)
-    {
-        throw nc::NcError("Manifest mode must specify a manifest path");
-    }
-
-    LOG("Running in manifest mode");
-    ReadManifest(config.manifestPath.value(), m_instructions);
 }
 } // namespace nc::convert

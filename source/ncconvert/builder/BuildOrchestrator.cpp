@@ -1,6 +1,7 @@
 #include "BuildOrchestrator.h"
 #include "Builder.h"
 #include "BuildInstructions.h"
+#include "Inspect.h"
 #include "Target.h"
 #include "utility/EnumConversion.h"
 #include "utility/Log.h"
@@ -35,6 +36,12 @@ BuildOrchestrator::~BuildOrchestrator() = default;
 
 void BuildOrchestrator::RunBuild()
 {
+    if (m_config.mode == OperationMode::Inspect)
+    {
+        Inspect(m_config.targetPath.value());
+        return;
+    }
+
     if(!std::filesystem::exists(m_config.outputDirectory))
     {
         LOG("Creating directory: {}", m_config.outputDirectory.string());

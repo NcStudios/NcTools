@@ -9,15 +9,34 @@
 
 namespace nc::convert
 {
+/** @brief Identifies different modes of operation for nc-convert. */
+enum class OperationMode
+{
+    /** @brief Default value for failure cases. */
+    Unspecified,
+
+    /** @brief Perform a single conversion from command line arguments. */
+    SingleTarget,
+
+    /** @brief Perform conversions from a manifest file. */
+    Manifest,
+
+    /** @brief Print details of an existing .nca file. */
+    Inspect
+};
+
 /** @brief Build controls generated from command line options. */
 struct Config
 {
+    /** @brief The operation to be performed. */
+    OperationMode mode = OperationMode::Unspecified;
+
     /** @brief The directory to output .nca files to. */
     std::filesystem::path outputDirectory = "./";
 
     /**
      * @brief A path to a raw asset file to be converted to .nca format.
-     * @note Specific to single target mode
+     * @note Specific to single target and inspect modes
      */
     std::optional<std::filesystem::path> targetPath;
 

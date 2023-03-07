@@ -171,7 +171,7 @@ TEST_F(NcConvertIntegration, Inspect_succeeds)
     ASSERT_EQ(buildResult, ResultCode::Success);
 
     const auto targetPath = (ncaTestOutDirectory / "myTexture.nca").string();
-    const auto inspectCmd = std::format(R"({} -i "{}")", exeName, targetPath);
+    const auto inspectCmd = fmt::format(R"({} -i "{}")", exeName, targetPath);
     const auto inspectResult = std::system(inspectCmd.c_str());
     EXPECT_EQ(inspectResult, ResultCode::Success);
 }

@@ -2,6 +2,8 @@
 
 #include "ncasset/AssetsFwd.h"
 
+#include <cstddef>
+
 namespace nc::convert
 {
 /** @brief Get the serialized size in bytes for an AudioClip. */

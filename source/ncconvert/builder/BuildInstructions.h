@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <unordered_map>
+#include <vector>
 
 namespace nc::convert
 {

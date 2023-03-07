@@ -17,7 +17,7 @@ const auto ncaTestOutDirectory = collateral::collateralDirectory / "test_temp_di
 auto BuildSingleTargetCommand(std::string_view type, std::string_view sourceName, std::string_view assetName) -> std::string
 {
     const auto source = (collateral::collateralDirectory / sourceName).string();
-    return fmt::format(R"({} -t {} -s "{}" -n {} -o "{}")",
+    return fmt::format(R"(./{} -t {} -s "{}" -n {} -o "{}")",
         exeName, type, source, assetName, ncaTestOutDirectory.string()
     );
 }

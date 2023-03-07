@@ -88,6 +88,24 @@ jobs:
           path: |
             artifacts/nc-convert
 
+  Publish-Test-Results:
+    runs-on: ubuntu-latest
+    needs: [Build]
+    permissions:
+      checks: write
+      pull-requests: write
+    if: always()
+    steps:
+    - name: Download Results
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+    - name: Publish Results
+      uses: mikepenz/action-junit-report@v3
+      if: always()
+      with:
+        report_paths: 'artifacts/**/*.xml'
+
 # jobs:
 #   Win-VS-17:
 #     runs-on: windows-2022
@@ -132,32 +150,32 @@ jobs:
 #           path: |
 #             artifacts/nc-convert.exe
 
-  CreateRelease:
-    runs-on: windows-2022
-    if: inputs.createRelease && github.ref == 'refs/heads/release'
-    needs: Win-VS-17
-    steps:
-      - name: Setup Artifact Cache
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: artifacts/nc-convert.exe
-          key: ${{ runner.os }}_cache_key
+  # CreateRelease:
+  #   runs-on: windows-2022
+  #   if: inputs.createRelease && github.ref == 'refs/heads/release'
+  #   needs: Win-VS-17
+  #   steps:
+  #     - name: Setup Artifact Cache
+  #       id: cache
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: artifacts/nc-convert.exe
+  #         key: ${{ runner.os }}_cache_key
 
-      - name: Create archive
-        run: 7z a -tzip -mx=9 artifacts/nc-tools.zip artifacts/nc-convert.exe
+  #     - name: Create archive
+  #       run: 7z a -tzip -mx=9 artifacts/nc-tools.zip artifacts/nc-convert.exe
 
-      - name: Hash artifacts
-        shell: pwsh
-        run: |
-          $hash = Get-FileHash -Path /artifacts/nc-tools.zip -Algorithm SHA256
-          "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath hash.txt
+  #     - name: Hash artifacts
+  #       shell: pwsh
+  #       run: |
+  #         $hash = Get-FileHash -Path /artifacts/nc-tools.zip -Algorithm SHA256
+  #         "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath hash.txt
 
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: ${{ format('v{0}', env.VERSION) }}
-          body_path: hash.txt
-          fail_on_unmatched_files: true
-          files: artifacts/nc-tools.zip
+  #     - name: Create release
+  #       uses: softprops/action-gh-release@v1
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         tag_name: ${{ format('v{0}', env.VERSION) }}
+  #         body_path: hash.txt
+  #         fail_on_unmatched_files: true
+  #         files: artifacts/nc-tools.zip

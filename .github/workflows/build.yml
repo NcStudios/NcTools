@@ -50,7 +50,7 @@ jobs:
           key: ${{ runner.os }}_cache_key
 
       - name: Configure
-        run: ${{ matrix.env }} cmake -G ${{ matrix.generator }} -S ./ -B build ${{ matrix.definitions }} -DCMAKE_INSTALL_PREFIX=install
+        run: ${{ matrix.env }} cmake -G "${{ matrix.generator }}"" -S ./ -B build ${{ matrix.definitions }} -DCMAKE_INSTALL_PREFIX=install
 
       - name: Build
         run: cmake --build build --target install --config Release

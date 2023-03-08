@@ -76,8 +76,9 @@ jobs:
       - name: Copy Artifacts to Cache
         if: steps.cache.output.cache-hit != true && matrix.name == 'Linux'
         run: |
-          if [ -d artifacts ] then;
-            mkdir artifacts
+          if [ ! -d artifacts ]
+          then
+              mkdir artifacts
           fi
           cp install/bin/nc-convert artifacts
 

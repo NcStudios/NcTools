@@ -16,7 +16,11 @@ const auto ncaTestOutDirectory = collateral::collateralDirectory / "test_temp_di
 
 auto RunCmd(const std::string& cmd) -> int
 {
+#ifdef WIN32
+    return std::system(cmd.c_str());
+#else
     return WEXITSTATUS(std::system(cmd.c_str()));
+#endif
 }
 
 auto BuildSingleTargetCommand(std::string_view type, std::string_view sourceName, std::string_view assetName) -> std::string

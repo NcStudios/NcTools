@@ -52,7 +52,7 @@ jobs:
           key: ${{ runner.os }}_cache_key
 
       - name: Debug
-        if: ${{ steps.cache.output.cache-hit != true && ${{ matrix.name == 'Windows' }} }}
+        if: steps.cache.output.cache-hit != true && matrix.name == 'Windows'
         run: echo yup
 
       - name: Configure

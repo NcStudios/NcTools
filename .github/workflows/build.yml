@@ -35,6 +35,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+
+
       - name: Checkout Branch
         uses: actions/checkout@v3
 
@@ -48,6 +50,10 @@ jobs:
         with:
           path: artifacts/nc-convert.exe
           key: ${{ runner.os }}_cache_key
+
+      - name: Debug
+        if: ${{ steps.cache.output.cache-hit != true && ${{ matrix.name == 'Windows' }} }}
+        run: echo yup
 
       - name: Configure
         run: ${{ matrix.env }} cmake -G "${{ matrix.generator }}" -S ./ -B build ${{ matrix.definitions }} -DCMAKE_INSTALL_PREFIX=install

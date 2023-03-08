@@ -78,7 +78,7 @@ TEST_F(NcConvertIntegration, SingleTarget_concaveCollider_wrongSourceType_fails)
 
 TEST_F(NcConvertIntegration, SingleTarget_cubeMap_succeeds)
 {
-    const auto cmd = BuildSingleTargetCommand("cube-map", "cube_map_horizontal_array.png", "myCubemap");
+    const auto cmd = BuildSingleTargetCommand("cube-map", "cube_map_horizontal_array.png", "myCubeMap");
     ASSERT_EQ(RunCmd(cmd), ResultCode::Success);
     EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myCubeMap.nca"));
 }

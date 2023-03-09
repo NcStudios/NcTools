@@ -25,11 +25,13 @@ jobs:
           - name: Windows
             os: windows-2022
             generator: "Visual Studio 17 2022"
+            artifactName: "nc-convert-windows-x64"
           - name: Linux
             os: ubuntu-22.04
             generator: "Unix Makefiles"
             env: "CXX=/usr/bin/g++-12"
             definitions: "-DCMAKE_BUILD_TYPE=Release"
+            artifactName: "nc-convert-ubuntu22.04-x64"
 
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -71,7 +73,7 @@ jobs:
           if (!(Test-Path artifacts)) {
             New-Item artifacts -ItemType Directory
           }
-          Copy-Item "install/bin/nc-convert" -Destination "artifacts/"
+          Copy-Item "install/bin/nc-convert.exe" -Destination "artifacts/"
 
       - name: Copy Artifacts to Cache
         if: steps.cache.output.cache-hit != true && matrix.name == 'Linux'
@@ -85,9 +87,9 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: nc-tools
+          name: ${{ matrix.artifactName }}
           path: |
-            artifacts/nc-convert
+            artifacts/nc-convert*
 
   Publish-Test-Results:
     runs-on: ubuntu-latest

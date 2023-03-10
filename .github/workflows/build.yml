@@ -18,13 +18,30 @@ env:
   VERSION: '1.0.0'
 
 jobs:
-  Win-VS-17:
-    runs-on: windows-2022
+  Build:
+    strategy:
+      matrix:
+        include:
+          - name: Windows
+            os: windows-2022
+            generator: "Visual Studio 17 2022"
+            artifactName: "nc-convert-windows-x64"
+          - name: Linux
+            os: ubuntu-22.04
+            generator: "Unix Makefiles"
+            env: "CXX=/usr/bin/g++-12"
+            definitions: "-DCMAKE_BUILD_TYPE=Release"
+            artifactName: "nc-convert-ubuntu22.04-x64"
+
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+
     steps:
       - name: Checkout Branch
         uses: actions/checkout@v3
 
       - name: Setup MSVC
+        if: matrix.name == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Setup Artifact Cache
@@ -35,58 +52,59 @@ jobs:
           key: ${{ runner.os }}_cache_key
 
       - name: Configure
-        run: cmake -G "Visual Studio 17 2022" -S ./ -B build -DCMAKE_INSTALL_PREFIX=install
+        run: ${{ matrix.env }} cmake -G "${{ matrix.generator }}" -S ./ -B build ${{ matrix.definitions }} -DCMAKE_INSTALL_PREFIX=install
 
       - name: Build
-        run: cmake --build build --config "Release"
-
-      - name: Install
-        run: cmake --install build/source --config "Release"
+        run: cmake --build build --target install --config Release
 
       - name: Run Tests
-        run: ctest --test-dir build/test -C Release -V
+        run: ctest --test-dir build/test --output-on-failure --output-junit TestResults.xml
 
-      - name: Copy artifacts to cache
-        if: steps.cache.output.cache-hit != true
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.name }}-TestResults
+          path: build/test/TestResults.xml
+
+      - name: Copy Artifacts to Cache
+        if: steps.cache.output.cache-hit != true && matrix.name == 'Windows'
         run: |
           if (!(Test-Path artifacts)) {
             New-Item artifacts -ItemType Directory
           }
           Copy-Item "install/bin/nc-convert.exe" -Destination "artifacts/"
 
+      - name: Copy Artifacts to Cache
+        if: steps.cache.output.cache-hit != true && matrix.name == 'Linux'
+        run: |
+          if [ ! -d artifacts ]
+          then
+              mkdir artifacts
+          fi
+          cp install/bin/nc-convert artifacts
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: nc-tools
+          name: ${{ matrix.artifactName }}
           path: |
-            artifacts/nc-convert.exe
+            artifacts/nc-convert*
 
-  CreateRelease:
-    runs-on: windows-2022
-    if: inputs.createRelease && github.ref == 'refs/heads/release'
-    needs: Win-VS-17
+  Publish-Test-Results:
+    runs-on: ubuntu-latest
+    needs: [Build]
+    permissions:
+      checks: write
+      pull-requests: write
+    if: always()
     steps:
-      - name: Setup Artifact Cache
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: artifacts/nc-convert.exe
-          key: ${{ runner.os }}_cache_key
-
-      - name: Create archive
-        run: 7z a -tzip -mx=9 artifacts/nc-tools.zip artifacts/nc-convert.exe
-
-      - name: Hash artifacts
-        shell: pwsh
-        run: |
-          $hash = Get-FileHash -Path /artifacts/nc-tools.zip -Algorithm SHA256
-          "nc-tools.zip {0}: {1}" -f $hash.Algorithm, $hash.Hash | Out-File -FilePath hash.txt
-
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: ${{ format('v{0}', env.VERSION) }}
-          body_path: hash.txt
-          fail_on_unmatched_files: true
-          files: artifacts/nc-tools.zip
+    - name: Download Results
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+    - name: Publish Results
+      uses: mikepenz/action-junit-report@v3
+      if: always()
+      with:
+        report_paths: 'artifacts/**/*.xml'

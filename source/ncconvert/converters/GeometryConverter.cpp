@@ -120,7 +120,10 @@ auto ConvertToTriangles(std::span<const aiFace> faces, std::span<const aiVector3
 
 auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVertex>
 {
-    NC_ASSERT(mesh->mNormals && mesh->mTextureCoords && mesh->mTangents && mesh->mBitangents,
+    NC_ASSERT(static_cast<bool>(mesh->mNormals) &&
+              static_cast<bool>(mesh->mTextureCoords) &&
+              static_cast<bool>(mesh->mTangents) &&
+              static_cast<bool>(mesh->mBitangents),
               "Not all required data was generated for mesh conversion");
     auto out = std::vector<nc::asset::MeshVertex>{};
     const auto nVertices = mesh->mNumVertices;
@@ -201,7 +204,7 @@ GeometryConverter::GeometryConverter()
 {
 }
 
-GeometryConverter::~GeometryConverter() = default;
+GeometryConverter::~GeometryConverter() noexcept = default;
 
 auto GeometryConverter::ImportConcaveCollider(const std::filesystem::path& path) -> asset::ConcaveCollider
 {

@@ -71,44 +71,46 @@ target_link_libraries(EnumConversion_unit_tests
 add_test(EnumConversion_unit_tests EnumConversion_unit_tests)
 
 ## GeometryConverter Tests ###
-add_executable(GeometryConverter_unit_tests
-    GeometryConverter_unit_tests.cpp
-)
+if(NC_TOOLS_BUILD_CONVERTER)
+    add_executable(GeometryConverter_unit_tests
+        GeometryConverter_unit_tests.cpp
+    )
 
-target_compile_options(GeometryConverter_unit_tests
-    PUBLIC
-        ${NC_TOOLS_COMPILE_OPTIONS}
-)
+    target_compile_options(GeometryConverter_unit_tests
+        PUBLIC
+            ${NC_TOOLS_COMPILE_OPTIONS}
+    )
 
-target_compile_definitions(GeometryConverter_unit_tests
-    PRIVATE
-        TEST_COLLATERAL_DIR="${NC_CONVERT_TEST_COLLATERAL_DIR}"
-)
+    target_compile_definitions(GeometryConverter_unit_tests
+        PRIVATE
+            TEST_COLLATERAL_DIR="${NC_CONVERT_TEST_COLLATERAL_DIR}"
+    )
 
-target_include_directories(GeometryConverter_unit_tests
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/test/collateral
-        ${PROJECT_SOURCE_DIR}/test/common
-        ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/source/ncconvert
-)
+    target_include_directories(GeometryConverter_unit_tests
+        PRIVATE
+            ${PROJECT_SOURCE_DIR}/test/collateral
+            ${PROJECT_SOURCE_DIR}/test/common
+            ${PROJECT_SOURCE_DIR}/include
+            ${PROJECT_SOURCE_DIR}/source/ncconvert
+    )
 
-target_sources(GeometryConverter_unit_tests
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/GeometryAnalysis.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/Sanitize.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/GeometryConverter.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/Path.cpp
-)
+    target_sources(GeometryConverter_unit_tests
+        PRIVATE
+            ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/GeometryAnalysis.cpp
+            ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/Sanitize.cpp
+            ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/GeometryConverter.cpp
+            ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/Path.cpp
+    )
 
-target_link_libraries(GeometryConverter_unit_tests
-    PRIVATE
-        gtest_main
-        NcMath
-        assimp::assimp
-)
+    target_link_libraries(GeometryConverter_unit_tests
+        PRIVATE
+            gtest_main
+            NcMath
+            assimp::assimp
+    )
 
-add_test(GeometryConverter_unit_tests GeometryConverter_unit_tests)
+    add_test(GeometryConverter_unit_tests GeometryConverter_unit_tests)
+endif()
 
 ## GeometryAnalysis Tests ###
 add_executable(GeometryAnalysis_unit_tests

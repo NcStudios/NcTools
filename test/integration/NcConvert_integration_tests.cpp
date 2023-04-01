@@ -20,10 +20,13 @@ const auto ncaTestOutDirectory = collateral::collateralDirectory / "test_temp_di
 
 auto RunCmd(const std::string& cmd) -> int
 {
+    auto result = std::system(cmd.c_str());
+
 #ifdef WIN32
-    return std::system(cmd.c_str());
+    return result;
 #else
-    return WEXITSTATUS(std::system(cmd.c_str()));
+    // note: At least on Mac, this takes the address of the arg, so we need to pass a local var.
+    return WEXITSTATUS(result);
 #endif
 }
 

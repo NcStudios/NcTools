@@ -52,7 +52,7 @@ Builder::Builder()
 {
 }
 
-Builder::~Builder() = default;
+Builder::~Builder() noexcept = default;
 
 auto Builder::Build(asset::AssetType type, const Target& target) -> bool
 {

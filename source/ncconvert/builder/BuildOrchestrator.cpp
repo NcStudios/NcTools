@@ -32,7 +32,7 @@ BuildOrchestrator::BuildOrchestrator(Config config)
 {
 }
 
-BuildOrchestrator::~BuildOrchestrator() = default;
+BuildOrchestrator::~BuildOrchestrator() noexcept = default;
 
 void BuildOrchestrator::RunBuild()
 {

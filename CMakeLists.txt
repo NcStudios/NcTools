@@ -5,7 +5,7 @@ if(${PROJECT_SOURCE_DIR} EQUAL ${PROJECT_BINARY_DIR})
     message(FATAL_ERROR "Don't be a fool, out-of-source build with your tool.")
 endif()
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 option(NC_TOOLS_BUILD_CONVERTER "Build nc-convert executable" ON)
@@ -56,7 +56,7 @@ include(FetchContent)
 
 FetchContent_Declare(NcCommon
                      GIT_REPOSITORY https://github.com/NcStudios/NcCommon.git
-                     GIT_TAG        origin/vnext
+                     GIT_TAG        e5479f29bfacd61e08362cb7b10fde12f2338d92
                      GIT_SHALLOW    TRUE
 )
 

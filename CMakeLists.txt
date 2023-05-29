@@ -56,7 +56,7 @@ include(FetchContent)
 
 FetchContent_Declare(NcCommon
                      GIT_REPOSITORY https://github.com/NcStudios/NcCommon.git
-                     GIT_TAG        e5479f29bfacd61e08362cb7b10fde12f2338d92
+                     GIT_TAG        origin/vnext
                      GIT_SHALLOW    TRUE
 )
 

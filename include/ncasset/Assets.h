@@ -1,8 +1,10 @@
 #pragma once
 
 #include "ncmath/Geometry.h"
+#include "DirectXMath.h"
 
 #include <vector>
+#include <unordered_map>
 
 namespace nc::asset
 {
@@ -11,6 +13,21 @@ struct AudioClip
     size_t samplesPerChannel;
     std::vector<double> leftChannel;
     std::vector<double> rightChannel;
+};
+
+struct BodySpaceNode
+{
+    std::string boneName;
+    DirectX::XMMATRIX localSpace;
+    BodySpaceNode* parent;
+    std::vector<BodySpaceNode*> children;
+};
+
+struct BonesData
+{
+    std::unordered_map<std::string, uint32_t> boneNamesToIds;
+    std::vector<DirectX::XMMATRIX> boneTransforms;
+    BodySpaceNode* bodySpaceOffsetTree;
 };
 
 struct HullCollider
@@ -34,6 +51,8 @@ struct MeshVertex
     Vector2 uv = Vector2::Zero();
     Vector3 tangent = Vector3::Zero();
     Vector3 bitangent = Vector3::Zero();
+    Vector4 boneWeights = Vector4::Zero();
+    std::array<uint32_t, 4> boneIds = {0, 0, 0, 0};
 };
 
 struct Mesh
@@ -42,6 +61,25 @@ struct Mesh
     float maxExtent;
     std::vector<MeshVertex> vertices;
     std::vector<uint32_t> indices;
+    std::optional<BonesData> bonesData;
+};
+
+struct PerVertexBones
+{
+    std::array<float, 4> boneWeights;
+    std::array<uint32_t, 4> boneIds;
+    
+    void Add(uint32_t id, float weight)
+    {
+        for (auto i = 0u; i < boneIds.size(); i++)
+        {
+            if (boneWeights[i] == 0.0)
+            {
+                boneIds[i] = id;
+                boneWeights[i] = weight;
+            }
+        }
+    }
 };
 
 struct Shader

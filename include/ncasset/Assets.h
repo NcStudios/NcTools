@@ -3,6 +3,9 @@
 #include "ncmath/Geometry.h"
 #include "DirectXMath.h"
 
+#include <array>
+#include <optional>
+#include <string>
 #include <vector>
 #include <unordered_map>
 

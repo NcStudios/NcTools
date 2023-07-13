@@ -40,6 +40,13 @@ constexpr auto meshVertexExtents = nc::Vector3::One();
 const auto furthestDistanceFromOrigin = std::sqrt(0.75f);
 } // namespace cube_fbx
 
+// Describes the collateral file single_bone_100_weights.fbx
+namespace single_bone_100_weights_fbx
+{
+const auto filePath = collateralDirectory / "single_bone_100_weights.fbx";
+
+} // namespace cube_fbx
+
 // Describes the collateral file plane.fbx
 namespace plane_fbx
 {

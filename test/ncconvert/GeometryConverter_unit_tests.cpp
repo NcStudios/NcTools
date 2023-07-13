@@ -69,3 +69,26 @@ TEST(GeometryConverterTest, ImportedMesh_convertsToNca)
     const auto nVertices = actual.vertices.size();
     EXPECT_TRUE(std::ranges::all_of(actual.indices, [&nVertices](auto i){ return i < nVertices; }));
 }
+
+TEST(GeometryConverterTest, GetBoneWeights_SingleBone_100PercentAllVertices)
+{
+    namespace test_data = collateral::single_bone_100_weights_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
+
+    //for (const auto& vertex : actual.vertices)
+    //{
+        // TODO: uvs
+        //const auto boneIds = std::ranges::find(test_data::possibleVertices, vertex.boneIds);
+        //const auto normalPos = std::ranges::find(test_data::possibleNormals, vertex.normal);
+        //const auto tangentPos = std::ranges::find(test_data::possibleTangents, vertex.tangent);
+        //const auto bitangentPos = std::ranges::find(test_data::possibleBitangents, vertex.bitangent);
+        //EXPECT_NE(vertexPos, test_data::possibleVertices.cend());
+        //EXPECT_NE(normalPos, test_data::possibleNormals.cend());
+        //EXPECT_NE(tangentPos, test_data::possibleTangents.cend());
+        //EXPECT_NE(bitangentPos, test_data::possibleBitangents.cend());
+  /*  }
+
+    const auto nVertices = actual.vertices.size();
+    EXPECT_TRUE(std::ranges::all_of(actual.indices, [&nVertices](auto i) { return i < nVertices; }));*/
+}

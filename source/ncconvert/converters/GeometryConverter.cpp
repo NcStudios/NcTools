@@ -131,9 +131,26 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
         for (auto j = 0u; j < currentBone->mNumWeights; j++)
         {
             auto vertexId = currentBone->mWeights[j].mVertexId;
-            vertexBones[vertexId].Add(i, static_cast<float>(currentBone->mWeights[j].mWeight), std::string(currentBone->mName.C_Str()));
+            if (vertexBones[vertexId].boneWeights[3] != -1)
+            {
+                throw nc::NcError("Cannot import a mesh with more than four bones influencing any single vertex.");
+            }
+
+            vertexBones[vertexId].Add(i, static_cast<float>(currentBone->mWeights[j].mWeight));
+
+            if (vertexBones[vertexId].boneWeights[3] != -1)
+            {
+                if (vertexBones[vertexId].boneWeights[0] +
+                    vertexBones[vertexId].boneWeights[1] + 
+                    vertexBones[vertexId].boneWeights[2] + 
+                    vertexBones[vertexId].boneWeights[3] != 1)
+                {
+                    throw nc::NcError("The sum of bone weights affecting each vertex must equal 1.");
+                }
+            }
         }
     }
+
     return vertexBones;
 }
 

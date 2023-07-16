@@ -52,6 +52,18 @@ namespace four_bone_four_vertex_fbx
 const auto filePath = collateralDirectory / "four_bone_four_vertex.fbx";
 } // namespace four_bone_four_vertex_fbx
 
+// Describes the collateral file five_bones_per_vertex.fbx
+namespace five_bones_per_vertex_fbx
+{
+const auto filePath = collateralDirectory / "five_bones_per_vertex.fbx";
+} // namespace five_bones_per_vertex_fbx
+
+// Describes the collateral file four_bones_neq100.fbx
+namespace four_bones_neq100_fbx
+{
+const auto filePath = collateralDirectory / "four_bones_neq100.fbx";
+} // namespace four_bones_neq100_fbx
+
 // Describes the collateral file plane.fbx
 namespace plane_fbx
 {

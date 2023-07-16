@@ -5,6 +5,7 @@
 #include "analysis/GeometryAnalysis.h"
 #include "converters/GeometryConverter.h"
 #include "ncasset/Assets.h"
+#include "ncutility/NcError.h"
 
 #include <algorithm>
 #include <iostream>
@@ -138,20 +139,37 @@ TEST(GeometryConverterTest, GetBoneWeights_FourBones_QuarterWeightAllVertices)
 
 TEST(GeometryConverterTest, GetBoneWeights_FiveBonesPerVertex_ImportFails)
 {
-    namespace test_data = collateral::four_bone_four_vertex_fbx;
+    namespace test_data = collateral::five_bones_per_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
-    const auto actual = uut.ImportMesh(test_data::filePath);
-
-    for (const auto& vertex : actual.vertices)
+    auto threwNcError = false;
+    try
     {
-        EXPECT_EQ(vertex.boneIds[0], 0);
-        EXPECT_EQ(vertex.boneIds[1], 1);
-        EXPECT_EQ(vertex.boneIds[2], 2);
-        EXPECT_EQ(vertex.boneIds[3], 3);
-        EXPECT_EQ(vertex.boneWeights.x, 0.25);
-        EXPECT_EQ(vertex.boneWeights.y, 0.25);
-        EXPECT_EQ(vertex.boneWeights.z, 0.25);
-        EXPECT_EQ(vertex.boneWeights.w, 0.25);
+        uut.ImportMesh(test_data::filePath);
     }
+    catch(const nc::NcError& e)
+    {
+        EXPECT_TRUE(std::string(e.what()).contains(std::string("more than four bones")));
+        threwNcError = true;
+    }
+    
+    EXPECT_TRUE(threwNcError);
+}
+
+TEST(GeometryConverterTest, GetBoneWeights_WeightsNotEqual100_ImportFails)
+{
+    namespace test_data = collateral::four_bones_neq100_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    auto threwNcError = false;
+    try
+    {
+        uut.ImportMesh(test_data::filePath);
+    }
+    catch(const nc::NcError& e)
+    {
+        EXPECT_TRUE(std::string(e.what()).contains(std::string("affecting each vertex must equal 1")));
+        threwNcError = true;
+    }
+    
+    EXPECT_TRUE(threwNcError);
 }
 }

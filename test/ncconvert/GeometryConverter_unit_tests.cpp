@@ -104,8 +104,6 @@ TEST(GeometryConverterTest, GetBoneWeights_SingleBone_1WeightAllVertices)
     auto uut = nc::convert::GeometryConverter{};
     const auto actual = uut.ImportMesh(test_data::filePath);
 
-    util::PrintBones(test_data::filePath);
-
     for (const auto& vertex : actual.vertices)
     {
         EXPECT_EQ(vertex.boneIds[0], 0);
@@ -125,7 +123,24 @@ TEST(GeometryConverterTest, GetBoneWeights_FourBones_QuarterWeightAllVertices)
     auto uut = nc::convert::GeometryConverter{};
     const auto actual = uut.ImportMesh(test_data::filePath);
 
-    util::PrintBones(test_data::filePath);
+    for (const auto& vertex : actual.vertices)
+    {
+        EXPECT_EQ(vertex.boneIds[0], 0);
+        EXPECT_EQ(vertex.boneIds[1], 1);
+        EXPECT_EQ(vertex.boneIds[2], 2);
+        EXPECT_EQ(vertex.boneIds[3], 3);
+        EXPECT_EQ(vertex.boneWeights.x, 0.25);
+        EXPECT_EQ(vertex.boneWeights.y, 0.25);
+        EXPECT_EQ(vertex.boneWeights.z, 0.25);
+        EXPECT_EQ(vertex.boneWeights.w, 0.25);
+    }
+}
+
+TEST(GeometryConverterTest, GetBoneWeights_FiveBonesPerVertex_ImportFails)
+{
+    namespace test_data = collateral::four_bone_four_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
 
     for (const auto& vertex : actual.vertices)
     {

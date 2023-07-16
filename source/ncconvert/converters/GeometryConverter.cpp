@@ -148,20 +148,32 @@ auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVer
     const auto nVertices = mesh->mNumVertices;
     out.reserve(nVertices);
 
-    const auto perVertexBones = GetBoneWeights(mesh);
+    if (mesh->HasBones())
+    {
+        const auto perVertexBones = GetBoneWeights(mesh);
+        for (auto i = 0u; i < nVertices; ++i)
+        {
+            const auto uv = mesh->mTextureCoords[0][i];
+            auto boneWeights = nc::Vector4(perVertexBones.at(i).boneWeights[0],
+                                        perVertexBones.at(i).boneWeights[1],
+                                        perVertexBones.at(i).boneWeights[2],
+                                        perVertexBones.at(i).boneWeights[3]);
+            out.emplace_back(
+                ToVector3(mesh->mVertices[i]), ToVector3(mesh->mNormals[i]), nc::Vector2{uv.x, uv.y},
+                ToVector3(mesh->mTangents[i]), ToVector3(mesh->mBitangents[i]), boneWeights, perVertexBones.at(i).boneIds
+            );
+        }
+        return out;
+    }
+
     for (auto i = 0u; i < nVertices; ++i)
     {
         const auto uv = mesh->mTextureCoords[0][i];
-        auto boneWeights = nc::Vector4(perVertexBones.at(i).boneWeights[0],
-                                       perVertexBones.at(i).boneWeights[1],
-                                       perVertexBones.at(i).boneWeights[2],
-                                       perVertexBones.at(i).boneWeights[3]);
         out.emplace_back(
             ToVector3(mesh->mVertices[i]), ToVector3(mesh->mNormals[i]), nc::Vector2{uv.x, uv.y},
-            ToVector3(mesh->mTangents[i]), ToVector3(mesh->mBitangents[i]), boneWeights, perVertexBones.at(i).boneIds
+            ToVector3(mesh->mTangents[i]), ToVector3(mesh->mBitangents[i]), nc::Vector4{-1, -1, -1, -1}, std::array<uint32_t, 4>{UINT32_MAX, UINT32_MAX, UINT32_MAX, UINT32_MAX}
         );
     }
-
     return out;
 }
 } // anonymous namespace

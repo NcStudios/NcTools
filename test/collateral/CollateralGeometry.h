@@ -40,12 +40,17 @@ constexpr auto meshVertexExtents = nc::Vector3::One();
 const auto furthestDistanceFromOrigin = std::sqrt(0.75f);
 } // namespace cube_fbx
 
-// Describes the collateral file single_bone_100_weights.fbx
-namespace single_bone_100_weights_fbx
+// Describes the collateral file single_bone_four_vertex.fbx
+namespace single_bone_four_vertex_fbx
 {
-const auto filePath = collateralDirectory / "single_bone_100_weights.fbx";
+const auto filePath = collateralDirectory / "single_bone_four_vertex.fbx";
+} // namespace single_bone_four_vertex_fbx
 
-} // namespace cube_fbx
+// Describes the collateral file four_bone_four_vertex.fbx
+namespace four_bone_four_vertex_fbx
+{
+const auto filePath = collateralDirectory / "four_bone_four_vertex.fbx";
+} // namespace four_bone_four_vertex_fbx
 
 // Describes the collateral file plane.fbx
 namespace plane_fbx

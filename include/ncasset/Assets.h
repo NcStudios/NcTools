@@ -68,17 +68,20 @@ struct Mesh
 
 struct PerVertexBones
 {
-    std::array<float, 4> boneWeights;
+    std::array<float, 4> boneWeights {-1, -1, -1, -1};
     std::array<uint32_t, 4> boneIds;
+    std::array<std::string, 4> boneNames;
     
-    void Add(uint32_t id, float weight)
+    void Add(uint32_t id, float weight, std::string name)
     {
         for (auto i = 0u; i < boneIds.size(); i++)
         {
-            if (boneWeights[i] == 0.0)
+            if (boneWeights[i] == -1)
             {
                 boneIds[i] = id;
                 boneWeights[i] = weight;
+                boneNames[i] = name;
+                return;
             }
         }
     }

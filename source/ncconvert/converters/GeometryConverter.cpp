@@ -118,21 +118,23 @@ auto ConvertToTriangles(std::span<const aiFace> faces, std::span<const aiVector3
     return out;
 }
 
-auto GetBoneWeights(const aiMesh* mesh) -> std::vector<nc::asset::PerVertexBones>
+auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asset::PerVertexBones>
 {
-    auto bones = std::vector<nc::asset::PerVertexBones>();
-    bones.resize(mesh->mNumVertices);
+    auto vertexBones = std::unordered_map<uint32_t, nc::asset::PerVertexBones>();
 
+    // Iterate through all the bones in the mesh
     for (auto i = 0u; i < mesh->mNumBones; i++)
     {
         auto* currentBone = mesh->mBones[i];
+        
+        // Iterate through all the weights each bone has
         for (auto j = 0u; j < currentBone->mNumWeights; j++)
         {
             auto vertexId = currentBone->mWeights[j].mVertexId;
-            bones[vertexId].Add(i, static_cast<float>(currentBone->mWeights[j].mWeight));
+            vertexBones[vertexId].Add(i, static_cast<float>(currentBone->mWeights[j].mWeight), std::string(currentBone->mName.C_Str()));
         }
     }
-    return bones;
+    return vertexBones;
 }
 
 auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVertex>
@@ -150,13 +152,13 @@ auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVer
     for (auto i = 0u; i < nVertices; ++i)
     {
         const auto uv = mesh->mTextureCoords[0][i];
-        auto boneWeights = nc::Vector4(perVertexBones[i].boneWeights[0],
-                                       perVertexBones[i].boneWeights[1],
-                                       perVertexBones[i].boneWeights[2],
-                                       perVertexBones[i].boneWeights[3]);
+        auto boneWeights = nc::Vector4(perVertexBones.at(i).boneWeights[0],
+                                       perVertexBones.at(i).boneWeights[1],
+                                       perVertexBones.at(i).boneWeights[2],
+                                       perVertexBones.at(i).boneWeights[3]);
         out.emplace_back(
             ToVector3(mesh->mVertices[i]), ToVector3(mesh->mNormals[i]), nc::Vector2{uv.x, uv.y},
-            ToVector3(mesh->mTangents[i]), ToVector3(mesh->mBitangents[i]), boneWeights, perVertexBones[i].boneIds
+            ToVector3(mesh->mTangents[i]), ToVector3(mesh->mBitangents[i]), boneWeights, perVertexBones.at(i).boneIds
         );
     }
 

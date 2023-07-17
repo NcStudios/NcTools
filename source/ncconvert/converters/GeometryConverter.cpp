@@ -120,38 +120,57 @@ auto ConvertToTriangles(std::span<const aiFace> faces, std::span<const aiVector3
 
 auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asset::PerVertexBones>
 {
-    auto vertexBones = std::unordered_map<uint32_t, nc::asset::PerVertexBones>();
+    auto out = std::unordered_map<uint32_t, nc::asset::PerVertexBones>();
 
     // Iterate through all the bones in the mesh
     for (auto i = 0u; i < mesh->mNumBones; i++)
     {
         auto* currentBone = mesh->mBones[i];
         
-        // Iterate through all the weights each bone has
+        // Iterate through all the vertex weights each bone has
         for (auto j = 0u; j < currentBone->mNumWeights; j++)
         {
             auto vertexId = currentBone->mWeights[j].mVertexId;
-            if (vertexBones[vertexId].boneWeights[3] != -1)
+            if (out[vertexId].boneWeights[3] != -1)
             {
                 throw nc::NcError("Cannot import a mesh with more than four bones influencing any single vertex.");
             }
 
-            vertexBones[vertexId].Add(i, static_cast<float>(currentBone->mWeights[j].mWeight));
+            // Create a mapping from vertex to collection of bone weights and IDs
+            out[vertexId].Add(i, static_cast<float>(currentBone->mWeights[j].mWeight));
 
-            if (vertexBones[vertexId].boneWeights[3] != -1)
+            if (out[vertexId].boneWeights[3] != -1)
             {
-                if (vertexBones[vertexId].boneWeights[0] +
-                    vertexBones[vertexId].boneWeights[1] + 
-                    vertexBones[vertexId].boneWeights[2] + 
-                    vertexBones[vertexId].boneWeights[3] != 1)
+                if (out[vertexId].boneWeights[0] +
+                    out[vertexId].boneWeights[1] + 
+                    out[vertexId].boneWeights[2] + 
+                    out[vertexId].boneWeights[3] != 1)
                 {
                     throw nc::NcError("The sum of bone weights affecting each vertex must equal 1.");
                 }
             }
         }
     }
+    return out;
+}
 
-    return vertexBones;
+auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
+{
+    auto out = nc::asset::BonesData{};
+    auto numBones = 0u;
+
+    for (auto i = 0u; i < mesh->mNumBones; i++)
+    {
+        auto boneIndex = 0u;
+        auto* currentBone = mesh->mBones[i];
+        auto boneName = std::string(currentBone->mName.data);
+
+        if (out.boneNamesToIds.find(boneName) == out.boneNamesToIds.end())
+        {
+            boneIndex = numBones++;
+            out.boneTransforms.push_back(DirectX::XMMATRIX());
+        }
+    }
 }
 
 auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVertex>

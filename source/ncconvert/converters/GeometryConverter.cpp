@@ -22,7 +22,7 @@ constexpr auto hullColliderFlags = concaveColliderFlags | aiProcess_JoinIdentica
 constexpr auto meshFlags = hullColliderFlags | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
 const auto supportedFileExtensions = std::array<std::string, 2> {".fbx", ".obj"};
 
-auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiMesh*
+auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiScene*
 {
     if (!nc::convert::ValidateInputFileExtension(path, supportedFileExtensions))
     {
@@ -56,7 +56,7 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
         throw nc::NcError("No vertices found for: ", path.string());
     }
 
-    return scene->mMeshes[0];
+    return scene;
 }
 
 auto ToVector3(const aiVector3D& in) -> nc::Vector3
@@ -154,10 +154,12 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
     return out;
 }
 
-auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
+
+
+auto GetBonesData(const aiMesh* mesh, const aiNode* ) -> nc::asset::BonesData
 {
     auto out = nc::asset::BonesData{};
-    auto numBones = 0u;
+    out.boneTransforms.reserve(mesh->mNumBones);
 
     for (auto i = 0u; i < mesh->mNumBones; i++)
     {
@@ -167,10 +169,28 @@ auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::Bone
 
         if (out.boneNamesToIds.find(boneName) == out.boneNamesToIds.end())
         {
-            boneIndex = numBones++;
-            out.boneTransforms.push_back(DirectX::XMMATRIX());
+            boneIndex = i;
         }
+        else
+        {
+            boneIndex = out.boneNamesToIds[boneName];
+        }
+
+        out.boneNamesToIds[boneName] = boneIndex;
+
+        auto& offsetMatrix = currentBone->mOffsetMatrix;
+        out.boneTransforms[boneIndex] = DirectX::XMMATRIX
+        {
+            offsetMatrix.a1, offsetMatrix.a2, offsetMatrix.a3, offsetMatrix.a4,
+            offsetMatrix.b1, offsetMatrix.b2, offsetMatrix.b3, offsetMatrix.b4,
+            offsetMatrix.c1, offsetMatrix.c2, offsetMatrix.c3, offsetMatrix.c4,
+            offsetMatrix.d1, offsetMatrix.d2, offsetMatrix.d3, offsetMatrix.d4
+        };
+
+        // Populate Body Space Tree
     }
+
+    return out;
 }
 
 auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVertex>
@@ -221,7 +241,7 @@ class GeometryConverter::impl
     public:
         auto ImportConcaveCollider(const std::filesystem::path& path) -> asset::ConcaveCollider
         {
-            const auto mesh = ::ReadFbx(path, &m_importer, concaveColliderFlags);
+            const auto mesh = ::ReadFbx(path, &m_importer, concaveColliderFlags)->mMeshes[0];
             auto triangles = ::ConvertToTriangles(::ViewFaces(mesh), ::ViewVertices(mesh));
             if(auto count = Sanitize(triangles))
             {
@@ -237,7 +257,7 @@ class GeometryConverter::impl
 
         auto ImportHullCollider(const std::filesystem::path& path) -> asset::HullCollider
         {
-            const auto mesh = ::ReadFbx(path, &m_importer, hullColliderFlags);
+            const auto mesh = ::ReadFbx(path, &m_importer, hullColliderFlags)->mMeshes[0];
             auto convertedVertices = ::ConvertToVertices(::ViewVertices(mesh));
             if(auto count = Sanitize(convertedVertices))
             {
@@ -253,8 +273,8 @@ class GeometryConverter::impl
 
         auto ImportMesh(const std::filesystem::path& path) -> asset::Mesh
         {
-            const auto mesh = ::ReadFbx(path, &m_importer, meshFlags);
-            auto convertedVertices = ::ConvertToMeshVertices(mesh);
+            const auto scene = ::ReadFbx(path, &m_importer, meshFlags);
+            auto convertedVertices = ::ConvertToMeshVertices(scene->mMeshes[0]);
             if(auto count = Sanitize(convertedVertices))
             {
                 LOG("Warning: Bad values detected in mesh. {} values have been set to 0.", count);
@@ -264,8 +284,8 @@ class GeometryConverter::impl
                 GetMeshVertexExtents(convertedVertices),
                 FindFurthestDistanceFromOrigin(convertedVertices),
                 std::move(convertedVertices),
-                ::ConvertToIndices(::ViewFaces(mesh)),
-                nc::asset::BonesData()
+                ::ConvertToIndices(::ViewFaces(scene->mMeshes[0])),
+                GetBonesData(scene->mMeshes[0], scene->mRootNode)
             };
         }
 

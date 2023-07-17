@@ -4,12 +4,14 @@
 
 #include "analysis/GeometryAnalysis.h"
 #include "converters/GeometryConverter.h"
+#include "DirectXMath.h"
 #include "ncasset/Assets.h"
 #include "ncutility/NcError.h"
 
 #include <algorithm>
-#include <iostream>
 #include <array>
+#include <iostream>
+#include <string>
 
 namespace util
 {
@@ -37,6 +39,38 @@ void PrintBones(const std::filesystem::path& filePath)
         std::cout << std::endl;
     }
 }
+
+void PrintMatrix(const DirectX::XMMATRIX& matrix)
+{
+   DirectX::XMFLOAT4X4 view;
+   XMStoreFloat4x4(&view, matrix);
+
+   float a1 = view._11;
+   float a2 = view._12;
+   float a3 = view._13;
+   float a4 = view._14;
+
+   float b1 = view._21;
+   float b2 = view._22;
+   float b3 = view._23;
+   float b4 = view._24;
+
+   float c1 = view._31;
+   float c2 = view._32;
+   float c3 = view._33;
+   float c4 = view._34;
+
+   float d1 = view._41;
+   float d2 = view._42;
+   float d3 = view._43;
+   float d4 = view._44;
+
+   std::cout << "(" << a1 << ", " << a2 << ", " << a3 << ", " << a4 << std::endl;
+   std::cout << b1 << ", " << b2 << ", " << b3 << ", " << b4 << std::endl;
+   std::cout << c1 << ", " << c2 << ", " << c3 << ", " << c4 << std::endl;
+   std::cout << d1 << ", " << d2 << ", " << d3 << ", " << d4 << ")" << std::endl;
+}
+
 
 TEST(GeometryConverterTest, ImportConcaveCollider_convertsToNca)
 {
@@ -99,6 +133,17 @@ TEST(GeometryConverterTest, ImportedMesh_convertsToNca)
     EXPECT_TRUE(std::ranges::all_of(actual.indices, [&nVertices](auto i){ return i < nVertices; }));
 }
 
+TEST(GeometryConverterTest, GetBonesData_Offset)
+{
+    namespace test_data = collateral::four_bone_four_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
+
+    PrintMatrix(actual.bonesData.value().boneTransforms[0]);
+
+    EXPECT_TRUE(actual.bonesData.has_value());
+}
+
 TEST(GeometryConverterTest, GetBoneWeights_SingleBone_1WeightAllVertices)
 {
     namespace test_data = collateral::single_bone_four_vertex_fbx;
@@ -148,7 +193,7 @@ TEST(GeometryConverterTest, GetBoneWeights_FiveBonesPerVertex_ImportFails)
     }
     catch(const nc::NcError& e)
     {
-        EXPECT_TRUE(std::string(e.what()).contains(std::string("more than four bones")));
+        EXPECT_TRUE(std::string(e.what()).find(std::string("more than four bones")));
         threwNcError = true;
     }
     
@@ -166,10 +211,11 @@ TEST(GeometryConverterTest, GetBoneWeights_WeightsNotEqual100_ImportFails)
     }
     catch(const nc::NcError& e)
     {
-        EXPECT_TRUE(std::string(e.what()).contains(std::string("affecting each vertex must equal 1")));
+        EXPECT_TRUE(std::string(e.what()).find(std::string("affecting each vertex must equal 1")));
         threwNcError = true;
     }
     
     EXPECT_TRUE(threwNcError);
 }
+
 }

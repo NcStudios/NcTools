@@ -208,9 +208,9 @@ auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::Bone
             offsetMatrix.c1, offsetMatrix.c2, offsetMatrix.c3, offsetMatrix.c4,
             offsetMatrix.d1, offsetMatrix.d2, offsetMatrix.d3, offsetMatrix.d4
         };
-
-        PopulateBodySpaceTree(&out.bodySpaceOffsetTree, rootNode, nullptr);
     }
+
+    PopulateBodySpaceTree(&out.bodySpaceOffsetTree, rootNode, nullptr);
     return out;
 }
 

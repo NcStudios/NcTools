@@ -71,19 +71,27 @@ void PrintMatrix(const DirectX::XMMATRIX& matrix)
    std::cout << d1 << ", " << d2 << ", " << d3 << ", " << d4 << ")" << std::endl;
 }
 
-void PrintTree(nc::asset::BodySpaceNode* parentNode)
+void PrintTree(nc::asset::BodySpaceNode* parentNode, uint32_t numGenerations)
 {
     if (!parentNode)
     {
         return;
     }
 
-    std::cout << parentNode->boneName << std:: endl;
-    std::cout << "    ";
+    std::cout << parentNode->boneName << ", Children: " << parentNode->children.size() << std:: endl;
+
+    if (parentNode->children.size() > 0)
+    {
+        numGenerations++;
+    }
+    for (auto i = 0u; i < numGenerations; i++)
+    {
+        std::cout << "    ";
+    }
 
     for (auto& child : parentNode->children)
     {
-        PrintTree(&child);
+        PrintTree(&child, numGenerations);
     }
 }
 }
@@ -275,10 +283,10 @@ TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
 
 TEST(GeometryConverterTest, GetBonesData_PrintTree)
 {
-    namespace test_data = collateral::four_bone_four_vertex_fbx;
+    namespace test_data = collateral::single_bone_four_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
     const auto actual = uut.ImportMesh(test_data::filePath);
 
     auto bonesData = actual.bonesData.value();
-    util::PrintTree(&bonesData.bodySpaceOffsetTree);
+    util::PrintTree(&bonesData.bodySpaceOffsetTree, 0u);
 }

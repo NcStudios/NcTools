@@ -111,7 +111,29 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
         },
         .bonesData = nc::asset::BonesData
         {
-            
+            .bodySpaceOffsetTree = nc::asset::BodySpaceNode
+                {
+                    .boneName = std::string("Bone0"),
+                    .children = std::vector<nc::asset::BodySpaceNode>(),
+                    .localSpace = DirectX::XMMATRIX{
+                        1, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0,
+                        0, 0, 0, 1
+                    },
+                    .parent = nullptr
+                },
+            .boneNamesToIds = std::unordered_map<std::string, uint32_t>{{"Bone0", 0}}, 
+            .boneTransforms = std::vector<DirectX::XMMATRIX>
+            {
+                DirectX::XMMATRIX
+                {
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                }
+            }
         }
     };
 

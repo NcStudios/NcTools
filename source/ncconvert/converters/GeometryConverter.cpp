@@ -156,7 +156,7 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
 
 void PopulateBodySpaceTree(nc::asset::BodySpaceNode* bodySpaceNode, const aiNode* inputNode, nc::asset::BodySpaceNode* parent)
 {
-    if (!inputNode || !bodySpaceNode)
+    if (!inputNode)
     {
         return;
     }
@@ -175,7 +175,7 @@ void PopulateBodySpaceTree(nc::asset::BodySpaceNode* bodySpaceNode, const aiNode
     for (auto i = 0u; i < inputNode->mNumChildren; i++)
     {
         bodySpaceNode->children.emplace_back();
-        PopulateBodySpaceTree(bodySpaceNode->children.back(), inputNode->mChildren[i], bodySpaceNode);
+        PopulateBodySpaceTree(&(bodySpaceNode->children.back()), inputNode->mChildren[i], bodySpaceNode);
     }
 }
 
@@ -209,7 +209,7 @@ auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::Bone
             offsetMatrix.d1, offsetMatrix.d2, offsetMatrix.d3, offsetMatrix.d4
         };
 
-        PopulateBodySpaceTree(out.bodySpaceOffsetTree, rootNode, nullptr);
+        PopulateBodySpaceTree(&out.bodySpaceOffsetTree, rootNode, nullptr);
     }
     return out;
 }

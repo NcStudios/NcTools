@@ -23,14 +23,14 @@ struct BodySpaceNode
     std::string boneName;
     DirectX::XMMATRIX localSpace;
     BodySpaceNode* parent;
-    std::vector<BodySpaceNode*> children;
+    std::vector<BodySpaceNode> children;
 };
 
 struct BonesData
 {
     std::unordered_map<std::string, uint32_t> boneNamesToIds;
     std::vector<DirectX::XMMATRIX> boneTransforms;
-    BodySpaceNode* bodySpaceOffsetTree;
+    BodySpaceNode bodySpaceOffsetTree;
 };
 
 struct HullCollider

@@ -71,6 +71,23 @@ void PrintMatrix(const DirectX::XMMATRIX& matrix)
    std::cout << d1 << ", " << d2 << ", " << d3 << ", " << d4 << ")" << std::endl;
 }
 
+void PrintTree(nc::asset::BodySpaceNode* parentNode)
+{
+    if (!parentNode)
+    {
+        return;
+    }
+
+    std::cout << parentNode->boneName << std:: endl;
+    std::cout << "    ";
+
+    for (auto& child : parentNode->children)
+    {
+        PrintTree(&child);
+    }
+}
+}
+
 TEST(GeometryConverterTest, ImportConcaveCollider_convertsToNca)
 {
     namespace test_data = collateral::plane_fbx;
@@ -255,4 +272,13 @@ TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
     EXPECT_EQ(d3, 0);
     EXPECT_EQ(d4, 1);
 }
+
+TEST(GeometryConverterTest, GetBonesData_PrintTree)
+{
+    namespace test_data = collateral::four_bone_four_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
+
+    auto bonesData = actual.bonesData.value();
+    util::PrintTree(&bonesData.bodySpaceOffsetTree);
 }

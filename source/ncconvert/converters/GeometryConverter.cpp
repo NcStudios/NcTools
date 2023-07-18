@@ -154,9 +154,32 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
     return out;
 }
 
+void PopulateBodySpaceTree(nc::asset::BodySpaceNode* bodySpaceNode, const aiNode* inputNode, nc::asset::BodySpaceNode* parent)
+{
+    if (!inputNode || !bodySpaceNode)
+    {
+        return;
+    }
 
+    bodySpaceNode->boneName = std::string(inputNode->mName.data);
+    auto& inputMatrix = inputNode->mTransformation;
+    bodySpaceNode->localSpace = DirectX::XMMATRIX
+    {
+        inputMatrix.a1, inputMatrix.a2, inputMatrix.a3, inputMatrix.a4,
+        inputMatrix.b1, inputMatrix.b2, inputMatrix.b3, inputMatrix.b4,
+        inputMatrix.c1, inputMatrix.c2, inputMatrix.c3, inputMatrix.c4,
+        inputMatrix.d1, inputMatrix.d2, inputMatrix.d3, inputMatrix.d4
+    };
+    bodySpaceNode->parent = parent;
 
-auto GetBonesData(const aiMesh* mesh, const aiNode* ) -> nc::asset::BonesData
+    for (auto i = 0u; i < inputNode->mNumChildren; i++)
+    {
+        bodySpaceNode->children.emplace_back();
+        PopulateBodySpaceTree(bodySpaceNode->children.back(), inputNode->mChildren[i], bodySpaceNode);
+    }
+}
+
+auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
 {
     auto out = nc::asset::BonesData{};
     out.boneTransforms.reserve(mesh->mNumBones);
@@ -177,7 +200,6 @@ auto GetBonesData(const aiMesh* mesh, const aiNode* ) -> nc::asset::BonesData
         }
 
         out.boneNamesToIds[boneName] = boneIndex;
-
         auto& offsetMatrix = currentBone->mOffsetMatrix;
         out.boneTransforms[boneIndex] = DirectX::XMMATRIX
         {
@@ -187,9 +209,8 @@ auto GetBonesData(const aiMesh* mesh, const aiNode* ) -> nc::asset::BonesData
             offsetMatrix.d1, offsetMatrix.d2, offsetMatrix.d3, offsetMatrix.d4
         };
 
-        // Populate Body Space Tree
+        PopulateBodySpaceTree(out.bodySpaceOffsetTree, rootNode, nullptr);
     }
-
     return out;
 }
 

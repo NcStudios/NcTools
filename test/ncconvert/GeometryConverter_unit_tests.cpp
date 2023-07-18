@@ -71,7 +71,6 @@ void PrintMatrix(const DirectX::XMMATRIX& matrix)
    std::cout << d1 << ", " << d2 << ", " << d3 << ", " << d4 << ")" << std::endl;
 }
 
-
 TEST(GeometryConverterTest, ImportConcaveCollider_convertsToNca)
 {
     namespace test_data = collateral::plane_fbx;
@@ -131,17 +130,6 @@ TEST(GeometryConverterTest, ImportedMesh_convertsToNca)
 
     const auto nVertices = actual.vertices.size();
     EXPECT_TRUE(std::ranges::all_of(actual.indices, [&nVertices](auto i){ return i < nVertices; }));
-}
-
-TEST(GeometryConverterTest, GetBonesData_Offset)
-{
-    namespace test_data = collateral::four_bone_four_vertex_fbx;
-    auto uut = nc::convert::GeometryConverter{};
-    const auto actual = uut.ImportMesh(test_data::filePath);
-
-    PrintMatrix(actual.bonesData.value().boneTransforms[0]);
-
-    EXPECT_TRUE(actual.bonesData.has_value());
 }
 
 TEST(GeometryConverterTest, GetBoneWeights_SingleBone_1WeightAllVertices)
@@ -218,4 +206,53 @@ TEST(GeometryConverterTest, GetBoneWeights_WeightsNotEqual100_ImportFails)
     EXPECT_TRUE(threwNcError);
 }
 
+TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
+{
+    namespace test_data = collateral::single_bone_four_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
+
+    DirectX::XMFLOAT4X4 view;
+    XMStoreFloat4x4(&view, actual.bonesData.value().boneTransforms[0]);
+ 
+    float a1 = view._11;
+    float a2 = view._12;
+    float a3 = view._13;
+    float a4 = view._14;
+ 
+    float b1 = view._21;
+    float b2 = view._22;
+    float b3 = view._23;
+    float b4 = view._24;
+ 
+    float c1 = view._31;
+    float c2 = view._32;
+    float c3 = view._33;
+    float c4 = view._34;
+ 
+    float d1 = view._41;
+    float d2 = view._42;
+    float d3 = view._43;
+    float d4 = view._44;
+ 
+    EXPECT_EQ(a1, 1);
+    EXPECT_EQ(a2, 0);
+    EXPECT_EQ(a3, 0);
+    EXPECT_EQ(a4, 0);
+     
+    EXPECT_EQ(b1, 0);
+    EXPECT_EQ(b2, 0);
+    EXPECT_EQ(b3, -1);
+    EXPECT_EQ(b4, 0);
+
+    EXPECT_EQ(c1, 0);
+    EXPECT_EQ(c2, 1);
+    EXPECT_EQ(c3, 0);
+    EXPECT_EQ(c4, 0);
+    
+    EXPECT_EQ(d1, 0);
+    EXPECT_EQ(d2, 0);
+    EXPECT_EQ(d3, 0);
+    EXPECT_EQ(d4, 1);
+}
 }

@@ -79,6 +79,10 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
     ::Write(stream, data.indices.size());
     ::Write(stream, data.vertices.data(), data.vertices.size() * sizeof(asset::MeshVertex));
     ::Write(stream, data.indices.data(), data.indices.size() * sizeof(uint32_t));
+    if (data.bonesData.has_value())
+    {
+        ::Write(stream, data.bonesData.value());
+    }
 }
 
 void Serialize(std::ostream& stream, const asset::Texture& data, size_t assetId)

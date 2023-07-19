@@ -91,39 +91,33 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
         .maxExtent = 10.010101f,
         .vertices = std::vector<nc::asset::MeshVertex>{
             nc::asset::MeshVertex{nc::Vector3::Splat(0.0f),
-                              nc::Vector3::Splat(1.0f),
-                              nc::Vector2::Splat(2.0f),
-                              nc::Vector3::Splat(3.0f),
-                              nc::Vector3::Splat(4.0f)},
-            nc::asset::MeshVertex{nc::Vector3::Splat(5.0f),
-                              nc::Vector3::Splat(6.0f),
-                              nc::Vector2::Splat(7.0f),
-                              nc::Vector3::Splat(9.0f),
-                              nc::Vector3::Splat(9.0f)},
-            nc::asset::MeshVertex{nc::Vector3::Splat(10.0f),
-                              nc::Vector3::Splat(11.0f),
-                              nc::Vector2::Splat(12.0f),
-                              nc::Vector3::Splat(13.0f),
-                              nc::Vector3::Splat(14.0f)}
+                                  nc::Vector3::Splat(1.0f),
+                                  nc::Vector2::Splat(2.0f),
+                                  nc::Vector3::Splat(3.0f),
+                                  nc::Vector3::Splat(4.0f),
+                                  nc::Vector4::Splat(5.0f),
+                                  std::array<uint32_t, 4>{6, 6, 6, 6}},
+            nc::asset::MeshVertex{nc::Vector3::Splat(7.0f),
+                                  nc::Vector3::Splat(8.0f),
+                                  nc::Vector2::Splat(9.0f),
+                                  nc::Vector3::Splat(10.0f),
+                                  nc::Vector3::Splat(11.0f),
+                                  nc::Vector4::Splat(12.0f),
+                                  std::array<uint32_t, 4>{13, 13, 13, 13}},
+            nc::asset::MeshVertex{nc::Vector3::Splat(14.0f),
+                                  nc::Vector3::Splat(15.0f),
+                                  nc::Vector2::Splat(16.0f),
+                                  nc::Vector3::Splat(17.0f),
+                                  nc::Vector3::Splat(18.0f),
+                                  nc::Vector4::Splat(19.0f),
+                                  std::array<uint32_t, 4>{20, 20, 20, 20}}
         },
         .indices = std::vector<uint32_t>{
             0, 1, 2,  1, 2, 0,  2, 0, 1
         },
         .bonesData = nc::asset::BonesData
         {
-            .bodySpaceOffsetTree = nc::asset::BodySpaceNode
-                {
-                    .boneName = std::string("Bone0"),
-                    .children = std::vector<nc::asset::BodySpaceNode>(),
-                    .localSpace = DirectX::XMMATRIX{
-                        1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 0, 1
-                    },
-                    .parent = nullptr
-                },
-            .boneNamesToIds = std::unordered_map<std::string, uint32_t>{{"Bone0", 0}}, 
+            .boneNamesToIds = std::unordered_map<std::string, uint32_t>{{std::string("Bone0"), 0}},
             .boneTransforms = std::vector<DirectX::XMMATRIX>
             {
                 DirectX::XMMATRIX
@@ -133,6 +127,19 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                     0, 0, 1, 0,
                     0, 0, 0, 1
                 }
+            },
+            .bodySpaceOffsetTree = nc::asset::BodySpaceNode
+            {
+                .boneName = std::string("Bone0"),
+                .localSpace = DirectX::XMMATRIX
+                {
+                    1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1
+                },
+                .parent = nullptr,
+                .children = std::vector<nc::asset::BodySpaceNode>{}
             }
         }
     };
@@ -161,6 +168,10 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
     EXPECT_TRUE(std::equal(expectedAsset.indices.cbegin(),
                            expectedAsset.indices.cend(),
                            actualAsset.indices.cbegin()));
+
+    EXPECT_EQ(expectedAsset.bonesData.has_value(), actualAsset.bonesData.has_value());
+    EXPECT_EQ(expectedAsset.bonesData.value().bodySpaceOffsetTree.children.size(), 
+              actualAsset.bonesData.value().bodySpaceOffsetTree.children.size());
 }
 
 TEST(SerializationTest, Texture_roundTrip_succeeds)

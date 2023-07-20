@@ -81,7 +81,13 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
     ::Write(stream, data.indices.data(), data.indices.size() * sizeof(uint32_t));
     if (data.bonesData.has_value())
     {
-        ::Write(stream, data.bonesData.value());
+        ::Write(stream, true);
+        ::Write(stream, data.bonesData.value().boneTransforms.data(), data.bonesData.value().boneTransforms.size() * sizeof(DirectX::XMMATRIX));
+        ::Write(stream, data.bonesData.value().boneNamesToIds., );
+    }
+    else
+    {
+        ::Write(stream, false);
     }
 }
 

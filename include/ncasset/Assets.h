@@ -31,6 +31,7 @@ struct BonesData
     std::unordered_map<std::string, uint32_t> boneNamesToIds;
     std::vector<DirectX::XMMATRIX> boneTransforms;
     BodySpaceNode bodySpaceOffsetTree;
+    uint32_t bodySpaceOffsetTreeSize;
 };
 
 struct HullCollider

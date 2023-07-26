@@ -140,7 +140,8 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                 },
                 .parent = nullptr,
                 .children = std::vector<nc::asset::BodySpaceNode>{}
-            }
+            },
+            .bodySpaceOffsetTreeSize = 1
         }
     };
 

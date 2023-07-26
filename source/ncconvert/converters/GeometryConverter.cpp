@@ -154,13 +154,14 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
     return out;
 }
 
-void PopulateBodySpaceTree(nc::asset::BodySpaceNode* bodySpaceNode, const aiNode* inputNode, nc::asset::BodySpaceNode* parent)
+void PopulateBodySpaceTree(nc::asset::BodySpaceNode* bodySpaceNode, const aiNode* inputNode, nc::asset::BodySpaceNode* parent, uint32_t* size)
 {
     if (!inputNode)
     {
         return;
     }
 
+    size++;
     bodySpaceNode->boneName = std::string(inputNode->mName.data);
     auto& inputMatrix = inputNode->mTransformation;
     bodySpaceNode->localSpace = DirectX::XMMATRIX
@@ -175,7 +176,7 @@ void PopulateBodySpaceTree(nc::asset::BodySpaceNode* bodySpaceNode, const aiNode
     for (auto i = 0u; i < inputNode->mNumChildren; i++)
     {
         bodySpaceNode->children.emplace_back();
-        PopulateBodySpaceTree(&(bodySpaceNode->children.back()), inputNode->mChildren[i], bodySpaceNode);
+        PopulateBodySpaceTree(&(bodySpaceNode->children.back()), inputNode->mChildren[i], bodySpaceNode, size);
     }
 }
 
@@ -210,7 +211,7 @@ auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::Bone
         };
     }
 
-    PopulateBodySpaceTree(&out.bodySpaceOffsetTree, rootNode, nullptr);
+    PopulateBodySpaceTree(&out.bodySpaceOffsetTree, rootNode, nullptr, &out.bodySpaceOffsetTreeSize);
     return out;
 }
 

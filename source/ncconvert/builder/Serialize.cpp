@@ -1,5 +1,5 @@
 #include "Serialize.h"
-#include "builder/BonesSerializer.h"
+#include "builder/BonesWriter.h"
 #include "utility/BlobSize.h"
 #include "ncasset/Assets.h"
 #include "ncasset/NcaHeader.h"

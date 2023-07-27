@@ -1,5 +1,6 @@
 #include "Deserialize.h"
-#include "ncconvert/builder/BonesSerializer.h"
+#include "BonesReader.h"
+#include "DirectXMath.h"
 #include "RawNcaBuffer.h"
 #include "ncasset/Assets.h"
 
@@ -152,8 +153,8 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
         bytes.Read(&bodySpaceTreeSize);
         auto bonesData = BonesData{};
         bonesData.boneNamesToIds.reserve(bonesCount);
-        nc::convert::Read(bytes, &bonesData.boneNamesToIds, bonesCount);
-        bytes.Read(&bonesData.boneTransforms.data(), bonesCount * sizeof(DirectX::XMMATRIX));
+        Read(bytes, &bonesData.boneNamesToIds, bonesCount);
+        bytes.Read(bonesData.boneTransforms.data(), bonesCount * sizeof(DirectX::XMMATRIX));
     }
 
     if (bytes.RemainingByteCount() != 0)

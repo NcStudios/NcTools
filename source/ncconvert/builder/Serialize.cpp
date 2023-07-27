@@ -1,6 +1,6 @@
 #include "Serialize.h"
+#include "builder/BonesSerializer.h"
 #include "utility/BlobSize.h"
-
 #include "ncasset/Assets.h"
 #include "ncasset/NcaHeader.h"
 
@@ -77,18 +77,17 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
     ::Write(stream, data.maxExtent);
     ::Write(stream, data.vertices.size());
     ::Write(stream, data.indices.size());
+    ::Write(stream, data.vertices.data(), data.vertices.size() * sizeof(asset::MeshVertex));
+    ::Write(stream, data.indices.data(), data.indices.size() * sizeof(uint32_t));
     ::Write(stream, data.bonesData.has_value());
     if (data.bonesData.has_value())
     {
         const auto& bonesData = data.bonesData.value();
-        ::Write(stream, bonesData.bodySpaceOffsetTreeSize);
         ::Write(stream, bonesData.boneNamesToIds.size());
-        ::Write(stream, bonesData.boneTransforms.size());
-    }
-    ::Write(stream, data.vertices.data(), data.vertices.size() * sizeof(asset::MeshVertex));
-    ::Write(stream, data.indices.data(), data.indices.size() * sizeof(uint32_t));
-    if (data.bonesData.has_value())
-    {
+        ::Write(stream, bonesData.bodySpaceOffsetTreeSize);
+        Write(stream, bonesData.boneNamesToIds);
+        ::Write(stream, bonesData.boneTransforms.data(), bonesData.boneTransforms.size() * sizeof(DirectX::XMMATRIX));
+        Write(stream, &bonesData.bodySpaceOffsetTree, 0u);
     }
 }
 

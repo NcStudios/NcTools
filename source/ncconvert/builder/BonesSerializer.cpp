@@ -17,29 +17,46 @@ void Write(std::ostream& stream, const T* data, size_t size)
 
 namespace nc::convert
 {
-void SerializeBodySpaceOffsetTree(std::ostream& stream, BodySpaceNode* parentNode)
+void Write(std::ostream& stream, const nc::asset::BodySpaceNode* parentNode, uint32_t generation)
 {
     if (!parentNode)
     {
         return;
     }
-
+    ::Write(stream, generation);
     ::Write(stream, parentNode->boneName);
     ::Write(stream, parentNode->localSpace);
-    stream << parentNode->boneName << ", Children: " << parentNode->children.size() << std:: endl;
+    ::Write(stream, parentNode->parent ? "hasParent" : "isRoot");
+    ::Write(stream, parentNode->children.size());
 
     if (parentNode->children.size() > 0)
     {
-        numGenerations++;
+        generation++;
     }
-    for (auto i = 0u; i < numGenerations; i++)
-    {
-        std::cout << "    ";
-    }
-
     for (auto& child : parentNode->children)
     {
-        SerializeBodySpaceOffsetTree(&child, numGenerations);
+        Write(stream, &child, generation);
+    }
+}
+
+void Write(std::ostream& stream, const std::unordered_map<std::string, uint32_t>& boneNamesToIds)
+{
+    for (const auto& pair: boneNamesToIds)
+    {
+        ::Write(stream, pair.first);
+        ::Write(stream, pair.second);
+    }
+}
+
+void Read(nc::asset::RawNcaBuffer& bytes, std::unordered_map<std::string, uint32_t>* boneNamesToIds, size_t numBones)
+{
+    for (auto i = 0u; i < numBones; i++)
+    {
+        auto boneName = std::string{};
+        auto boneId = size_t{};
+        bytes.Read(&boneName);
+        bytes.Read(&boneId);
+        boneNamesToIds->emplace(boneName, boneId);
     }
 }
 }

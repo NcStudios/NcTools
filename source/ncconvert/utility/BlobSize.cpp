@@ -2,6 +2,21 @@
 
 #include "ncasset/Assets.h"
 
+namespace
+{
+    auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_t
+    {
+        auto out = size_t{};
+        if (bonesData.has_value())
+        {
+            out += bonesData.value().bodySpaceOffsetTreeSize;
+            out += bonesData.value().boneNamesToIds.size() * (sizeof(uint32_t) + sizeof(std::string));
+            out += bonesData.value().boneTransforms.size() * sizeof(DirectX::XMMATRIX);
+        }
+        return out;
+    }
+}
+
 namespace nc::convert
 {
 auto GetBlobSize(const asset::AudioClip& asset) -> size_t
@@ -31,7 +46,7 @@ auto GetBlobSize(const asset::HullCollider& asset) -> size_t
 auto GetBlobSize(const asset::Mesh& asset) -> size_t
 {
     constexpr auto baseSize = sizeof(asset::Mesh::extents) + sizeof(asset::Mesh::maxExtent) + sizeof(size_t) + sizeof(size_t);
-    return baseSize + asset.vertices.size() * sizeof(asset::MeshVertex) + asset.indices.size() * sizeof(uint32_t);
+    return baseSize + asset.vertices.size() * sizeof(asset::MeshVertex) + asset.indices.size() * sizeof(uint32_t) + sizeof(bool) + GetBonesSize(asset.bonesData);
 }
 
 auto GetBlobSize(const asset::Texture& asset) -> size_t

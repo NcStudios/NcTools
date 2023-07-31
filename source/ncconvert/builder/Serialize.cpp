@@ -83,8 +83,8 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
     if (data.bonesData.has_value())
     {
         const auto& bonesData = data.bonesData.value();
-        ::Write(stream, bonesData.boneNamesToIds.size());
-        ::Write(stream, bonesData.bodySpaceOffsetTreeSize);
+        ::Write(stream, bonesData.boneNamesToIds.size() * (sizeof(uint32_t) + sizeof(std::string)));
+        ::Write(stream, bonesData.bodySpaceOffsetTreeSize * sizeof(asset::BodySpaceNode));
         Write(stream, bonesData.boneNamesToIds);
         ::Write(stream, bonesData.boneTransforms.data(), bonesData.boneTransforms.size() * sizeof(DirectX::XMMATRIX));
         Write(stream, &bonesData.bodySpaceOffsetTree, 0u);

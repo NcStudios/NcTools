@@ -14,18 +14,16 @@ void Read(RawNcaBuffer& bytes, std::unordered_map<std::string, uint32_t>* boneNa
     }
 }
 
-void Read(RawNcaBuffer& bytes, nc::asset::BodySpaceNode* parentNode)
+void Read(RawNcaBuffer& bytes, nc::asset::BodySpaceNode* currentNode, nc::asset::BodySpaceNode* parentNode)
 {
     auto generation = size_t{};
     auto isRoot = false;
     auto parentStatus = std::string{};
     auto numChildren = size_t{};
     bytes.Read(&generation);
-    bytes.Read(&parentNode->boneName);
+    bytes.Read(&currentNode->boneName);
     //ReadMatrix(&parentNode->localSpace);
-    bytes.Read(&parentStatus);
-    isRoot = parentStatus == "hasParent" ? false : true;
-    parentNode->parent = parentNode; //@todo Wrong
+    currentNode->parent = parentNode;
     bytes.Read(&numChildren);
     parentNode->children.reserve(numChildren);
     for (auto i = 0u; i < numChildren; i++)

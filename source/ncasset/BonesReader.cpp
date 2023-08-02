@@ -17,8 +17,6 @@ void Read(RawNcaBuffer& bytes, std::unordered_map<std::string, uint32_t>* boneNa
 void Read(RawNcaBuffer& bytes, nc::asset::BodySpaceNode* currentNode, nc::asset::BodySpaceNode* parentNode)
 {
     auto generation = size_t{};
-    auto isRoot = false;
-    auto parentStatus = std::string{};
     auto numChildren = size_t{};
     bytes.Read(&generation);
     bytes.Read(&currentNode->boneName);
@@ -29,7 +27,7 @@ void Read(RawNcaBuffer& bytes, nc::asset::BodySpaceNode* currentNode, nc::asset:
     for (auto i = 0u; i < numChildren; i++)
     {
         parentNode->children.emplace_back();
-        Read(bytes, &parentNode->children.back());
+        Read(bytes, &parentNode->children.back(), currentNode);
     }
 }
 }

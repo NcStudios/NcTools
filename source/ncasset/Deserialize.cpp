@@ -144,18 +144,17 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
     bytes.Read(asset.vertices.data(), vertexCount * sizeof(MeshVertex));
     asset.indices.resize(indexCount);
     bytes.Read(asset.indices.data(), indexCount * sizeof(uint32_t));
-    bytes.Read(&hasBones);
+    bytes.Read(&hasBones); //333
     if (hasBones)
     {
         auto bonesCount = size_t{};
         auto bodySpaceTreeSize = size_t{};
-        bytes.Read(&bonesCount);
-        bytes.Read(&bodySpaceTreeSize);
+        bytes.Read(&bonesCount); //341
+        bytes.Read(&bodySpaceTreeSize); //349
         auto bonesData = BonesData{};
-        bonesData.boneNamesToIds.reserve(bonesCount);
         Read(bytes, &bonesData.boneNamesToIds, bonesCount);
         //bytes.Read(bonesData.boneTransforms.data(), bonesCount * sizeof(DirectX::XMMATRIX));
-        Read(bytes, &bonesData.bodySpaceOffsetTree, nullptr);
+       // Read(bytes, &bonesData.bodySpaceOffsetTree, nullptr);
     }
 
     if (bytes.RemainingByteCount() != 0)

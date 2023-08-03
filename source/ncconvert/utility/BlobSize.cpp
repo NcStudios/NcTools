@@ -9,9 +9,10 @@ namespace
         auto out = size_t{};
         if (bonesData.has_value())
         {
+            out += bonesData.value().boneNamesToIds.size();
             out += bonesData.value().bodySpaceOffsetTreeSize;
             out += bonesData.value().boneNamesToIds.size() * (sizeof(uint32_t) + sizeof(std::string));
-            out += bonesData.value().boneTransforms.size() * sizeof(DirectX::XMMATRIX);
+            //out += bonesData.value().boneTransforms.size() * sizeof(DirectX::XMMATRIX);
         }
         return out;
     }

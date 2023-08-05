@@ -4,14 +4,26 @@
 
 namespace
 {
+    auto GetBoneNamesToIdsSize(const std::unordered_map<std::string, uint32_t>& boneNamesToIds) -> size_t
+    {
+        auto size = size_t{};
+        for (const auto& pair: boneNamesToIds)
+        {
+            size += pair.first.size() * sizeof(char);
+            size += sizeof(size_t);
+            size += sizeof(uint32_t);
+        }
+        return size;
+    }
+
     auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_t
     {
         auto out = size_t{};
         if (bonesData.has_value())
         {
-            out += bonesData.value().boneNamesToIds.size();
-            out += bonesData.value().bodySpaceOffsetTreeSize;
-            out += bonesData.value().boneNamesToIds.size() * (sizeof(uint32_t) + sizeof(std::string));
+            out += sizeof(size_t);
+            out += GetBoneNamesToIdsSize(bonesData.value().boneNamesToIds);
+            // out += bonesData.value().bodySpaceOffsetTreeSize * sizeof;
             //out += bonesData.value().boneTransforms.size() * sizeof(DirectX::XMMATRIX);
         }
         return out;

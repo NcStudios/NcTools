@@ -148,9 +148,9 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
     if (hasBones)
     {
         auto bonesCount = size_t{};
-        auto bodySpaceTreeSize = size_t{};
+        //auto bodySpaceTreeSize = size_t{};
         bytes.Read(&bonesCount); //341
-        bytes.Read(&bodySpaceTreeSize); //349
+        //bytes.Read(&bodySpaceTreeSize); //349
         auto bonesData = BonesData{};
         Read(bytes, &bonesData.boneNamesToIds, bonesCount);
         //bytes.Read(bonesData.boneTransforms.data(), bonesCount * sizeof(DirectX::XMMATRIX));

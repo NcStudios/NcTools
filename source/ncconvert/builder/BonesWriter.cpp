@@ -42,7 +42,8 @@ void Write(std::ostream& stream, const std::unordered_map<std::string, uint32_t>
 {
     for (const auto& pair: boneNamesToIds)
     {
-        ::Write(stream, pair.first);
+        ::Write(stream, pair.first.size());
+        ::Write(stream, pair.first.data(), pair.first.size() * sizeof(char));
         ::Write(stream, pair.second);
     }
 }

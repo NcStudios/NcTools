@@ -30,7 +30,7 @@ namespace
     }
 }
 
-namespace nc::convert
+namespace nc::convert6
 {
 auto GetBlobSize(const asset::AudioClip& asset) -> size_t
 {

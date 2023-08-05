@@ -172,7 +172,11 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                            actualAsset.indices.cbegin()));
 
     EXPECT_EQ(expectedAsset.bonesData.has_value(), actualAsset.bonesData.has_value());
-    EXPECT_EQ(expectedAsset.bonesData.value().bodySpaceOffsetTree.children.size(), 
+
+    const auto& bonesData = expectedAsset.bonesData.value();
+    EXPECT_EQ(bonesData.boneNamesToIds.at("Bone0"), 0);
+    EXPECT_EQ(bonesData.boneNamesToIds.size(), 1);
+    EXPECT_EQ(bonesData.bodySpaceOffsetTree.children.size(), 
               actualAsset.bonesData.value().bodySpaceOffsetTree.children.size());
 }
 

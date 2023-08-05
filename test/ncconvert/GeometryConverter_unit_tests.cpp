@@ -280,13 +280,3 @@ TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
     EXPECT_EQ(d3, 0);
     EXPECT_EQ(d4, 1);
 }
-
-TEST(GeometryConverterTest, GetBonesData_PrintTree)
-{
-    namespace test_data = collateral::single_bone_four_vertex_fbx;
-    auto uut = nc::convert::GeometryConverter{};
-    const auto actual = uut.ImportMesh(test_data::filePath);
-
-    auto bonesData = actual.bonesData.value();
-    util::PrintTree(&bonesData.bodySpaceOffsetTree, 0u);
-}

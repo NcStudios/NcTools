@@ -119,6 +119,7 @@ target_include_directories(Serialize_integration_tests
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/source/ncasset
         ${PROJECT_SOURCE_DIR}/source/ncconvert
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/utility
 )
 
 target_sources(Serialize_integration_tests

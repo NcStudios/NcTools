@@ -8,4 +8,5 @@ namespace nc::convert
 {
 void Write(std::ostream& stream, const std::unordered_map<std::string, uint32_t>& boneNamesToIds);
 void Write(std::ostream& stream, const nc::asset::BodySpaceNode* parentNode, uint32_t generation);
+void Write(std::ostream& stream, const DirectX::XMMATRIX& matrix);
 }

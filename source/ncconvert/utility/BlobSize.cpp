@@ -23,14 +23,14 @@ namespace
         {
             out += sizeof(size_t);
             out += GetBoneNamesToIdsSize(bonesData.value().boneNamesToIds);
-            // out += bonesData.value().bodySpaceOffsetTreeSize * sizeof;
-            //out += bonesData.value().boneTransforms.size() * sizeof(DirectX::XMMATRIX);
+            //out += bonesData.value().bodySpaceOffsetTreeSize * sizeof;
+            out += bonesData.value().boneTransforms.size() * sizeof(float) * 16;
         }
         return out;
     }
 }
 
-namespace nc::convert6
+namespace nc::convert
 {
 auto GetBlobSize(const asset::AudioClip& asset) -> size_t
 {

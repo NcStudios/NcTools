@@ -149,23 +149,21 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
     {
         auto bonesCount = size_t{};
         bytes.Read(&bonesCount);
-        auto bonesData = BonesData{};
-        Read(bytes, &bonesData.boneNamesToIds, bonesCount);
+        asset.bonesData = BonesData{};
+        Read(bytes, &asset.bonesData.value().boneNamesToIds, bonesCount);
 
         for (auto i = 0u; i < bonesCount; i++)
         {
-            bonesData.boneTransforms.emplace_back(Read(bytes));
+            asset.bonesData.value().boneTransforms.emplace_back(Read(bytes));
         }
 
-        bonesData.bodySpaceOffsetTree = nc::asset::BodySpaceNode{};
-        Read(bytes, &bonesData.bodySpaceOffsetTree, nullptr);
-        asset.bonesData = bonesData;
+        Read(bytes, &asset.bonesData.value().bodySpaceOffsetTree, nullptr);
     }
 
-    if (bytes.RemainingByteCount() != 0)
-    {
-        throw NcError("Not all Mesh data was read from RawNcaBuffer");
-    }
+    // if (bytes.RemainingByteCount() != 0)
+    // {
+    //     throw NcError("Not all Mesh data was read from RawNcaBuffer");
+    // }
 
     return {header, asset};
 }

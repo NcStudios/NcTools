@@ -30,7 +30,7 @@ struct BonesData
 {
     std::unordered_map<std::string, uint32_t> boneNamesToIds;
     std::vector<DirectX::XMMATRIX> boneTransforms;
-    BodySpaceNode bodySpaceOffsetTree;
+    BodySpaceNode bodySpaceOffsetTree = BodySpaceNode{};
     size_t bodySpaceOffsetTreeSize;
 };
 

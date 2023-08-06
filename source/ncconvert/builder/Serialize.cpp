@@ -84,13 +84,12 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
     {
         const auto& bonesData = data.bonesData.value();
         ::Write(stream, bonesData.boneNamesToIds.size());
-        //::Write(stream, bonesData.bodySpaceOffsetTreeSize);
         Write(stream, bonesData.boneNamesToIds);
         for (const auto& boneTransform : bonesData.boneTransforms)
         {
             Write(stream, boneTransform);
         }
-        //Write(stream, &bonesData.bodySpaceOffsetTree, 0u);
+        Write(stream, &bonesData.bodySpaceOffsetTree, 0u);
     }
 }
 

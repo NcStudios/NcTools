@@ -25,7 +25,7 @@ void Write(std::ostream& stream, const nc::asset::BodySpaceNode* parentNode, uin
     }
     ::Write(stream, generation);
     ::Write(stream, parentNode->boneName);
-    ::Write(stream, parentNode->localSpace);
+    Write(stream, parentNode->localSpace);
     ::Write(stream, parentNode->children.size());
 
     if (parentNode->children.size() > 0)

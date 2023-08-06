@@ -30,7 +30,7 @@ void Read(RawNcaBuffer& bytes, nc::asset::BodySpaceNode* currentNode, nc::asset:
     auto numChildren = size_t{};
     bytes.Read(&generation);
     bytes.Read(&currentNode->boneName);
-    //ReadMatrix(&parentNode->localSpace);
+    currentNode->localSpace = Read(bytes);
     currentNode->parent = parentNode;
     bytes.Read(&numChildren);
     parentNode->children.reserve(numChildren);

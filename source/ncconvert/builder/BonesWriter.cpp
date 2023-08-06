@@ -17,24 +17,19 @@ void Write(std::ostream& stream, const T* data, size_t size)
 
 namespace nc::convert
 {
-void Write(std::ostream& stream, const nc::asset::BodySpaceNode* parentNode, uint32_t generation)
+void Write(std::ostream& stream, const nc::asset::BodySpaceNode* parentNode)
 {
     if (!parentNode)
     {
         return;
     }
-    ::Write(stream, generation);
     ::Write(stream, parentNode->boneName);
     Write(stream, parentNode->localSpace);
     ::Write(stream, parentNode->children.size());
 
-    if (parentNode->children.size() > 0)
-    {
-        generation++;
-    }
     for (auto& child : parentNode->children)
     {
-        Write(stream, &child, generation);
+        Write(stream, &child);
     }
 }
 

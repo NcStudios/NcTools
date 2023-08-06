@@ -144,11 +144,11 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
     bytes.Read(asset.vertices.data(), vertexCount * sizeof(MeshVertex));
     asset.indices.resize(indexCount);
     bytes.Read(asset.indices.data(), indexCount * sizeof(uint32_t));
-    bytes.Read(&hasBones); //333
+    bytes.Read(&hasBones);
     if (hasBones)
     {
         auto bonesCount = size_t{};
-        bytes.Read(&bonesCount); //341
+        bytes.Read(&bonesCount);
         auto bonesData = BonesData{};
         Read(bytes, &bonesData.boneNamesToIds, bonesCount);
 
@@ -156,6 +156,8 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
         {
             bonesData.boneTransforms.emplace_back(Read(bytes));
         }
+
+        bonesData.bodySpaceOffsetTree = nc::asset::BodySpaceNode{};
         Read(bytes, &bonesData.bodySpaceOffsetTree, nullptr);
         asset.bonesData = bonesData;
     }

@@ -160,10 +160,10 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                 .boneName = std::string("Bone0"),
                 .localSpace = DirectX::XMMATRIX
                 {
-                    1, 0, 0, 0,
-                    0, 1, 0, 0,
+                    0, 0, 0, 1,
                     0, 0, 1, 0,
-                    0, 0, 0, 1
+                    0, 1, 0, 0,
+                    1, 0, 0, 0
                 },
                 .parent = nullptr,
                 .children = std::vector<nc::asset::BodySpaceNode>{}

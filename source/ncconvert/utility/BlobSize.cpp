@@ -11,10 +11,9 @@ namespace
             return;
         }
 
-        totalSize += sizeof(std::string); // boneName
-        totalSize += (sizeof(float) * 16); // localSpace
-        totalSize += 1; // parent ptr
-        totalSize += sizeof(std::vector<nc::asset::BodySpaceNode>);
+        *totalSize += sizeof(std::string); // boneName
+        *totalSize += (sizeof(float) * 16); // localSpace
+        *totalSize += sizeof(size_t); // children count
 
         for (auto& child : parentNode->children)
         {

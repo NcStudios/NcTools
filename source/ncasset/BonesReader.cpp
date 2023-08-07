@@ -12,6 +12,13 @@ void Read(RawNcaBuffer& bytes, std::unordered_map<std::string, uint32_t>* boneNa
         bytes.Read(&boneNameSize);
         boneName.reserve(boneNameSize);
 
+        // As long as not done through a const-qualified overload, you can write to
+        // a string like an array through the data() member (but not c_str() because
+        // its const!):
+        //
+        // auto str = std::string(size, '\0');
+        // bytes.Read(str.data(), size);
+
         for (auto j = 0u; j < boneNameSize; j++)
         {
             auto boneNameChar = char{};
@@ -41,6 +48,11 @@ void Read(RawNcaBuffer& bytes, nc::asset::BodySpaceNode* currentNode, nc::asset:
 
 auto Read(RawNcaBuffer& bytes) -> DirectX::XMMATRIX
 {
+    // Can we use XMMATRIX(const float*) ?
+    //   float buf[16];
+    //   bytes.Read(buf, 16 * sizeof(float));
+    //   return DirectX::XMMATRIX{buf};
+
     float a1 = float{};
     float a2 = float{};
     float a3 = float{};

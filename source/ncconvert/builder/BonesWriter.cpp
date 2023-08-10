@@ -17,15 +17,20 @@ void Write(std::ostream& stream, const T* data, size_t size)
 
 namespace nc::convert
 {
-void Write(std::ostream& stream, const nc::asset::BodySpaceNode* parentNode)
+void Write(std::ostream& stream, const std::vector<BodySpaceNode>& bodySpaceNodes)
 {
+    for (const auto& node : bodySpaceNodes)
+    {
+        ::Write(stream, parentNode->boneName);
+        Write(stream, parentNode->localSpace);
+        ::Write(stream, parentNode->children.size());
+    }
+
     if (!parentNode)
     {
         return;
     }
-    ::Write(stream, parentNode->boneName);
-    Write(stream, parentNode->localSpace);
-    ::Write(stream, parentNode->children.size());
+
 
     for (auto& child : parentNode->children)
     {

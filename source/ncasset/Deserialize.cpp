@@ -157,7 +157,7 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
             asset.bonesData.value().boneTransforms.emplace_back(Read(bytes));
         }
 
-        Read(bytes, &asset.bonesData.value().bodySpaceOffsetTree, nullptr);
+        Read(bytes, &asset.bonesData.value().bodySpaceOffsetTree, nullptr); // This method is causing the problem.
     }
 
     // if (bytes.RemainingByteCount() != 0)

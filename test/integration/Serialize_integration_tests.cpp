@@ -155,7 +155,7 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                     0, 0, 0, 1
                 }
             },
-            .bodySpaceOffsetTree = nc::asset::BodySpaceNode
+            .bodySpaceOffsetTree = nc::asset::BoneParentOffset
             {
                 .boneName = std::string("Bone0"),
                 .localSpace = DirectX::XMMATRIX
@@ -166,7 +166,7 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                     1, 0, 0, 0
                 },
                 .parent = nullptr,
-                .children = std::vector<nc::asset::BodySpaceNode>{}
+                .children = std::vector<nc::asset::BoneParentOffset>{}
             },
             .bodySpaceOffsetTreeSize = 1
         }

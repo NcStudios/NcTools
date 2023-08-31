@@ -17,9 +17,9 @@ void Write(std::ostream& stream, const T* data, size_t size)
 
 namespace nc::convert
 {
-void Write(std::ostream& stream, const std::vector<BodySpaceNode>& bodySpaceNodes)
+void Write(std::ostream& stream, const std::vector<BoneParentOffset>& boneParentOffsets)
 {
-    for (const auto& node : bodySpaceNodes)
+    for (const auto& node : boneParentOffsets)
     {
         ::Write(stream, parentNode->boneName);
         Write(stream, parentNode->localSpace);

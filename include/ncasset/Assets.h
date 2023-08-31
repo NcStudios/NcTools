@@ -18,7 +18,7 @@ struct AudioClip
     std::vector<double> rightChannel;
 };
 
-struct BodySpaceNode
+struct BoneParentOffset
 {
     std::string boneName;
     DirectX::XMMATRIX localSpace;
@@ -30,7 +30,7 @@ struct BonesData
 {
     std::unordered_map<std::string, uint32_t> boneNamesToIds;
     std::vector<DirectX::XMMATRIX> boneTransforms;
-    std::vector<BodySpaceNode> bodySpaceOffsets;
+    std::vector<BoneParentOffset> boneParentOffsets;
 };
 
 struct HullCollider

@@ -71,7 +71,7 @@ void PrintMatrix(const DirectX::XMMATRIX& matrix)
    std::cout << d1 << ", " << d2 << ", " << d3 << ", " << d4 << ")" << std::endl;
 }
 
-void PrintTree(nc::asset::BodySpaceNode* parentNode, uint32_t numGenerations)
+void PrintTree(nc::asset::BoneParentOffset* parentNode, uint32_t numGenerations)
 {
     if (!parentNode)
     {

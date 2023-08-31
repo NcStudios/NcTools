@@ -154,31 +154,50 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
     return out;
 }
 
-void PopulateBodySpaceTree(nc::asset::BodySpaceNode* bodySpaceNode, const aiNode* inputNode, nc::asset::BodySpaceNode* parent, size_t* size)
+void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOffsets, const aiNode* inputNode, uint32_t index)
 {
     if (!inputNode)
     {
         return;
     }
 
-    size++;
-    bodySpaceNode->boneName = std::string(inputNode->mName.data);
+    auto boneParentOffset = nc::asset::BoneParentOffset{};
+    boneParentOffset.boneName = std::string(inputNode->mName.data);
     auto& inputMatrix = inputNode->mTransformation;
-    bodySpaceNode->localSpace = DirectX::XMMATRIX
+    boneParentOffset.localSpace = DirectX::XMMATRIX
     {
         inputMatrix.a1, inputMatrix.a2, inputMatrix.a3, inputMatrix.a4,
         inputMatrix.b1, inputMatrix.b2, inputMatrix.b3, inputMatrix.b4,
         inputMatrix.c1, inputMatrix.c2, inputMatrix.c3, inputMatrix.c4,
         inputMatrix.d1, inputMatrix.d2, inputMatrix.d3, inputMatrix.d4
     };
-    bodySpaceNode->parent = parent;
-
+    boneParentOffset.numChildren = inputNode->mNumChildren;
+    if (boneParentOffset.numChildren > 0)
+    {
+        boneParentOffset.indexOfFirstChild = index+1;
+    }
+    boneParentOffsets->push_back(std::move(boneParentOffset));
     for (auto i = 0u; i < inputNode->mNumChildren; i++)
     {
-        bodySpaceNode->children.emplace_back();
-        PopulateBodySpaceTree(&(bodySpaceNode->children.back()), inputNode->mChildren[i], bodySpaceNode, size);
+        index++; // @todo: right?
+        GetBoneParentOffsets(boneParentOffsets, inputNode, index);
     }
 }
+
+/*
+
+A
+ A1 A2 A3
+     AA1
+B
+C
+ C1 C2
+
+(A,3,1 - A1,0,0 - A2,1,3 - AA1,0,0 - A3,0,0
+
+index 3
+
+*/
 
 auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
 {
@@ -211,7 +230,7 @@ auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::Bone
         };
     }
 
-    PopulateBodySpaceTree(&out.bodySpaceOffsetTree, rootNode, nullptr, &out.bodySpaceOffsetTreeSize);
+    GetBoneParentOffsets(&out.boneParentOffsets, rootNode, 0u);
     return out;
 }
 

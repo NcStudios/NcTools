@@ -4,7 +4,7 @@
 
 namespace
 {
-    auto GetBodySpaceTreeSize(const nc::asset::BodySpaceNode* parentNode, size_t* totalSize)
+    auto GetBodySpaceTreeSize(const nc::asset::BoneParentOffset* parentNode, size_t* totalSize)
     {
         if (!parentNode)
         {

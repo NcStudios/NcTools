@@ -71,11 +71,20 @@ void PrintMatrix(const DirectX::XMMATRIX& matrix)
    std::cout << d1 << ", " << d2 << ", " << d3 << ", " << d4 << ")" << std::endl;
 }
 
-void PrintTree(nc::asset::BoneParentOffset* parentNode, uint32_t numGenerations)
+void PrintTree(const std::vector<nc::asset::BoneParentOffset>& boneParentOffsets)
 {
-    if (!parentNode)
+    auto currentIndex = size_t{0};
+    auto parentIndex = size_t{0};
+    
+    while (currentIndex < boneParentOffsets.size())
     {
-        return;
+        auto& currentBoneOffset = boneParentOffsets[currentIndex];
+        std::cout << currentBoneOffset.boneName << std::endl;
+
+        if (currentBoneOffset.numChildren == 0)
+        {
+            continue;
+        }
     }
 
     std::cout << parentNode->boneName << ", Children: " << parentNode->children.size() << std:: endl;

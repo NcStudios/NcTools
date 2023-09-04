@@ -4,23 +4,6 @@
 
 namespace
 {
-    auto GetBodySpaceTreeSize(const nc::asset::BoneParentOffset* parentNode, size_t* totalSize)
-    {
-        if (!parentNode)
-        {
-            return;
-        }
-
-        *totalSize += sizeof(std::string); // boneName
-        *totalSize += (sizeof(float) * 16); // localSpace
-        *totalSize += sizeof(size_t); // children count
-
-        for (auto& child : parentNode->children)
-        {
-            GetBodySpaceTreeSize(&child, totalSize);
-        }
-    }
-
     auto GetBoneNamesToIdsSize(const std::unordered_map<std::string, uint32_t>& boneNamesToIds) -> size_t
     {
         auto size = size_t{};
@@ -41,7 +24,7 @@ namespace
             out += sizeof(size_t);
             out += GetBoneNamesToIdsSize(bonesData.value().boneNamesToIds);
             out += bonesData.value().boneTransforms.size() * sizeof(float) * 16;
-            GetBodySpaceTreeSize(&bonesData.value().bodySpaceOffsetTree, &out);
+            out += bonesData.value().boneParentOffsets.size() * sizeof(nc::asset::BoneParentOffset);
         }
         return out;
     }

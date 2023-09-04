@@ -89,7 +89,7 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
         {
             Write(stream, boneTransform);
         }
-        Write(stream, &bonesData.bodySpaceOffsetTree);
+        Write(stream, bonesData.boneParentOffsets);
     }
 }
 

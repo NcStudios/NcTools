@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <array>
+#include <containers>
 #include <span>
 
 namespace
@@ -156,13 +157,36 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
 
 void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOffsets, const aiNode* inputNode, uint32_t index)
 {
+    auto unprocessedNodes = std::queue<const aiNode*>{};
+
     if (!inputNode)
     {
         return;
     }
 
+    unprocessedNodes.push(inputNode);
+    auto* currentNode = nullptr;
+
+    while (!unprocessedNodes.empty())
+    {
+        currentNode = unprocessedNodes.front();
+
+        auto boneParentOffset = nc::asset::BoneParentOffset{};
+        auto& inputMatrix = currentNode->mTransformation;
+        boneParentOffset.localSpace = DirectX::XMMATRIX
+        {
+            inputMatrix.a1, inputMatrix.a2, inputMatrix.a3, inputMatrix.a4,
+            inputMatrix.b1, inputMatrix.b2, inputMatrix.b3, inputMatrix.b4,
+            inputMatrix.c1, inputMatrix.c2, inputMatrix.c3, inputMatrix.c4,
+            inputMatrix.d1, inputMatrix.d2, inputMatrix.d3, inputMatrix.d4
+        };
+
+        unprocessedNodes.pop();
+        
+
+    }
+
     auto boneParentOffset = nc::asset::BoneParentOffset{};
-    boneParentOffset.boneName = std::string(inputNode->mName.data);
     auto& inputMatrix = inputNode->mTransformation;
     boneParentOffset.localSpace = DirectX::XMMATRIX
     {
@@ -171,6 +195,16 @@ void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOf
         inputMatrix.c1, inputMatrix.c2, inputMatrix.c3, inputMatrix.c4,
         inputMatrix.d1, inputMatrix.d2, inputMatrix.d3, inputMatrix.d4
     };
+
+
+
+
+
+
+
+
+    boneParentOffset.boneName = std::string(inputNode->mName.data);
+
     boneParentOffset.numChildren = inputNode->mNumChildren;
     if (boneParentOffset.numChildren > 0)
     {
@@ -180,9 +214,18 @@ void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOf
     for (auto i = 0u; i < inputNode->mNumChildren; i++)
     {
         index++; // @todo: right?
-        GetBoneParentOffsets(boneParentOffsets, inputNode, index);
+        GetBoneParentOffsets(boneParentOffsets, inputNode->mChildren[i], index);
     }
 }
+
+/* 
+A
+  A1 A2 A3 A4 A5
+(A,5,1 - )
+*/
+
+
+
 
 /*
 

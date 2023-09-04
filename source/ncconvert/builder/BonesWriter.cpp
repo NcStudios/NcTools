@@ -17,24 +17,14 @@ void Write(std::ostream& stream, const T* data, size_t size)
 
 namespace nc::convert
 {
-void Write(std::ostream& stream, const std::vector<BoneParentOffset>& boneParentOffsets)
+void Write(std::ostream& stream, const std::vector<nc::asset::BoneParentOffset>& boneParentOffsets)
 {
     for (const auto& node : boneParentOffsets)
     {
-        ::Write(stream, parentNode->boneName);
-        Write(stream, parentNode->localSpace);
-        ::Write(stream, parentNode->children.size());
-    }
-
-    if (!parentNode)
-    {
-        return;
-    }
-
-
-    for (auto& child : parentNode->children)
-    {
-        Write(stream, &child);
+        ::Write(stream, node.boneName);
+        Write(stream, node.localSpace);
+        ::Write(stream, node.indexOfFirstChild);
+        ::Write(stream, node.numChildren);
     }
 }
 

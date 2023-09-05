@@ -13,7 +13,7 @@
 
 #include <algorithm>
 #include <array>
-#include <containers>
+#include <container>
 #include <span>
 
 namespace
@@ -181,40 +181,16 @@ void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOf
             inputMatrix.d1, inputMatrix.d2, inputMatrix.d3, inputMatrix.d4
         };
 
+        boneParentOffset.numChildren = currentNode->mNumChildren;
+        boneParentOffset.indexOfFirstChild = unprocessedNodes.size() + boneParentOffsets.size();
         unprocessedNodes.pop();
-        
 
-    }
+        boneParentOffsets.push_back(std::move(boneParentOffset));
 
-    auto boneParentOffset = nc::asset::BoneParentOffset{};
-    auto& inputMatrix = inputNode->mTransformation;
-    boneParentOffset.localSpace = DirectX::XMMATRIX
-    {
-        inputMatrix.a1, inputMatrix.a2, inputMatrix.a3, inputMatrix.a4,
-        inputMatrix.b1, inputMatrix.b2, inputMatrix.b3, inputMatrix.b4,
-        inputMatrix.c1, inputMatrix.c2, inputMatrix.c3, inputMatrix.c4,
-        inputMatrix.d1, inputMatrix.d2, inputMatrix.d3, inputMatrix.d4
-    };
-
-
-
-
-
-
-
-
-    boneParentOffset.boneName = std::string(inputNode->mName.data);
-
-    boneParentOffset.numChildren = inputNode->mNumChildren;
-    if (boneParentOffset.numChildren > 0)
-    {
-        boneParentOffset.indexOfFirstChild = index+1;
-    }
-    boneParentOffsets->push_back(std::move(boneParentOffset));
-    for (auto i = 0u; i < inputNode->mNumChildren; i++)
-    {
-        index++; // @todo: right?
-        GetBoneParentOffsets(boneParentOffsets, inputNode->mChildren[i], index);
+        for (const auto* child : currentNode->mChildren)
+        {
+            unprocessedNodes.push(child);
+        }
     }
 }
 

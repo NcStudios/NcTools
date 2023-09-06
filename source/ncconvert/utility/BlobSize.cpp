@@ -24,7 +24,7 @@ namespace
             out += sizeof(size_t);
             out += GetBoneNamesToIdsSize(bonesData.value().boneNamesToIds);
             out += bonesData.value().boneTransforms.size() * sizeof(float) * 16;
-            out += bonesData.value().boneParentOffsets.size() * sizeof(nc::asset::BoneParentOffset);
+            out += bonesData.value().boneParentOffsets.size() * (sizeof(std::string) + (sizeof(float) * 16) + sizeof(uint32_t) + sizeof(uint32_t));
         }
         return out;
     }

@@ -167,8 +167,8 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                         0, 1, 0, 0,
                         1, 0, 0, 0
                     },
-                    .indexOfFirstChild = 0u,
-                    .numChildren = 0u
+                    .numChildren = 0u,
+                    .indexOfFirstChild = 0u
                 }
             },
         }

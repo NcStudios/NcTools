@@ -22,8 +22,8 @@ struct BoneParentOffset
 {
     std::string boneName;
     DirectX::XMMATRIX localSpace;
+    uint32_t numChildren;
     uint32_t indexOfFirstChild;
-    size_t numChildren;
 };
 
 struct BonesData

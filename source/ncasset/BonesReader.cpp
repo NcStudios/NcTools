@@ -33,15 +33,15 @@ void Read(RawNcaBuffer& bytes, std::unordered_map<std::string, uint32_t>* boneNa
 
 void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneParentOffset>* boneParentOffsets)
 {
-    auto numChildren = size_t{};
+    auto numChildren = uint32_t{};
     auto indexOfFirstChild = uint32_t{};
     auto boneParentOffset = nc::asset::BoneParentOffset{};
     bytes.Read(&boneParentOffset.boneName);
     boneParentOffset.localSpace = Read(bytes);
-    bytes.Read(&indexOfFirstChild);
-    boneParentOffset.indexOfFirstChild = indexOfFirstChild;
     bytes.Read(&numChildren);
     boneParentOffset.numChildren = numChildren;
+    bytes.Read(&indexOfFirstChild);
+    boneParentOffset.indexOfFirstChild = indexOfFirstChild;
     boneParentOffsets->push_back(std::move(boneParentOffset));
     for (auto i = 0u; i < numChildren; i++)
     {

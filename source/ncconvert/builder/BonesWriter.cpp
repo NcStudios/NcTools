@@ -23,8 +23,8 @@ void Write(std::ostream& stream, const std::vector<nc::asset::BoneParentOffset>&
     {
         ::Write(stream, node.boneName);
         Write(stream, node.localSpace);
-        ::Write(stream, node.indexOfFirstChild);
         ::Write(stream, node.numChildren);
+        ::Write(stream, node.indexOfFirstChild);
     }
 }
 

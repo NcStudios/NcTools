@@ -13,7 +13,7 @@
 
 #include <algorithm>
 #include <array>
-#include <container>
+#include <queue>
 #include <span>
 
 namespace
@@ -155,7 +155,7 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
     return out;
 }
 
-void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOffsets, const aiNode* inputNode, uint32_t index)
+void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOffsets, const aiNode* inputNode)
 {
     auto unprocessedNodes = std::queue<const aiNode*>{};
 
@@ -165,7 +165,7 @@ void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOf
     }
 
     unprocessedNodes.push(inputNode);
-    auto* currentNode = nullptr;
+    const aiNode* currentNode = nullptr;
 
     while (!unprocessedNodes.empty())
     {
@@ -173,6 +173,7 @@ void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOf
 
         auto boneParentOffset = nc::asset::BoneParentOffset{};
         auto& inputMatrix = currentNode->mTransformation;
+        boneParentOffset.boneName = std::string(currentNode->mName.data);
         boneParentOffset.localSpace = DirectX::XMMATRIX
         {
             inputMatrix.a1, inputMatrix.a2, inputMatrix.a3, inputMatrix.a4,
@@ -182,41 +183,17 @@ void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOf
         };
 
         boneParentOffset.numChildren = currentNode->mNumChildren;
-        boneParentOffset.indexOfFirstChild = unprocessedNodes.size() + boneParentOffsets.size();
+        boneParentOffset.indexOfFirstChild = static_cast<uint32_t>(unprocessedNodes.size() + boneParentOffsets->size());
         unprocessedNodes.pop();
 
-        boneParentOffsets.push_back(std::move(boneParentOffset));
+        boneParentOffsets->push_back(std::move(boneParentOffset));
 
-        for (const auto* child : currentNode->mChildren)
+        for (auto i = 0u; i < currentNode->mNumChildren; i++)
         {
-            unprocessedNodes.push(child);
+            unprocessedNodes.push(currentNode->mChildren[i]);
         }
     }
 }
-
-/* 
-A
-  A1 A2 A3 A4 A5
-(A,5,1 - )
-*/
-
-
-
-
-/*
-
-A
- A1 A2 A3
-     AA1
-B
-C
- C1 C2
-
-(A,3,1 - A1,0,0 - A2,1,3 - AA1,0,0 - A3,0,0
-
-index 3
-
-*/
 
 auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
 {
@@ -249,7 +226,7 @@ auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::Bone
         };
     }
 
-    GetBoneParentOffsets(&out.boneParentOffsets, rootNode, 0u);
+    GetBoneParentOffsets(&out.boneParentOffsets, rootNode);
     return out;
 }
 

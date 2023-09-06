@@ -71,37 +71,14 @@ void PrintMatrix(const DirectX::XMMATRIX& matrix)
    std::cout << d1 << ", " << d2 << ", " << d3 << ", " << d4 << ")" << std::endl;
 }
 
-void PrintTree(const std::vector<nc::asset::BoneParentOffset>& boneParentOffsets)
+void PrintFlattenedTree(const std::vector<nc::asset::BoneParentOffset>& boneParentOffsets)
 {
-    auto currentIndex = size_t{0};
-    auto parentIndex = size_t{0};
-    
-    while (currentIndex < boneParentOffsets.size())
+    std::cout << "(";
+    for (const auto& boneParentOffset : boneParentOffsets)
     {
-        auto& currentBoneOffset = boneParentOffsets[currentIndex];
-        std::cout << currentBoneOffset.boneName << std::endl;
-
-        if (currentBoneOffset.numChildren == 0)
-        {
-            continue;
-        }
+        std::cout << "(" << boneParentOffset.boneName << ", " << boneParentOffset.numChildren << ", " << boneParentOffset.indexOfFirstChild << ")";
     }
-
-    std::cout << parentNode->boneName << ", Children: " << parentNode->children.size() << std:: endl;
-
-    if (parentNode->children.size() > 0)
-    {
-        numGenerations++;
-    }
-    for (auto i = 0u; i < numGenerations; i++)
-    {
-        std::cout << "    ";
-    }
-
-    for (auto& child : parentNode->children)
-    {
-        PrintTree(&child, numGenerations);
-    }
+    std::cout << ")" << std::endl;
 }
 }
 
@@ -245,6 +222,8 @@ TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
     namespace test_data = collateral::single_bone_four_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
     const auto actual = uut.ImportMesh(test_data::filePath);
+
+    util::PrintFlattenedTree(actual.bonesData.value().boneParentOffsets);
 
     DirectX::XMFLOAT4X4 view;
     XMStoreFloat4x4(&view, actual.bonesData.value().boneTransforms[0]);

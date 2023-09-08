@@ -268,3 +268,15 @@ TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
     EXPECT_EQ(d3, 0);
     EXPECT_EQ(d4, 1);
 }
+
+TEST(GeometryConverterTest, GetBonesData_BoneNamesToIds_ConvertedCorrectly)
+{
+    namespace test_data = collateral::single_bone_four_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
+    EXPECT_EQ(actual.bonesData.value().boneNamesToIds.size(), 1);
+    auto foundBoneIterator = actual.bonesData.value().boneNamesToIds.find("Bone");
+    EXPECT_NE(foundBoneIterator, actual.bonesData.value().boneNamesToIds.end);
+    EXPECT_EQ(actual.bonesData.value().boneParentOffsets.size(), 6);
+    EXPECT_EQ(actual.bonesData.value().boneTransforms.size(), 6);
+}

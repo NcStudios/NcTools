@@ -18,19 +18,24 @@ struct AudioClip
     std::vector<double> rightChannel;
 };
 
-struct BoneParentOffset
+struct VertexSpaceToBoneSpace
 {
     std::string boneName;
-    DirectX::XMMATRIX localSpace;
+    DirectX::XMMATRIX transformationMatrix;
+};
+
+struct BoneSpaceToParentSpace
+{
+    std::string boneName;
+    DirectX::XMMATRIX transformationMatrix;
     uint32_t numChildren;
     uint32_t indexOfFirstChild;
 };
 
 struct BonesData
 {
-    std::unordered_map<std::string, uint32_t> boneNamesToIds;
-    std::vector<DirectX::XMMATRIX> boneTransforms;
-    std::vector<BoneParentOffset> boneParentOffsets;
+    std::vector<VertexSpaceToBoneSpace> vertexSpaceToBoneSpace;
+    std::vector<BoneSpaceToParentSpace> boneSpaceToParentSpace;
 };
 
 struct HullCollider

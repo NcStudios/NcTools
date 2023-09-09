@@ -155,9 +155,9 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                     0, 0, 0, 1
                 }
             },
-            .boneParentOffsets = std::vector<nc::asset::BoneParentOffset>
+            .boneSpaceToParentSpace = std::vector<nc::asset::BoneSpaceToParentSpace>
             {
-                nc::asset::BoneParentOffset
+                nc::asset::BoneSpaceToParentSpace
                 {
                     .boneName = std::string("Bone0"),
                     .localSpace = DirectX::XMMATRIX
@@ -206,8 +206,8 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
     EXPECT_EQ(bonesData.boneNamesToIds.size(), 1);
     EXPECT_EQ(bonesData.boneTransforms.size(), 1);
     EXPECT_TRUE(nc::asset::Equals(bonesData.boneTransforms[0], actualAsset.bonesData.value().boneTransforms[0]));
-    EXPECT_EQ(bonesData.boneParentOffsets.size(), 
-              actualAsset.bonesData.value().boneParentOffsets.size());
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace.size(), 
+              actualAsset.bonesData.value().boneSpaceToParentSpace.size());
 }
 
 TEST(SerializationTest, Texture_roundTrip_succeeds)

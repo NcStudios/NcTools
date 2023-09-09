@@ -121,41 +121,41 @@ auto ConvertToTriangles(std::span<const aiFace> faces, std::span<const aiVector3
 
 auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asset::PerVertexBones>
 {
-    auto out = std::unordered_map<uint32_t, nc::asset::PerVertexBones>();
+    auto perVertexBones = std::unordered_map<uint32_t, nc::asset::PerVertexBones>();
 
     // Iterate through all the bones in the mesh
-    for (auto i = 0u; i < mesh->mNumBones; i++)
+    for (auto boneIndex = 0u; boneIndex < mesh->mNumBones; boneIndex++)
     {
-        auto* currentBone = mesh->mBones[i];
+        auto* currentBone = mesh->mBones[boneIndex];
         
         // Iterate through all the vertex weights each bone has
-        for (auto j = 0u; j < currentBone->mNumWeights; j++)
+        for (auto boneWeightIndex = 0u; boneWeightIndex < currentBone->mNumWeights; boneWeightIndex++)
         {
-            auto vertexId = currentBone->mWeights[j].mVertexId;
-            if (out[vertexId].boneWeights[3] != -1)
+            auto vertexId = currentBone->mWeights[boneWeightIndex].mVertexId;
+            if (perVertexBones[vertexId].boneWeights[3] != -1)
             {
                 throw nc::NcError("Cannot import a mesh with more than four bones influencing any single vertex.");
             }
 
             // Create a mapping from vertex to collection of bone weights and IDs
-            out[vertexId].Add(i, static_cast<float>(currentBone->mWeights[j].mWeight));
+            perVertexBones[vertexId].Add(boneIndex, static_cast<float>(currentBone->mWeights[boneWeightIndex].mWeight));
 
-            if (out[vertexId].boneWeights[3] != -1)
+            if (perVertexBones[vertexId].boneWeights[3] != -1)
             {
-                if (out[vertexId].boneWeights[0] +
-                    out[vertexId].boneWeights[1] + 
-                    out[vertexId].boneWeights[2] + 
-                    out[vertexId].boneWeights[3] != 1)
+                if (perVertexBones[vertexId].boneWeights[0] +
+                    perVertexBones[vertexId].boneWeights[1] + 
+                    perVertexBones[vertexId].boneWeights[2] + 
+                    perVertexBones[vertexId].boneWeights[3] != 1)
                 {
                     throw nc::NcError("The sum of bone weights affecting each vertex must equal 1.");
                 }
             }
         }
     }
-    return out;
+    return perVertexBones;
 }
 
-void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOffsets, const aiNode* inputNode)
+void GetBoneSpaceToParentSpaceMatrices(std::vector<nc::asset::BoneSpaceToParentSpace>* boneSpaceToParentSpaceMatrices, const aiNode* inputNode)
 {
     auto unprocessedNodes = std::queue<const aiNode*>{};
 
@@ -170,11 +170,10 @@ void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOf
     while (!unprocessedNodes.empty())
     {
         currentNode = unprocessedNodes.front();
-
-        auto boneParentOffset = nc::asset::BoneParentOffset{};
+        auto boneSpaceToParentSpace = nc::asset::BoneSpaceToParentSpace{};
         auto& inputMatrix = currentNode->mTransformation;
-        boneParentOffset.boneName = std::string(currentNode->mName.data);
-        boneParentOffset.localSpace = DirectX::XMMATRIX
+        boneSpaceToParentSpace.boneName = std::string(currentNode->mName.data);
+        boneSpaceToParentSpace.transformationMatrix = DirectX::XMMATRIX
         {
             inputMatrix.a1, inputMatrix.a2, inputMatrix.a3, inputMatrix.a4,
             inputMatrix.b1, inputMatrix.b2, inputMatrix.b3, inputMatrix.b4,
@@ -182,11 +181,11 @@ void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOf
             inputMatrix.d1, inputMatrix.d2, inputMatrix.d3, inputMatrix.d4
         };
 
-        boneParentOffset.numChildren = currentNode->mNumChildren;
-        boneParentOffset.indexOfFirstChild = static_cast<uint32_t>(unprocessedNodes.size() + boneParentOffsets->size());
+        boneSpaceToParentSpace.numChildren = currentNode->mNumChildren;
+        boneSpaceToParentSpace.indexOfFirstChild = static_cast<uint32_t>(unprocessedNodes.size() + boneSpaceToParentSpaceMatrices->size());
         unprocessedNodes.pop();
 
-        boneParentOffsets->push_back(std::move(boneParentOffset));
+        boneSpaceToParentSpaceMatrices->push_back(std::move(boneSpaceToParentSpace));
 
         for (auto i = 0u; i < currentNode->mNumChildren; i++)
         {
@@ -195,38 +194,35 @@ void GetBoneParentOffsets(std::vector<nc::asset::BoneParentOffset>* boneParentOf
     }
 }
 
+void GetVertexToBoneSpaceMatrices(std::vector<nc::asset::VertexSpaceToBoneSpace>* vertexToBoneSpaceMatrices, const aiMesh* mesh)
+{
+    vertexToBoneSpaceMatrices->reserve(mesh->mNumBones);
+
+    for (auto boneIndex = 0u; boneIndex < mesh->mNumBones; boneIndex++)
+    {
+        auto* currentBone = mesh->mBones[boneIndex];
+        auto boneName = std::string(currentBone->mName.data);
+        auto transformationMatrix = currentBone->mOffsetMatrix;
+        vertexToBoneSpaceMatrices->insert(vertexToBoneSpaceMatrices->begin() + boneIndex, nc::asset::VertexSpaceToBoneSpace 
+        {
+            boneName,
+            DirectX::XMMATRIX
+            {
+                transformationMatrix.a1, transformationMatrix.a2, transformationMatrix.a3, transformationMatrix.a4,
+                transformationMatrix.b1, transformationMatrix.b2, transformationMatrix.b3, transformationMatrix.b4,
+                transformationMatrix.c1, transformationMatrix.c2, transformationMatrix.c3, transformationMatrix.c4,
+                transformationMatrix.d1, transformationMatrix.d2, transformationMatrix.d3, transformationMatrix.d4
+            }
+        }); 
+
+    }
+}
+
 auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
 {
     auto out = nc::asset::BonesData{};
-    out.boneTransforms.reserve(mesh->mNumBones);
-
-    for (auto i = 0u; i < mesh->mNumBones; i++)
-    {
-        auto boneIndex = 0u;
-        auto* currentBone = mesh->mBones[i];
-        auto boneName = std::string(currentBone->mName.data);
-
-        if (out.boneNamesToIds.find(boneName) == out.boneNamesToIds.end())
-        {
-            boneIndex = i;
-        }
-        else
-        {
-            boneIndex = out.boneNamesToIds[boneName];
-        }
-
-        out.boneNamesToIds[boneName] = boneIndex;
-        auto& offsetMatrix = currentBone->mOffsetMatrix;
-        out.boneTransforms[boneIndex] = DirectX::XMMATRIX
-        {
-            offsetMatrix.a1, offsetMatrix.a2, offsetMatrix.a3, offsetMatrix.a4,
-            offsetMatrix.b1, offsetMatrix.b2, offsetMatrix.b3, offsetMatrix.b4,
-            offsetMatrix.c1, offsetMatrix.c2, offsetMatrix.c3, offsetMatrix.c4,
-            offsetMatrix.d1, offsetMatrix.d2, offsetMatrix.d3, offsetMatrix.d4
-        };
-    }
-
-    GetBoneParentOffsets(&out.boneParentOffsets, rootNode);
+    GetVertexToBoneSpaceMatrices(&out.vertexSpaceToBoneSpace, mesh);
+    GetBoneSpaceToParentSpaceMatrices(&out.boneSpaceToParentSpace, rootNode);
     return out;
 }
 

@@ -71,14 +71,27 @@ void PrintMatrix(const DirectX::XMMATRIX& matrix)
    std::cout << d1 << ", " << d2 << ", " << d3 << ", " << d4 << ")" << std::endl;
 }
 
-void PrintFlattenedTree(const std::vector<nc::asset::BoneParentOffset>& boneParentOffsets)
+void PrintFlattenedTree(const std::vector<nc::asset::BoneSpaceToParentSpace>& boneSpaceToParentSpaceMatrices)
 {
     std::cout << "(";
-    for (const auto& boneParentOffset : boneParentOffsets)
+    for (const auto& boneSpaceToParentSpace : boneSpaceToParentSpaceMatrices)
     {
-        std::cout << "(" << boneParentOffset.boneName << ", " << boneParentOffset.numChildren << ", " << boneParentOffset.indexOfFirstChild << ")";
+        std::cout << "(" << boneSpaceToParentSpace.boneName << ", " << boneSpaceToParentSpace.numChildren << ", " << boneSpaceToParentSpace.indexOfFirstChild << ")";
     }
     std::cout << ")" << std::endl;
+}
+
+void PrintBoneTransforms(const std::vector<DirectX::XMMATRIX>& boneTransforms)
+{
+    std::cout << "(";
+    for (auto i = 0u; i < boneTransforms.size(); i++)
+    {
+        PrintMatrix(boneTransforms[i]);
+        std::cout << ",";
+        std::cout << std::endl;
+    }
+    std::cout << ")";
+    std::cout << std::endl;
 }
 }
 
@@ -221,12 +234,10 @@ TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
 {
     namespace test_data = collateral::single_bone_four_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
-    const auto actual = uut.ImportMesh(test_data::filePath);
-
-    util::PrintFlattenedTree(actual.bonesData.value().boneParentOffsets);
+    const auto bonesData = uut.ImportMesh(test_data::filePath).bonesData.value();
 
     DirectX::XMFLOAT4X4 view;
-    XMStoreFloat4x4(&view, actual.bonesData.value().boneTransforms[0]);
+    XMStoreFloat4x4(&view, bonesData.vertexSpaceToBoneSpace[0].transformationMatrix);
  
     float a1 = view._11;
     float a2 = view._12;
@@ -269,14 +280,41 @@ TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
     EXPECT_EQ(d4, 1);
 }
 
-TEST(GeometryConverterTest, GetBonesData_BoneNamesToIds_ConvertedCorrectly)
+TEST(GeometryConverterTest, GetBonesData_MatrixVectorsPopulated)
 {
     namespace test_data = collateral::single_bone_four_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
+    const auto bonesData = uut.ImportMesh(test_data::filePath).bonesData.value();
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace.size(), 6);
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace.size(), 1);
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace[4].boneName, "Bone");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone");
+}
+
+TEST(GeometryConverterTest, GetBonesData_GetBonesWeight_ElementsCorrespond)
+{
+    namespace test_data = collateral::four_bones_one_bone_70_percent_fbx;
+    auto uut = nc::convert::GeometryConverter{};
     const auto actual = uut.ImportMesh(test_data::filePath);
-    EXPECT_EQ(actual.bonesData.value().boneNamesToIds.size(), 1);
-    auto foundBoneIterator = actual.bonesData.value().boneNamesToIds.find("Bone");
-    EXPECT_NE(foundBoneIterator, actual.bonesData.value().boneNamesToIds.end);
-    EXPECT_EQ(actual.bonesData.value().boneParentOffsets.size(), 6);
-    EXPECT_EQ(actual.bonesData.value().boneTransforms.size(), 6);
+
+    for (const auto& vertex : actual.vertices)
+    {
+        EXPECT_EQ(vertex.boneIds[0], 0); // Bone0
+        EXPECT_EQ(vertex.boneIds[1], 1); // Bone1
+        EXPECT_EQ(vertex.boneIds[2], 2); // Bone2
+        EXPECT_EQ(vertex.boneIds[3], 3); // Bone3
+        EXPECT_FLOAT_EQ(vertex.boneWeights.x, 0.1f);  // Bone0
+        EXPECT_FLOAT_EQ(vertex.boneWeights.y, 0.1f);  // Bone1
+        EXPECT_FLOAT_EQ(vertex.boneWeights.z, 0.1f);  // Bone2
+        EXPECT_FLOAT_EQ(vertex.boneWeights.w, 0.7f);  // Bone3
+    }
+
+    const auto& bonesData = actual.bonesData.value();
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace.size(), 10);
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace.size(), 5); // Four bones + Bone_End bone
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone0");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[1].boneName, "Bone1");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[2].boneName, "Bone2");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[3].boneName, "Bone3");
+
 }

@@ -157,7 +157,7 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
             asset.bonesData.value().boneTransforms.emplace_back(Read(bytes));
         }
 
-        Read(bytes, &asset.bonesData.value().boneParentOffsets);
+        Read(bytes, &asset.bonesData.value().boneSpaceToParentSpace);
     }
 
     // if (bytes.RemainingByteCount() != 0)

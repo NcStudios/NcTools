@@ -64,6 +64,13 @@ namespace four_bones_neq100_fbx
 const auto filePath = collateralDirectory / "four_bones_neq100.fbx";
 } // namespace four_bones_neq100_fbx
 
+// Describes the collateral file four_bones_one_bone_70_percent.fbx
+namespace four_bones_one_bone_70_percent_fbx
+{
+const auto filePath = collateralDirectory / "four_bones_one_bone_70_percent.fbx";
+} // namespace four_bones_one_bone_70_percent_fbx
+
+
 // Describes the collateral file plane.fbx
 namespace plane_fbx
 {

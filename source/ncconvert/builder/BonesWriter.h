@@ -7,6 +7,6 @@
 namespace nc::convert
 {
 void Write(std::ostream& stream, const std::unordered_map<std::string, uint32_t>& boneNamesToIds);
-void Write(std::ostream& stream, const std::vector<nc::asset::BoneParentOffset>& boneParentOffsets);
+void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentSpace>& boneSpaceToParentSpace);
 void Write(std::ostream& stream, const DirectX::XMMATRIX& matrix);
 }

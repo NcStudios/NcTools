@@ -9,7 +9,7 @@
 
 namespace nc::asset
 {
-void Read(RawNcaBuffer& bytes, std::unordered_map<std::string, uint32_t>* boneNamesToIds, size_t numBones);
-void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneSpaceToParentSpace>* boneSpaceToParentSpace);
-auto Read(RawNcaBuffer& bytes) -> DirectX::XMMATRIX;
+void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneSpaceToParentSpace>* boneSpaceToParentSpaceMatrices, size_t matrixCount);
+void Read(RawNcaBuffer& bytes, std::vector<nc::asset::VertexSpaceToBoneSpace>* vertexSpaceToBoneSpaceMatrices, size_t matrixCount);
+auto ReadMatrix(RawNcaBuffer& bytes) -> DirectX::XMMATRIX;
 }

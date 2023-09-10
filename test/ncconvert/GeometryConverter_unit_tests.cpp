@@ -316,5 +316,4 @@ TEST(GeometryConverterTest, GetBonesData_GetBonesWeight_ElementsCorrespond)
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[1].boneName, "Bone1");
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[2].boneName, "Bone2");
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[3].boneName, "Bone3");
-
 }

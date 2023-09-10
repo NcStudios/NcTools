@@ -144,15 +144,18 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
         },
         .bonesData = nc::asset::BonesData
         {
-            .boneNamesToIds = std::unordered_map<std::string, uint32_t>{{std::string("Bone0"), 0}},
-            .boneTransforms = std::vector<DirectX::XMMATRIX>
+            .vertexSpaceToBoneSpace = std::vector<nc::asset::VertexSpaceToBoneSpace>
             {
-                DirectX::XMMATRIX
+                nc::asset::VertexSpaceToBoneSpace
                 {
-                    1, 0, 0, 0,
-                    0, 1, 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1
+                    .boneName = std::string("Bone0"),
+                    .transformationMatrix = DirectX::XMMATRIX
+                    {
+                        1, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0,
+                        0, 0, 0, 1
+                    }
                 }
             },
             .boneSpaceToParentSpace = std::vector<nc::asset::BoneSpaceToParentSpace>
@@ -160,7 +163,7 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                 nc::asset::BoneSpaceToParentSpace
                 {
                     .boneName = std::string("Bone0"),
-                    .localSpace = DirectX::XMMATRIX
+                    .transformationMatrix = DirectX::XMMATRIX
                     {
                         0, 0, 0, 1,
                         0, 0, 1, 0,
@@ -202,10 +205,10 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
     EXPECT_EQ(expectedAsset.bonesData.has_value(), actualAsset.bonesData.has_value());
 
     const auto& bonesData = expectedAsset.bonesData.value();
-    EXPECT_EQ(bonesData.boneNamesToIds.at("Bone0"), 0);
-    EXPECT_EQ(bonesData.boneNamesToIds.size(), 1);
-    EXPECT_EQ(bonesData.boneTransforms.size(), 1);
-    EXPECT_TRUE(nc::asset::Equals(bonesData.boneTransforms[0], actualAsset.bonesData.value().boneTransforms[0]));
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone0");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace.size(), 1);
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace[4].boneName, "Bone0");
+    EXPECT_TRUE(nc::asset::Equals(bonesData.vertexSpaceToBoneSpace[0].transformationMatrix, actualAsset.bonesData.value().vertexSpaceToBoneSpace[0].transformationMatrix));
     EXPECT_EQ(bonesData.boneSpaceToParentSpace.size(), 
               actualAsset.bonesData.value().boneSpaceToParentSpace.size());
 }

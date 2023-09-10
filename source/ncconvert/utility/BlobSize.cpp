@@ -4,26 +4,14 @@
 
 namespace
 {
-    auto GetBoneNamesToIdsSize(const std::unordered_map<std::string, uint32_t>& boneNamesToIds) -> size_t
-    {
-        auto size = size_t{};
-        for (const auto& pair: boneNamesToIds)
-        {
-            size += pair.first.size() * sizeof(char);
-            size += sizeof(size_t);
-            size += sizeof(uint32_t);
-        }
-        return size;
-    }
-
     auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_t
     {
         auto out = size_t{};
         if (bonesData.has_value())
         {
             out += sizeof(size_t);
-            out += GetBoneNamesToIdsSize(bonesData.value().boneNamesToIds);
-            out += bonesData.value().boneTransforms.size() * sizeof(float) * 16;
+            out += bonesData.value().vertexSpaceToBoneSpace.size() * ((sizeof(float) * 16) + sizeof(std::string));
+            out += sizeof(size_t);
             out += bonesData.value().boneSpaceToParentSpace.size() * (sizeof(std::string) + (sizeof(float) * 16) + sizeof(uint32_t) + sizeof(uint32_t));
         }
         return out;

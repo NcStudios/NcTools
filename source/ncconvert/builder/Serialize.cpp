@@ -83,12 +83,9 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
     if (data.bonesData.has_value())
     {
         const auto& bonesData = data.bonesData.value();
-        ::Write(stream, bonesData.boneNamesToIds.size());
-        Write(stream, bonesData.boneNamesToIds);
-        for (const auto& boneTransform : bonesData.boneTransforms)
-        {
-            Write(stream, boneTransform);
-        }
+        ::Write(stream, bonesData.vertexSpaceToBoneSpace.size());
+        ::Write(stream, bonesData.boneSpaceToParentSpace.size());
+        Write(stream, bonesData.vertexSpaceToBoneSpace);
         Write(stream, bonesData.boneSpaceToParentSpace);
     }
 }

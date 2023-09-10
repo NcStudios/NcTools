@@ -147,23 +147,20 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
     bytes.Read(&hasBones);
     if (hasBones)
     {
-        auto bonesCount = size_t{};
-        bytes.Read(&bonesCount);
+        auto vertexToBoneSpaceMatrixCount = size_t{};
+        bytes.Read(&vertexToBoneSpaceMatrixCount);
+        auto boneSpaceToParentSpaceMatrixCount = size_t{};
+        bytes.Read(&boneSpaceToParentSpaceMatrixCount);
+
         asset.bonesData = BonesData{};
-        Read(bytes, &asset.bonesData.value().boneNamesToIds, bonesCount);
-
-        for (auto i = 0u; i < bonesCount; i++)
-        {
-            asset.bonesData.value().boneTransforms.emplace_back(Read(bytes));
-        }
-
-        Read(bytes, &asset.bonesData.value().boneSpaceToParentSpace);
+        Read(bytes, &asset.bonesData.value().vertexSpaceToBoneSpace, vertexToBoneSpaceMatrixCount);
+        Read(bytes, &asset.bonesData.value().boneSpaceToParentSpace, boneSpaceToParentSpaceMatrixCount);
     }
 
-    // if (bytes.RemainingByteCount() != 0)
-    // {
-    //     throw NcError("Not all Mesh data was read from RawNcaBuffer");
-    // }
+    if (bytes.RemainingByteCount() != 0)
+    {
+        throw NcError("Not all Mesh data was read from RawNcaBuffer");
+    }
 
     return {header, asset};
 }

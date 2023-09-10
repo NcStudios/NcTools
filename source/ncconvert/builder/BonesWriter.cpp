@@ -17,24 +17,23 @@ void Write(std::ostream& stream, const T* data, size_t size)
 
 namespace nc::convert
 {
-void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentSpace>& boneSpaceToParentSpace)
+void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentSpace>& boneSpaceToParentSpaceMatrices)
 {
-    for (const auto& node : boneSpaceToParentSpace)
+    for (const auto& toParentSpace : boneSpaceToParentSpaceMatrices)
     {
-        ::Write(stream, node.boneName);
-        Write(stream, node.localSpace);
-        ::Write(stream, node.numChildren);
-        ::Write(stream, node.indexOfFirstChild);
+        ::Write(stream, toParentSpace.boneName);
+        Write(stream, toParentSpace.transformationMatrix);
+        ::Write(stream, toParentSpace.numChildren);
+        ::Write(stream, toParentSpace.indexOfFirstChild);
     }
 }
 
-void Write(std::ostream& stream, const std::unordered_map<std::string, uint32_t>& boneNamesToIds)
+void Write(std::ostream& stream, const std::vector<nc::asset::VertexSpaceToBoneSpace>& vertexSpaceToBoneSpaceMatrices)
 {
-    for (const auto& pair: boneNamesToIds)
+    for (const auto& toBoneSpace : vertexSpaceToBoneSpaceMatrices)
     {
-        ::Write(stream, pair.first.size());
-        ::Write(stream, pair.first.data(), pair.first.size() * sizeof(char));
-        ::Write(stream, pair.second);
+        ::Write(stream, toBoneSpace.boneName);
+        Write(stream, toBoneSpace.transformationMatrix);
     }
 }
 

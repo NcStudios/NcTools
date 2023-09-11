@@ -15,8 +15,10 @@ void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneSpaceToParentSpace>* b
     {
         auto numChildren = uint32_t{};
         auto indexOfFirstChild = uint32_t{};
+        auto boneNameSize = size_t{};
+        bytes.Read(&boneNameSize);
         auto boneSpaceToParentSpace = nc::asset::BoneSpaceToParentSpace{};
-        bytes.Read(&boneSpaceToParentSpace.boneName);
+        bytes.Read(boneSpaceToParentSpace.boneName.data(), boneNameSize);
         boneSpaceToParentSpace.transformationMatrix = ReadMatrix(bytes);
         bytes.Read(&numChildren);
         boneSpaceToParentSpace.numChildren = numChildren;
@@ -30,8 +32,10 @@ void Read(RawNcaBuffer& bytes, std::vector<nc::asset::VertexSpaceToBoneSpace>* v
 {
     for (auto i = 0u; i < matrixCount; i++)
     {
+        auto boneNameSize = size_t{};
+        bytes.Read(&boneNameSize);
         auto vertexSpaceToBoneSpace = nc::asset::VertexSpaceToBoneSpace{};
-        bytes.Read(&vertexSpaceToBoneSpace.boneName);
+        bytes.Read(vertexSpaceToBoneSpace.boneName.data(), boneNameSize);
         vertexSpaceToBoneSpace.transformationMatrix = ReadMatrix(bytes);
         vertexSpaceToBoneSpaceMatrices->push_back(std::move(vertexSpaceToBoneSpace));
     }

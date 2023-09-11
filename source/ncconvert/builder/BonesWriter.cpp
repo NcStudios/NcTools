@@ -21,6 +21,7 @@ void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentS
 {
     for (const auto& toParentSpace : boneSpaceToParentSpaceMatrices)
     {
+        ::Write(stream, toParentSpace.boneName.size());
         ::Write(stream, toParentSpace.boneName);
         Write(stream, toParentSpace.transformationMatrix);
         ::Write(stream, toParentSpace.numChildren);
@@ -32,6 +33,7 @@ void Write(std::ostream& stream, const std::vector<nc::asset::VertexSpaceToBoneS
 {
     for (const auto& toBoneSpace : vertexSpaceToBoneSpaceMatrices)
     {
+        ::Write(stream, toBoneSpace.boneName.size());
         ::Write(stream, toBoneSpace.boneName);
         Write(stream, toBoneSpace.transformationMatrix);
     }

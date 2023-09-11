@@ -4,15 +4,17 @@
 
 namespace
 {
+    constexpr size_t matrixSize = (sizeof(float) * 16);
+
     auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_t
     {
         auto out = size_t{};
         if (bonesData.has_value())
         {
             out += sizeof(size_t);
-            out += bonesData.value().vertexSpaceToBoneSpace.size() * ((sizeof(float) * 16) + sizeof(std::string));
             out += sizeof(size_t);
-            out += bonesData.value().boneSpaceToParentSpace.size() * (sizeof(std::string) + (sizeof(float) * 16) + sizeof(uint32_t) + sizeof(uint32_t));
+            out += bonesData.value().vertexSpaceToBoneSpace.size() * (matrixSize + sizeof(size_t) + sizeof(std::string));
+            out += bonesData.value().boneSpaceToParentSpace.size() * (sizeof(size_t) + sizeof(std::string) + matrixSize + sizeof(uint32_t) + sizeof(uint32_t));
         }
         return out;
     }

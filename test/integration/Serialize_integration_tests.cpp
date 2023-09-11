@@ -151,10 +151,10 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
                     .boneName = std::string("Bone0"),
                     .transformationMatrix = DirectX::XMMATRIX
                     {
-                        1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 0, 1
+                        -1, -1, -1, -1,
+                        0, 0, 0, 0,
+                        0, 0, 0, 0,
+                        0, 0, 0, 0
                     }
                 }
             },

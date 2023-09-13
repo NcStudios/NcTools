@@ -24,7 +24,7 @@ void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentS
 
 /** @brief Write a DirectX::XMMATRIX to a binary stream.
  * 
- * @param bytes The byte stream to read from.
+ * @param bytes The byte stream to read to.
  */
 void Write(std::ostream& stream, const DirectX::XMMATRIX& matrix);
 }

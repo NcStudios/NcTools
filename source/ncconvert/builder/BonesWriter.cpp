@@ -17,25 +17,25 @@ void Write(std::ostream& stream, const T* data, size_t size)
 
 namespace nc::convert
 {
-void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentSpace>& boneSpaceToParentSpaceMatrices)
-{
-    for (const auto& toParentSpace : boneSpaceToParentSpaceMatrices)
-    {
-        ::Write(stream, toParentSpace.boneName.size());
-        ::Write(stream, toParentSpace.boneName);
-        Write(stream, toParentSpace.transformationMatrix);
-        ::Write(stream, toParentSpace.numChildren);
-        ::Write(stream, toParentSpace.indexOfFirstChild);
-    }
-}
-
 void Write(std::ostream& stream, const std::vector<nc::asset::VertexSpaceToBoneSpace>& vertexSpaceToBoneSpaceMatrices)
 {
     for (const auto& toBoneSpace : vertexSpaceToBoneSpaceMatrices)
     {
         ::Write(stream, toBoneSpace.boneName.size());
-        ::Write(stream, toBoneSpace.boneName);
+        ::Write(stream, toBoneSpace.boneName.data(), toBoneSpace.boneName.size());
         Write(stream, toBoneSpace.transformationMatrix);
+    }
+}
+
+void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentSpace>& boneSpaceToParentSpaceMatrices)
+{
+    for (const auto& toParentSpace : boneSpaceToParentSpaceMatrices)
+    {
+        ::Write(stream, toParentSpace.boneName.size());
+        ::Write(stream, toParentSpace.boneName.data(), toParentSpace.boneName.size());
+        Write(stream, toParentSpace.transformationMatrix);
+        ::Write(stream, toParentSpace.numChildren);
+        ::Write(stream, toParentSpace.indexOfFirstChild);
     }
 }
 

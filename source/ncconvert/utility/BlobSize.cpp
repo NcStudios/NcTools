@@ -13,8 +13,16 @@ namespace
         {
             out += sizeof(size_t);
             out += sizeof(size_t);
-            out += bonesData.value().vertexSpaceToBoneSpace.size() * (matrixSize + sizeof(size_t) + sizeof(std::string));
-            out += bonesData.value().boneSpaceToParentSpace.size() * (sizeof(size_t) + sizeof(std::string) + matrixSize + sizeof(uint32_t) + sizeof(uint32_t));
+
+            for (const auto& vertexSpaceToBoneSpace : bonesData.value().vertexSpaceToBoneSpace)
+            {
+                out += sizeof(size_t) + vertexSpaceToBoneSpace.boneName.size() + matrixSize;
+            }
+
+            for (const auto& boneSpaceToParentSpace : bonesData.value().boneSpaceToParentSpace)
+            {
+                out += sizeof(size_t) + boneSpaceToParentSpace.boneName.size() + matrixSize + sizeof(uint32_t) + sizeof(uint32_t);
+            }
         }
         return out;
     }

@@ -207,7 +207,7 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
     const auto& bonesData = expectedAsset.bonesData.value();
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone0");
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace.size(), 1);
-    EXPECT_EQ(bonesData.boneSpaceToParentSpace[4].boneName, "Bone0");
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace[0].boneName, "Bone0");
     EXPECT_TRUE(nc::asset::Equals(bonesData.vertexSpaceToBoneSpace[0].transformationMatrix, actualAsset.bonesData.value().vertexSpaceToBoneSpace[0].transformationMatrix));
     EXPECT_EQ(bonesData.boneSpaceToParentSpace.size(), 
               actualAsset.bonesData.value().boneSpaceToParentSpace.size());

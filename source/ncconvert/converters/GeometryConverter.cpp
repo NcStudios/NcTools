@@ -15,6 +15,7 @@
 #include <array>
 #include <queue>
 #include <span>
+#include <unordered_map>
 
 namespace
 {

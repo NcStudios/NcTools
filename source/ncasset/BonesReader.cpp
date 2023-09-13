@@ -9,6 +9,19 @@ auto ReadMatrix(RawNcaBuffer& bytes) -> DirectX::XMMATRIX
     return DirectX::XMMATRIX{buf};
 }
 
+void Read(RawNcaBuffer& bytes, std::vector<nc::asset::VertexSpaceToBoneSpace>* vertexSpaceToBoneSpaceMatrices, size_t matrixCount)
+{
+    for (auto i = 0u; i < matrixCount; i++)
+    {
+        auto boneNameSize = size_t{};
+        bytes.Read(&boneNameSize);
+        auto vertexSpaceToBoneSpace = nc::asset::VertexSpaceToBoneSpace{};
+        bytes.Read(vertexSpaceToBoneSpace.boneName.data(), boneNameSize);
+        vertexSpaceToBoneSpace.transformationMatrix = ReadMatrix(bytes);
+        vertexSpaceToBoneSpaceMatrices->push_back(std::move(vertexSpaceToBoneSpace));
+    }
+}
+
 void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneSpaceToParentSpace>* boneSpaceToParentSpaceMatrices, size_t matrixCount)
 {
     for (auto i = 0u; i < matrixCount; i++)
@@ -25,19 +38,6 @@ void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneSpaceToParentSpace>* b
         bytes.Read(&indexOfFirstChild);
         boneSpaceToParentSpace.indexOfFirstChild = indexOfFirstChild;
         boneSpaceToParentSpaceMatrices->push_back(std::move(boneSpaceToParentSpace));
-    }
-}
-
-void Read(RawNcaBuffer& bytes, std::vector<nc::asset::VertexSpaceToBoneSpace>* vertexSpaceToBoneSpaceMatrices, size_t matrixCount)
-{
-    for (auto i = 0u; i < matrixCount; i++)
-    {
-        auto boneNameSize = size_t{};
-        bytes.Read(&boneNameSize);
-        auto vertexSpaceToBoneSpace = nc::asset::VertexSpaceToBoneSpace{};
-        bytes.Read(vertexSpaceToBoneSpace.boneName.data(), boneNameSize);
-        vertexSpaceToBoneSpace.transformationMatrix = ReadMatrix(bytes);
-        vertexSpaceToBoneSpaceMatrices->push_back(std::move(vertexSpaceToBoneSpace));
     }
 }
 }

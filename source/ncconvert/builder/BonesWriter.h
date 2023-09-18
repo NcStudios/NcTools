@@ -27,4 +27,4 @@ void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentS
  * @param bytes The byte stream to read to.
  */
 void Write(std::ostream& stream, const DirectX::XMMATRIX& matrix);
-}
+} // namespace nc::convert

@@ -185,12 +185,11 @@ void GetBoneSpaceToParentSpaceMatrices(std::vector<nc::asset::BoneSpaceToParentS
         boneSpaceToParentSpace.numChildren = currentNode->mNumChildren;
         boneSpaceToParentSpace.indexOfFirstChild = static_cast<uint32_t>(unprocessedNodes.size() + boneSpaceToParentSpaceMatrices->size());
         unprocessedNodes.pop();
-
         boneSpaceToParentSpaceMatrices->push_back(std::move(boneSpaceToParentSpace));
 
-        for (auto i = 0u; i < currentNode->mNumChildren; i++)
+        for (auto childIndex = 0u; childIndex < currentNode->mNumChildren; childIndex++)
         {
-            unprocessedNodes.push(currentNode->mChildren[i]);
+            unprocessedNodes.push(currentNode->mChildren[childIndex]);
         }
     }
 }
@@ -215,7 +214,6 @@ void GetVertexToBoneSpaceMatrices(std::vector<nc::asset::VertexSpaceToBoneSpace>
                 transformationMatrix.d1, transformationMatrix.d2, transformationMatrix.d3, transformationMatrix.d4
             }
         }); 
-
     }
 }
 

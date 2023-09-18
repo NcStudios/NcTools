@@ -1,6 +1,5 @@
 #include "Deserialize.h"
 #include "BonesReader.h"
-#include "DirectXMath.h"
 #include "RawNcaBuffer.h"
 #include "ncasset/Assets.h"
 
@@ -151,7 +150,6 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
         bytes.Read(&vertexToBoneSpaceMatrixCount);
         auto boneSpaceToParentSpaceMatrixCount = size_t{};
         bytes.Read(&boneSpaceToParentSpaceMatrixCount);
-
         asset.bonesData = BonesData{};
         Read(bytes, &asset.bonesData.value().vertexSpaceToBoneSpace, vertexToBoneSpaceMatrixCount);
         Read(bytes, &asset.bonesData.value().boneSpaceToParentSpace, boneSpaceToParentSpaceMatrixCount);

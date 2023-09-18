@@ -8,7 +8,7 @@ namespace
 
     auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_t
     {
-        auto out = size_t{};
+        auto out = size_t{0};
         if (bonesData.has_value())
         {
             out += sizeof(size_t);
@@ -26,7 +26,7 @@ namespace
         }
         return out;
     }
-}
+}  // anonymous namespace
 
 namespace nc::convert
 {

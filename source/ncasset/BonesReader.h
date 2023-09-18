@@ -28,4 +28,4 @@ namespace nc::asset
      * @param bytes The byte stream to read from.
      */
     auto ReadMatrix(RawNcaBuffer& bytes) -> DirectX::XMMATRIX;
-}
+} // namespace nc::asset

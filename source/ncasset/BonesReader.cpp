@@ -40,4 +40,4 @@ void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneSpaceToParentSpace>* b
         boneSpaceToParentSpaceMatrices->push_back(std::move(boneSpaceToParentSpace));
     }
 }
-}
+} // namespace nc::asset

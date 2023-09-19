@@ -46,7 +46,6 @@ if(NC_TOOLS_BUILD_CONVERTER)
             ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/Sanitize.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/TextureAnalysis.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BonesWriter.cpp
-            ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/DataWriter.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Builder.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/AudioConverter.cpp
@@ -130,7 +129,6 @@ target_sources(Serialize_integration_tests
         ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BonesWriter.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/DataWriter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/BlobSize.cpp
 )

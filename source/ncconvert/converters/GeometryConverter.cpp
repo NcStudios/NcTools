@@ -120,6 +120,17 @@ auto ConvertToTriangles(std::span<const aiFace> faces, std::span<const aiVector3
     return out;
 }
 
+auto ConvertToXMMATRIX(const aiMatrix4x4* inputMatrix) -> DirectX::XMMATRIX
+{
+    return DirectX::XMMATRIX
+    {
+        inputMatrix->a1, inputMatrix->a2, inputMatrix->a3, inputMatrix->a4,
+        inputMatrix->b1, inputMatrix->b2, inputMatrix->b3, inputMatrix->b4,
+        inputMatrix->c1, inputMatrix->c2, inputMatrix->c3, inputMatrix->c4,
+        inputMatrix->d1, inputMatrix->d2, inputMatrix->d3, inputMatrix->d4
+    };
+}
+
 auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asset::PerVertexBones>
 {
     auto perVertexBones = std::unordered_map<uint32_t, nc::asset::PerVertexBones>();
@@ -156,13 +167,25 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
     return perVertexBones;
 }
 
-void GetBoneSpaceToParentSpaceMatrices(std::vector<nc::asset::BoneSpaceToParentSpace>* boneSpaceToParentSpaceMatrices, const aiNode* inputNode)
+/**
+ * @brief Converts the given aiNode* tree of bone spaces into a flattened vector where all siblings are contiguous.
+ * Tree:
+ * A
+ *    A1
+ *       A1A   A1B
+ *    B1
+ * 
+ * Vector:
+ * [A, A1, B1, A1A, A1B]
+ */
+auto GetBoneSpaceToParentSpaceMatrices(const aiNode* inputNode) -> std::vector<nc::asset::BoneSpaceToParentSpace>
 {
+    auto out = std::vector<nc::asset::BoneSpaceToParentSpace>();
     auto unprocessedNodes = std::queue<const aiNode*>{};
 
     if (!inputNode)
     {
-        return;
+        return out;
     }
 
     unprocessedNodes.push(inputNode);
@@ -171,57 +194,51 @@ void GetBoneSpaceToParentSpaceMatrices(std::vector<nc::asset::BoneSpaceToParentS
     while (!unprocessedNodes.empty())
     {
         currentNode = unprocessedNodes.front();
-        auto boneSpaceToParentSpace = nc::asset::BoneSpaceToParentSpace{};
-        auto& inputMatrix = currentNode->mTransformation;
-        boneSpaceToParentSpace.boneName = std::string(currentNode->mName.data);
-        boneSpaceToParentSpace.transformationMatrix = DirectX::XMMATRIX
+
+        // Get the index of the next available slot after the current node and it's children have been placed. (Siblings are always contiguous.)
+        auto nextAvailableSlot = static_cast<uint32_t>(unprocessedNodes.size() + out.size());
+        auto boneSpaceToParentSpace = nc::asset::BoneSpaceToParentSpace
         {
-            inputMatrix.a1, inputMatrix.a2, inputMatrix.a3, inputMatrix.a4,
-            inputMatrix.b1, inputMatrix.b2, inputMatrix.b3, inputMatrix.b4,
-            inputMatrix.c1, inputMatrix.c2, inputMatrix.c3, inputMatrix.c4,
-            inputMatrix.d1, inputMatrix.d2, inputMatrix.d3, inputMatrix.d4
+            .boneName = std::string(currentNode->mName.data),
+            .transformationMatrix = ConvertToXMMATRIX(&currentNode->mTransformation),
+            .numChildren = currentNode->mNumChildren,
+            .indexOfFirstChild = nextAvailableSlot
         };
 
-        boneSpaceToParentSpace.numChildren = currentNode->mNumChildren;
-        boneSpaceToParentSpace.indexOfFirstChild = static_cast<uint32_t>(unprocessedNodes.size() + boneSpaceToParentSpaceMatrices->size());
         unprocessedNodes.pop();
-        boneSpaceToParentSpaceMatrices->push_back(std::move(boneSpaceToParentSpace));
+        out.push_back(std::move(boneSpaceToParentSpace));
 
         for (auto childIndex = 0u; childIndex < currentNode->mNumChildren; childIndex++)
         {
             unprocessedNodes.push(currentNode->mChildren[childIndex]);
         }
     }
+    return out;
 }
 
-void GetVertexToBoneSpaceMatrices(std::vector<nc::asset::VertexSpaceToBoneSpace>* vertexToBoneSpaceMatrices, const aiMesh* mesh)
+auto GetVertexToBoneSpaceMatrices(const aiMesh* mesh) -> std::vector<nc::asset::VertexSpaceToBoneSpace>
 {
-    vertexToBoneSpaceMatrices->reserve(mesh->mNumBones);
+    auto out = std::vector<nc::asset::VertexSpaceToBoneSpace>();
+    out.reserve(mesh->mNumBones);
 
     for (auto boneIndex = 0u; boneIndex < mesh->mNumBones; boneIndex++)
     {
         auto* currentBone = mesh->mBones[boneIndex];
         auto boneName = std::string(currentBone->mName.data);
-        auto transformationMatrix = currentBone->mOffsetMatrix;
-        vertexToBoneSpaceMatrices->insert(vertexToBoneSpaceMatrices->begin() + boneIndex, nc::asset::VertexSpaceToBoneSpace 
+        out.insert(out.begin() + boneIndex, nc::asset::VertexSpaceToBoneSpace 
         {
             boneName,
-            DirectX::XMMATRIX
-            {
-                transformationMatrix.a1, transformationMatrix.a2, transformationMatrix.a3, transformationMatrix.a4,
-                transformationMatrix.b1, transformationMatrix.b2, transformationMatrix.b3, transformationMatrix.b4,
-                transformationMatrix.c1, transformationMatrix.c2, transformationMatrix.c3, transformationMatrix.c4,
-                transformationMatrix.d1, transformationMatrix.d2, transformationMatrix.d3, transformationMatrix.d4
-            }
+            ConvertToXMMATRIX(&currentBone->mOffsetMatrix)
         }); 
     }
+    return out;
 }
 
 auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
 {
     auto out = nc::asset::BonesData{};
-    GetVertexToBoneSpaceMatrices(&out.vertexSpaceToBoneSpace, mesh);
-    GetBoneSpaceToParentSpaceMatrices(&out.boneSpaceToParentSpace, rootNode);
+    out.vertexSpaceToBoneSpace = GetVertexToBoneSpaceMatrices(mesh);
+    out.boneSpaceToParentSpace = GetBoneSpaceToParentSpaceMatrices(rootNode);
     return out;
 }
 

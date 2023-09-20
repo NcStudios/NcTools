@@ -113,7 +113,7 @@ TEST(SerializationTest, ConcaveCollider_roundTrip_succeeds)
 TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
 {
     constexpr auto assetId = 1234ull;
-    const auto expectedAsset = nc::asset::Mesh{
+    auto expectedAsset = nc::asset::Mesh{
         .extents = nc::Vector3{-5.0f, 4.22f, 10.010101f},
         .maxExtent = 10.010101f,
         .vertices = std::vector<nc::asset::MeshVertex>{
@@ -142,40 +142,41 @@ TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
         .indices = std::vector<uint32_t>{
             0, 1, 2,  1, 2, 0,  2, 0, 1
         },
-        .bonesData = nc::asset::BonesData
-        {
-            .vertexSpaceToBoneSpace = std::vector<nc::asset::VertexSpaceToBoneSpace>
-            {
-                nc::asset::VertexSpaceToBoneSpace
-                {
-                    .boneName = std::string("Bone0"),
-                    .transformationMatrix = DirectX::XMMATRIX
-                    {
-                        -1, -1, -1, -1,
-                        0, 0, 0, 0,
-                        0, 0, 0, 0,
-                        0, 0, 0, 0
-                    }
-                }
-            },
-            .boneSpaceToParentSpace = std::vector<nc::asset::BoneSpaceToParentSpace>
-            {
-                nc::asset::BoneSpaceToParentSpace
-                {
-                    .boneName = std::string("Bone0"),
-                    .transformationMatrix = DirectX::XMMATRIX
-                    {
-                        0, 0, 0, 1,
-                        0, 0, 1, 0,
-                        0, 1, 0, 0,
-                        1, 0, 0, 0
-                    },
-                    .numChildren = 0u,
-                    .indexOfFirstChild = 0u
-                }
-            },
+        .bonesData = nc::asset::BonesData{
+            .vertexSpaceToBoneSpace = std::vector<nc::asset::VertexSpaceToBoneSpace>(0),
+            .boneSpaceToParentSpace = std::vector<nc::asset::BoneSpaceToParentSpace>(0)
         }
     };
+
+    // Can't initialize above due to internal compiler error in MS.
+    expectedAsset.bonesData.value().vertexSpaceToBoneSpace.push_back(
+        nc::asset::VertexSpaceToBoneSpace
+        {
+            .boneName = std::string("Bone0"),
+            .transformationMatrix = DirectX::XMMATRIX
+            {
+                -1, -1, -1, -1,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0
+            }
+        });
+
+    // Can't initialize above due to internal compiler error in MS.
+    expectedAsset.bonesData.value().boneSpaceToParentSpace.push_back(
+        nc::asset::BoneSpaceToParentSpace
+        {
+            .boneName = std::string("Bone0"),
+            .transformationMatrix = DirectX::XMMATRIX
+            {
+                0, 0, 0, 1,
+                0, 0, 1, 0,
+                0, 1, 0, 0,
+                1, 0, 0, 0
+            },
+            .numChildren = 0u,
+            .indexOfFirstChild = 0u
+        });
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
     nc::convert::Serialize(stream, expectedAsset, assetId);

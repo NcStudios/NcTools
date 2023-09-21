@@ -152,7 +152,7 @@ TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
     expectedAsset.bonesData.value().vertexSpaceToBoneSpace.push_back(
         nc::asset::VertexSpaceToBoneSpace
         {
-            .boneName = std::string("Bone0"),
+            .boneName = std::string("Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0"),
             .transformationMatrix = DirectX::XMMATRIX
             {
                 -1, -1, -1, -1,
@@ -206,7 +206,7 @@ TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
     EXPECT_EQ(expectedAsset.bonesData.has_value(), actualAsset.bonesData.has_value());
 
     const auto& bonesData = expectedAsset.bonesData.value();
-    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone0");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0");
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace.size(), 1);
     EXPECT_EQ(bonesData.boneSpaceToParentSpace[0].boneName, "Bone0");
     EXPECT_TRUE(nc::asset::Equals(bonesData.vertexSpaceToBoneSpace[0].transformationMatrix, actualAsset.bonesData.value().vertexSpaceToBoneSpace[0].transformationMatrix));

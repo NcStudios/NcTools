@@ -75,19 +75,6 @@ struct PerVertexBones
 {
     std::array<float, 4> boneWeights {-1, -1, -1, -1};
     std::array<uint32_t, 4> boneIds;
-    
-    void Add(uint32_t id, float weight)
-    {
-        for (auto i = 0u; i < boneIds.size(); i++)
-        {
-            if (boneWeights[i] == -1)
-            {
-                boneIds[i] = id;
-                boneWeights[i] = weight;
-                return;
-            }
-        }
-    }
 };
 
 struct Shader

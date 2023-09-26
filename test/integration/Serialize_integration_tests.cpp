@@ -5,6 +5,8 @@
 #include "utility/BlobSize.h"
 #include "ncasset/Assets.h"
 
+#include "ncmath/Math.h"
+
 #include <algorithm>
 #include <sstream>
 
@@ -27,22 +29,22 @@ bool Equals(const DirectX::XMMATRIX& lhs, const DirectX::XMMATRIX& rhs)
     DirectX::XMFLOAT4X4 rhsView;
     XMStoreFloat4x4(&rhsView, rhs);
 
-    return rhsView._11 == lhsView._11 &&
-           rhsView._12 == lhsView._12 &&
-           rhsView._13 == lhsView._13 &&
-           rhsView._14 == lhsView._14 &&
-           rhsView._21 == lhsView._21 &&
-           rhsView._22 == lhsView._22 &&
-           rhsView._23 == lhsView._23 &&
-           rhsView._24 == lhsView._24 &&
-           rhsView._31 == lhsView._31 &&
-           rhsView._32 == lhsView._32 &&
-           rhsView._33 == lhsView._33 &&
-           rhsView._34 == lhsView._34 &&
-           rhsView._41 == lhsView._41 &&
-           rhsView._42 == lhsView._42 &&
-           rhsView._43 == lhsView._43 &&
-           rhsView._44 == lhsView._44;
+    return nc::FloatEqual(rhsView._11, lhsView._11) &&
+           nc::FloatEqual(rhsView._12, lhsView._12) &&
+           nc::FloatEqual(rhsView._13, lhsView._13) &&
+           nc::FloatEqual(rhsView._14, lhsView._14) &&
+           nc::FloatEqual(rhsView._21, lhsView._21) &&
+           nc::FloatEqual(rhsView._22, lhsView._22) &&
+           nc::FloatEqual(rhsView._23, lhsView._23) &&
+           nc::FloatEqual(rhsView._24, lhsView._24) &&
+           nc::FloatEqual(rhsView._31, lhsView._31) &&
+           nc::FloatEqual(rhsView._32, lhsView._32) &&
+           nc::FloatEqual(rhsView._33, lhsView._33) &&
+           nc::FloatEqual(rhsView._34, lhsView._34) &&
+           nc::FloatEqual(rhsView._41, lhsView._41) &&
+           nc::FloatEqual(rhsView._42, lhsView._42) &&
+           nc::FloatEqual(rhsView._43, lhsView._43) &&
+           nc::FloatEqual(rhsView._44, lhsView._44);
 }
 }
 

@@ -6,22 +6,22 @@
 namespace nc::asset
 {
     /** @brief Read a VertexSpaceToBoneSpace vector from a RawNcaBuffer byte stream.
+     * A VertexSpaceToBoneSpace object represents the transformation matrix required to transform the vertex/vertices affected by the named bone into the bone's space.
      * 
      * @param bytes The byte stream to read from.
-     * @param vertexSpaceToBoneSpaceMatrices A vector of VertexSpaceToBoneSpace objects. 
-     * A VertexSpaceToBoneSpace object represents the transformation matrix required to transform the vertex/vertices affected by the named bone into the bone's space.
      * @param matrixCount The count of items in the VertexSpaceToBoneSpace vector.
+     * @returns A VertexSpaceToBoneSpace vector
      */
-    void Read(RawNcaBuffer& bytes, std::vector<nc::asset::VertexSpaceToBoneSpace>* vertexSpaceToBoneSpaceMatrices, size_t matrixCount);
+    auto ReadVertexToBoneMatrices(RawNcaBuffer& bytes, size_t matrixCount) -> std::vector<nc::asset::VertexSpaceToBoneSpace>;
 
     /** @brief Read a BoneSpaceToParentSpace vector from a RawNcaBuffer byte stream.
+     * A BoneSpaceToParentSpace object represents the transformation matrix required to transform the named bone's space into it's parent bone's space.
      * 
      * @param bytes The byte stream to read from.
-     * @param boneSpaceToParentSpaceMatrices A vector of BoneSpaceToParentSpace objects. 
-     * A BoneSpaceToParentSpace object represents the transformation matrix required to transform the named bone's space into it's parent bone's space.
      * @param matrixCount The count of items in the BoneSpaceToParentSpace vector.
+     * @returns A vector of BoneSpaceToParentSpace objects. 
      */
-    void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneSpaceToParentSpace>* boneSpaceToParentSpaceMatrices, size_t matrixCount);
+    auto ReadBoneToParentMatrices(RawNcaBuffer& bytes, size_t matrixCount) -> std::vector<nc::asset::BoneSpaceToParentSpace>;
 
     /** @brief Read a DirectX::XMMATRIX from a RawNcaBuffer byte stream.
      * 

@@ -31,9 +31,6 @@ void Write(std::ostream& stream, const DirectX::XMMATRIX& matrix)
 {
     DirectX::XMFLOAT4X4 view;
     XMStoreFloat4x4(&view, matrix);
-
-    float buf[16];
-    std::memcpy(buf, view.m, sizeof(float)*16);
-    Write(stream, buf, sizeof(float)*16);
+    Write(stream, view.m, sizeof(float)*16);
 }
 } // namespace nc::convert

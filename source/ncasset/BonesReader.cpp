@@ -9,8 +9,10 @@ auto ReadMatrix(RawNcaBuffer& bytes) -> DirectX::XMMATRIX
     return DirectX::XMMATRIX{buf};
 }
 
-void Read(RawNcaBuffer& bytes, std::vector<nc::asset::VertexSpaceToBoneSpace>* vertexSpaceToBoneSpaceMatrices, size_t matrixCount)
+auto ReadVertexToBoneMatrices(RawNcaBuffer& bytes, size_t matrixCount) -> std::vector<nc::asset::VertexSpaceToBoneSpace>
 {
+    auto vertexSpaceToBoneSpaceMatrices = std::vector<nc::asset::VertexSpaceToBoneSpace>{};
+    vertexSpaceToBoneSpaceMatrices.reserve(matrixCount);
     for (auto i = 0u; i < matrixCount; i++)
     {
         auto boneNameSize = size_t{};
@@ -19,12 +21,15 @@ void Read(RawNcaBuffer& bytes, std::vector<nc::asset::VertexSpaceToBoneSpace>* v
         vertexSpaceToBoneSpace.boneName.resize(boneNameSize);
         bytes.Read(vertexSpaceToBoneSpace.boneName.data(), boneNameSize);
         vertexSpaceToBoneSpace.transformationMatrix = ReadMatrix(bytes);
-        vertexSpaceToBoneSpaceMatrices->push_back(std::move(vertexSpaceToBoneSpace));
+        vertexSpaceToBoneSpaceMatrices.push_back(std::move(vertexSpaceToBoneSpace));
     }
+    return vertexSpaceToBoneSpaceMatrices;
 }
 
-void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneSpaceToParentSpace>* boneSpaceToParentSpaceMatrices, size_t matrixCount)
+auto ReadBoneToParentMatrices(RawNcaBuffer& bytes, size_t matrixCount) -> std::vector<nc::asset::BoneSpaceToParentSpace>
 {
+    auto boneSpaceToParentSpaceMatrices = std::vector<nc::asset::BoneSpaceToParentSpace>{};
+    boneSpaceToParentSpaceMatrices.reserve(matrixCount);
     for (auto i = 0u; i < matrixCount; i++)
     {
         auto numChildren = uint32_t{};
@@ -39,7 +44,8 @@ void Read(RawNcaBuffer& bytes, std::vector<nc::asset::BoneSpaceToParentSpace>* b
         boneSpaceToParentSpace.numChildren = numChildren;
         bytes.Read(&indexOfFirstChild);
         boneSpaceToParentSpace.indexOfFirstChild = indexOfFirstChild;
-        boneSpaceToParentSpaceMatrices->push_back(std::move(boneSpaceToParentSpace));
+        boneSpaceToParentSpaceMatrices.push_back(std::move(boneSpaceToParentSpace));
     }
+    return boneSpaceToParentSpaceMatrices;
 }
 } // namespace nc::asset

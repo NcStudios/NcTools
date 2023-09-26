@@ -144,20 +144,29 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
         for (auto boneWeightIndex = 0u; boneWeightIndex < currentBone->mNumWeights; boneWeightIndex++)
         {
             auto vertexId = currentBone->mWeights[boneWeightIndex].mVertexId;
-            if (perVertexBones[vertexId].boneWeights[3] != -1)
+            auto& currentPerVertexBones = perVertexBones[vertexId];
+            if (currentPerVertexBones.boneWeights[3] != -1)
             {
                 throw nc::NcError("Cannot import a mesh with more than four bones influencing any single vertex.");
             }
 
             // Create a mapping from vertex to collection of bone weights and IDs
-            perVertexBones[vertexId].Add(boneIndex, static_cast<float>(currentBone->mWeights[boneWeightIndex].mWeight));
-
-            if (perVertexBones[vertexId].boneWeights[3] != -1)
+            for (auto i = 0u; i < currentPerVertexBones.boneIds.size(); i++)
             {
-                if (perVertexBones[vertexId].boneWeights[0] +
-                    perVertexBones[vertexId].boneWeights[1] + 
-                    perVertexBones[vertexId].boneWeights[2] + 
-                    perVertexBones[vertexId].boneWeights[3] != 1)
+                if (currentPerVertexBones.boneWeights[i] == -1)
+                {
+                    currentPerVertexBones.boneIds[i] = boneIndex;
+                    currentPerVertexBones.boneWeights[i] = currentBone->mWeights[boneWeightIndex].mWeight;
+                    break;
+                }
+            }
+
+            if (currentPerVertexBones.boneWeights[3] != -1)
+            {
+                if (currentPerVertexBones.boneWeights[0] +
+                    currentPerVertexBones.boneWeights[1] + 
+                    currentPerVertexBones.boneWeights[2] + 
+                    currentPerVertexBones.boneWeights[3] != 1)
                 {
                     throw nc::NcError("The sum of bone weights affecting each vertex must equal 1.");
                 }
@@ -225,21 +234,18 @@ auto GetVertexToBoneSpaceMatrices(const aiMesh* mesh) -> std::vector<nc::asset::
     {
         auto* currentBone = mesh->mBones[boneIndex];
         auto boneName = std::string(currentBone->mName.data);
-        out.insert(out.begin() + boneIndex, nc::asset::VertexSpaceToBoneSpace 
-        {
-            boneName,
-            ConvertToXMMATRIX(&currentBone->mOffsetMatrix)
-        }); 
+        out.emplace(out.begin() + boneIndex, std::string{currentBone->mName.data}, ConvertToXMMATRIX(&currentBone->mOffsetMatrix));
     }
     return out;
 }
 
 auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
 {
-    auto out = nc::asset::BonesData{};
-    out.vertexSpaceToBoneSpace = GetVertexToBoneSpaceMatrices(mesh);
-    out.boneSpaceToParentSpace = GetBoneSpaceToParentSpaceMatrices(rootNode);
-    return out;
+    return nc::asset::BonesData
+    {
+        GetVertexToBoneSpaceMatrices(mesh),
+        GetBoneSpaceToParentSpaceMatrices(rootNode)
+    };
 }
 
 auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVertex>

@@ -2,6 +2,32 @@
 
 #include "ncasset/Assets.h"
 
+namespace
+{
+constexpr size_t matrixSize = (sizeof(float) * 16);
+
+auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_t
+{
+    auto out = size_t{0};
+    if (bonesData.has_value())
+    {
+        out += sizeof(size_t);
+        out += sizeof(size_t);
+
+        for (const auto& vertexSpaceToBoneSpace : bonesData.value().vertexSpaceToBoneSpace)
+        {
+            out += sizeof(size_t) + vertexSpaceToBoneSpace.boneName.size() + matrixSize;
+        }
+
+        for (const auto& boneSpaceToParentSpace : bonesData.value().boneSpaceToParentSpace)
+        {
+            out += sizeof(size_t) + boneSpaceToParentSpace.boneName.size() + matrixSize + sizeof(uint32_t) + sizeof(uint32_t);
+        }
+    }
+    return out;
+}
+}  // anonymous namespace
+
 namespace nc::convert
 {
 auto GetBlobSize(const asset::AudioClip& asset) -> size_t
@@ -31,7 +57,7 @@ auto GetBlobSize(const asset::HullCollider& asset) -> size_t
 auto GetBlobSize(const asset::Mesh& asset) -> size_t
 {
     constexpr auto baseSize = sizeof(asset::Mesh::extents) + sizeof(asset::Mesh::maxExtent) + sizeof(size_t) + sizeof(size_t);
-    return baseSize + asset.vertices.size() * sizeof(asset::MeshVertex) + asset.indices.size() * sizeof(uint32_t);
+    return baseSize + asset.vertices.size() * sizeof(asset::MeshVertex) + asset.indices.size() * sizeof(uint32_t) + sizeof(bool) + GetBonesSize(asset.bonesData);
 }
 
 auto GetBlobSize(const asset::Texture& asset) -> size_t

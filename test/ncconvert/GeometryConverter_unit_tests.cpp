@@ -4,10 +4,14 @@
 
 #include "analysis/GeometryAnalysis.h"
 #include "converters/GeometryConverter.h"
+#include "DirectXMath.h"
 #include "ncasset/Assets.h"
+#include "ncutility/NcError.h"
 
 #include <algorithm>
 #include <array>
+#include <iostream>
+#include <string>
 
 TEST(GeometryConverterTest, ImportConcaveCollider_convertsToNca)
 {
@@ -68,4 +72,166 @@ TEST(GeometryConverterTest, ImportedMesh_convertsToNca)
 
     const auto nVertices = actual.vertices.size();
     EXPECT_TRUE(std::ranges::all_of(actual.indices, [&nVertices](auto i){ return i < nVertices; }));
+}
+
+TEST(GeometryConverterTest, GetBoneWeights_SingleBone_1WeightAllVertices)
+{
+    namespace test_data = collateral::single_bone_four_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
+
+    for (const auto& vertex : actual.vertices)
+    {
+        EXPECT_EQ(vertex.boneIds[0], 0);
+        EXPECT_EQ(vertex.boneIds[1], 0);
+        EXPECT_EQ(vertex.boneIds[2], 0);
+        EXPECT_EQ(vertex.boneIds[3], 0);
+        EXPECT_EQ(vertex.boneWeights.x, 1);
+        EXPECT_EQ(vertex.boneWeights.y, -1);
+        EXPECT_EQ(vertex.boneWeights.z, -1);
+        EXPECT_EQ(vertex.boneWeights.w, -1);
+    }
+}
+
+TEST(GeometryConverterTest, GetBoneWeights_FourBones_QuarterWeightAllVertices)
+{
+    namespace test_data = collateral::four_bone_four_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
+
+    for (const auto& vertex : actual.vertices)
+    {
+        EXPECT_EQ(vertex.boneIds[0], 0);
+        EXPECT_EQ(vertex.boneIds[1], 1);
+        EXPECT_EQ(vertex.boneIds[2], 2);
+        EXPECT_EQ(vertex.boneIds[3], 3);
+        EXPECT_EQ(vertex.boneWeights.x, 0.25);
+        EXPECT_EQ(vertex.boneWeights.y, 0.25);
+        EXPECT_EQ(vertex.boneWeights.z, 0.25);
+        EXPECT_EQ(vertex.boneWeights.w, 0.25);
+    }
+}
+
+TEST(GeometryConverterTest, GetBoneWeights_FiveBonesPerVertex_ImportFails)
+{
+    namespace test_data = collateral::five_bones_per_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    auto threwNcError = false;
+    try
+    {
+        uut.ImportMesh(test_data::filePath);
+    }
+    catch(const nc::NcError& e)
+    {
+        EXPECT_TRUE(std::string(e.what()).find(std::string("more than four bones")));
+        threwNcError = true;
+    }
+    
+    EXPECT_TRUE(threwNcError);
+}
+
+TEST(GeometryConverterTest, GetBoneWeights_WeightsNotEqual100_ImportFails)
+{
+    namespace test_data = collateral::four_bones_neq100_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    auto threwNcError = false;
+    try
+    {
+        uut.ImportMesh(test_data::filePath);
+    }
+    catch(const nc::NcError& e)
+    {
+        EXPECT_TRUE(std::string(e.what()).find(std::string("affecting each vertex must equal 1")));
+        threwNcError = true;
+    }
+    
+    EXPECT_TRUE(threwNcError);
+}
+
+TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
+{
+    namespace test_data = collateral::single_bone_four_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto bonesData = uut.ImportMesh(test_data::filePath).bonesData.value();
+
+    DirectX::XMFLOAT4X4 view;
+    XMStoreFloat4x4(&view, bonesData.vertexSpaceToBoneSpace[0].transformationMatrix);
+ 
+    float a1 = view._11;
+    float a2 = view._12;
+    float a3 = view._13;
+    float a4 = view._14;
+ 
+    float b1 = view._21;
+    float b2 = view._22;
+    float b3 = view._23;
+    float b4 = view._24;
+ 
+    float c1 = view._31;
+    float c2 = view._32;
+    float c3 = view._33;
+    float c4 = view._34;
+ 
+    float d1 = view._41;
+    float d2 = view._42;
+    float d3 = view._43;
+    float d4 = view._44;
+ 
+    EXPECT_EQ(a1, 1);
+    EXPECT_EQ(a2, 0);
+    EXPECT_EQ(a3, 0);
+    EXPECT_EQ(a4, 0);
+     
+    EXPECT_EQ(b1, 0);
+    EXPECT_EQ(b2, 0);
+    EXPECT_EQ(b3, -1);
+    EXPECT_EQ(b4, 0);
+
+    EXPECT_EQ(c1, 0);
+    EXPECT_EQ(c2, 1);
+    EXPECT_EQ(c3, 0);
+    EXPECT_EQ(c4, 0);
+    
+    EXPECT_EQ(d1, 0);
+    EXPECT_EQ(d2, 0);
+    EXPECT_EQ(d3, 0);
+    EXPECT_EQ(d4, 1);
+}
+
+TEST(GeometryConverterTest, GetBonesData_MatrixVectorsPopulated)
+{
+    namespace test_data = collateral::single_bone_four_vertex_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto bonesData = uut.ImportMesh(test_data::filePath).bonesData.value();
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace.size(), 6);
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace.size(), 1);
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace[4].boneName, "Bone");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone");
+}
+
+TEST(GeometryConverterTest, GetBonesData_GetBonesWeight_ElementsCorrespond)
+{
+    namespace test_data = collateral::four_bones_one_bone_70_percent_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
+
+    for (const auto& vertex : actual.vertices)
+    {
+        EXPECT_EQ(vertex.boneIds[0], 0); // Bone0
+        EXPECT_EQ(vertex.boneIds[1], 1); // Bone1
+        EXPECT_EQ(vertex.boneIds[2], 2); // Bone2
+        EXPECT_EQ(vertex.boneIds[3], 3); // Bone3
+        EXPECT_FLOAT_EQ(vertex.boneWeights.x, 0.1f);  // Bone0
+        EXPECT_FLOAT_EQ(vertex.boneWeights.y, 0.1f);  // Bone1
+        EXPECT_FLOAT_EQ(vertex.boneWeights.z, 0.1f);  // Bone2
+        EXPECT_FLOAT_EQ(vertex.boneWeights.w, 0.7f);  // Bone3
+    }
+
+    const auto& bonesData = actual.bonesData.value();
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace.size(), 10);
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace.size(), 5); // Four bones + Bone_End bone
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone0");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[1].boneName, "Bone1");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[2].boneName, "Bone2");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[3].boneName, "Bone3");
 }

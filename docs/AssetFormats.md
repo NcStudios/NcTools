@@ -89,20 +89,20 @@ CubeMap faces in pixel data array are ordered: front, back, up, down, right, lef
 | extents      | Vector3   | 12                |
 | max extent   | float     | 4                 |
 | vertex count | u64       | 8                 |
-| vertext list | Vector3[] | vertex count * 12 |
+| vertex list  | Vector3[] | vertex count * 12 |
 
 ### Mesh Blob Format
 > Magic Number: 'MESH'
 
-| Name         | Type         | Size              |
-|--------------|--------------|-------------------|
-| extents      | Vector3      | 12                |
-| max extent   | float        | 4                 |
-| vertex count | u64          | 8                 |
-| index count  | u64          | 8                 |
-| vertext list | MeshVertex[] | vertex count * 56 |
-| indices      | int[]        | index count * 4   |
-
+| Name         | Type                | Size              |
+|--------------|---------------------|-------------------|
+| extents      | Vector3             | 12                |
+| max extent   | float               | 4                 |
+| vertex count | u64                 | 8                 |
+| index count  | u64                 | 8                 |
+| vertex list  | MeshVertex[]        | vertex count * 88 |
+| indices      | int[]               | index count * 4   |
+| bones data   | optional<BonesData> | 56                |
 
 ### Shader Blob Format
 > Magic Number: 'SHAD'

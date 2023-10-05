@@ -1,8 +1,11 @@
 #include "gtest/gtest.h"
 #include "Deserialize.h"
+#include "builder/BonesWriter.h"
 #include "builder/Serialize.h"
 #include "utility/BlobSize.h"
 #include "ncasset/Assets.h"
+
+#include "ncmath/Math.h"
 
 #include <algorithm>
 #include <sstream>
@@ -16,6 +19,32 @@ bool operator==(const nc::asset::MeshVertex& lhs, const nc::asset::MeshVertex& r
            lhs.uv == rhs.uv &&
            lhs.tangent == rhs.tangent &&
            lhs.bitangent == rhs.bitangent;
+}
+
+bool Equals(const DirectX::XMMATRIX& lhs, const DirectX::XMMATRIX& rhs)
+{
+    DirectX::XMFLOAT4X4 lhsView;
+    XMStoreFloat4x4(&lhsView, lhs);
+
+    DirectX::XMFLOAT4X4 rhsView;
+    XMStoreFloat4x4(&rhsView, rhs);
+
+    return nc::FloatEqual(rhsView._11, lhsView._11) &&
+           nc::FloatEqual(rhsView._12, lhsView._12) &&
+           nc::FloatEqual(rhsView._13, lhsView._13) &&
+           nc::FloatEqual(rhsView._14, lhsView._14) &&
+           nc::FloatEqual(rhsView._21, lhsView._21) &&
+           nc::FloatEqual(rhsView._22, lhsView._22) &&
+           nc::FloatEqual(rhsView._23, lhsView._23) &&
+           nc::FloatEqual(rhsView._24, lhsView._24) &&
+           nc::FloatEqual(rhsView._31, lhsView._31) &&
+           nc::FloatEqual(rhsView._32, lhsView._32) &&
+           nc::FloatEqual(rhsView._33, lhsView._33) &&
+           nc::FloatEqual(rhsView._34, lhsView._34) &&
+           nc::FloatEqual(rhsView._41, lhsView._41) &&
+           nc::FloatEqual(rhsView._42, lhsView._42) &&
+           nc::FloatEqual(rhsView._43, lhsView._43) &&
+           nc::FloatEqual(rhsView._44, lhsView._44);
 }
 }
 
@@ -83,7 +112,111 @@ TEST(SerializationTest, ConcaveCollider_roundTrip_succeeds)
     }
 }
 
-TEST(SerializationTest, Mesh_roundTrip_succeeds)
+TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
+{
+    constexpr auto assetId = 1234ull;
+    auto expectedAsset = nc::asset::Mesh{
+        .extents = nc::Vector3{-5.0f, 4.22f, 10.010101f},
+        .maxExtent = 10.010101f,
+        .vertices = std::vector<nc::asset::MeshVertex>{
+            nc::asset::MeshVertex{nc::Vector3::Splat(0.0f),
+                                  nc::Vector3::Splat(1.0f),
+                                  nc::Vector2::Splat(2.0f),
+                                  nc::Vector3::Splat(3.0f),
+                                  nc::Vector3::Splat(4.0f),
+                                  nc::Vector4::Splat(5.0f),
+                                  std::array<uint32_t, 4>{6, 6, 6, 6}},
+            nc::asset::MeshVertex{nc::Vector3::Splat(7.0f),
+                                  nc::Vector3::Splat(8.0f),
+                                  nc::Vector2::Splat(9.0f),
+                                  nc::Vector3::Splat(10.0f),
+                                  nc::Vector3::Splat(11.0f),
+                                  nc::Vector4::Splat(12.0f),
+                                  std::array<uint32_t, 4>{13, 13, 13, 13}},
+            nc::asset::MeshVertex{nc::Vector3::Splat(14.0f),
+                                  nc::Vector3::Splat(15.0f),
+                                  nc::Vector2::Splat(16.0f),
+                                  nc::Vector3::Splat(17.0f),
+                                  nc::Vector3::Splat(18.0f),
+                                  nc::Vector4::Splat(19.0f),
+                                  std::array<uint32_t, 4>{20, 20, 20, 20}}
+        },
+        .indices = std::vector<uint32_t>{
+            0, 1, 2,  1, 2, 0,  2, 0, 1
+        },
+        .bonesData = nc::asset::BonesData{
+            .vertexSpaceToBoneSpace = std::vector<nc::asset::VertexSpaceToBoneSpace>(0),
+            .boneSpaceToParentSpace = std::vector<nc::asset::BoneSpaceToParentSpace>(0)
+        }
+    };
+
+    // Can't initialize above due to internal compiler error in MS.
+    expectedAsset.bonesData.value().vertexSpaceToBoneSpace.push_back(
+        nc::asset::VertexSpaceToBoneSpace
+        {
+            .boneName = std::string("Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0"),
+            .transformationMatrix = DirectX::XMMATRIX
+            {
+                -1, -1, -1, -1,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0
+            }
+        });
+
+    // Can't initialize above due to internal compiler error in MS.
+    expectedAsset.bonesData.value().boneSpaceToParentSpace.push_back(
+        nc::asset::BoneSpaceToParentSpace
+        {
+            .boneName = std::string("Bone0"),
+            .transformationMatrix = DirectX::XMMATRIX
+            {
+                0, 0, 0, 1,
+                0, 0, 1, 0,
+                0, 1, 0, 0,
+                1, 0, 0, 0
+            },
+            .numChildren = 0u,
+            .indexOfFirstChild = 0u
+        });
+
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, expectedAsset, assetId);
+    const auto [actualHeader, actualAsset] = nc::asset::DeserializeMesh(stream);
+
+    EXPECT_STREQ("MESH", actualHeader.magicNumber);
+    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
+
+    EXPECT_EQ(expectedAsset.extents, actualAsset.extents);
+    EXPECT_EQ(expectedAsset.maxExtent, actualAsset.maxExtent);
+    ASSERT_EQ(expectedAsset.vertices.size(), actualAsset.vertices.size());
+    ASSERT_EQ(expectedAsset.indices.size(), actualAsset.indices.size());
+
+    for(auto i = 0u; i < expectedAsset.vertices.size(); ++i)
+    {
+        const auto& e = expectedAsset.vertices[i];
+        const auto& a = actualAsset.vertices[i];
+        EXPECT_EQ(e, a);
+    }
+
+    EXPECT_TRUE(std::equal(expectedAsset.indices.cbegin(),
+                           expectedAsset.indices.cend(),
+                           actualAsset.indices.cbegin()));
+
+    EXPECT_EQ(expectedAsset.bonesData.has_value(), actualAsset.bonesData.has_value());
+
+    const auto& bonesData = expectedAsset.bonesData.value();
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace.size(), 1);
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace[0].boneName, "Bone0");
+    EXPECT_TRUE(nc::asset::Equals(bonesData.vertexSpaceToBoneSpace[0].transformationMatrix, actualAsset.bonesData.value().vertexSpaceToBoneSpace[0].transformationMatrix));
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace.size(), 
+              actualAsset.bonesData.value().boneSpaceToParentSpace.size());
+}
+
+TEST(SerializationTest, Mesh_noBones_roundTrip_succeeds)
 {
     constexpr auto assetId = 1234ull;
     const auto expectedAsset = nc::asset::Mesh{
@@ -91,24 +224,31 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
         .maxExtent = 10.010101f,
         .vertices = std::vector<nc::asset::MeshVertex>{
             nc::asset::MeshVertex{nc::Vector3::Splat(0.0f),
-                              nc::Vector3::Splat(1.0f),
-                              nc::Vector2::Splat(2.0f),
-                              nc::Vector3::Splat(3.0f),
-                              nc::Vector3::Splat(4.0f)},
-            nc::asset::MeshVertex{nc::Vector3::Splat(5.0f),
-                              nc::Vector3::Splat(6.0f),
-                              nc::Vector2::Splat(7.0f),
-                              nc::Vector3::Splat(9.0f),
-                              nc::Vector3::Splat(9.0f)},
-            nc::asset::MeshVertex{nc::Vector3::Splat(10.0f),
-                              nc::Vector3::Splat(11.0f),
-                              nc::Vector2::Splat(12.0f),
-                              nc::Vector3::Splat(13.0f),
-                              nc::Vector3::Splat(14.0f)}
+                                  nc::Vector3::Splat(1.0f),
+                                  nc::Vector2::Splat(2.0f),
+                                  nc::Vector3::Splat(3.0f),
+                                  nc::Vector3::Splat(4.0f),
+                                  nc::Vector4::Splat(5.0f),
+                                  std::array<uint32_t, 4>{6, 6, 6, 6}},
+            nc::asset::MeshVertex{nc::Vector3::Splat(7.0f),
+                                  nc::Vector3::Splat(8.0f),
+                                  nc::Vector2::Splat(9.0f),
+                                  nc::Vector3::Splat(10.0f),
+                                  nc::Vector3::Splat(11.0f),
+                                  nc::Vector4::Splat(12.0f),
+                                  std::array<uint32_t, 4>{13, 13, 13, 13}},
+            nc::asset::MeshVertex{nc::Vector3::Splat(14.0f),
+                                  nc::Vector3::Splat(15.0f),
+                                  nc::Vector2::Splat(16.0f),
+                                  nc::Vector3::Splat(17.0f),
+                                  nc::Vector3::Splat(18.0f),
+                                  nc::Vector4::Splat(19.0f),
+                                  std::array<uint32_t, 4>{20, 20, 20, 20}}
         },
         .indices = std::vector<uint32_t>{
             0, 1, 2,  1, 2, 0,  2, 0, 1
-        }
+        },
+        .bonesData = std::nullopt
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
@@ -135,6 +275,8 @@ TEST(SerializationTest, Mesh_roundTrip_succeeds)
     EXPECT_TRUE(std::equal(expectedAsset.indices.cbegin(),
                            expectedAsset.indices.cend(),
                            actualAsset.indices.cbegin()));
+
+    EXPECT_EQ(expectedAsset.bonesData.has_value(), actualAsset.bonesData.has_value());
 }
 
 TEST(SerializationTest, Texture_roundTrip_succeeds)

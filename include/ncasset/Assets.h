@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include <unordered_map>
 
 namespace nc::asset
 {
@@ -18,19 +17,24 @@ struct AudioClip
     std::vector<double> rightChannel;
 };
 
-struct BodySpaceNode
+struct VertexSpaceToBoneSpace
 {
     std::string boneName;
-    DirectX::XMMATRIX localSpace;
-    BodySpaceNode* parent;
-    std::vector<BodySpaceNode*> children;
+    DirectX::XMMATRIX transformationMatrix;
+};
+
+struct BoneSpaceToParentSpace
+{
+    std::string boneName;
+    DirectX::XMMATRIX transformationMatrix;
+    uint32_t numChildren;
+    uint32_t indexOfFirstChild;
 };
 
 struct BonesData
 {
-    std::unordered_map<std::string, uint32_t> boneNamesToIds;
-    std::vector<DirectX::XMMATRIX> boneTransforms;
-    BodySpaceNode* bodySpaceOffsetTree;
+    std::vector<VertexSpaceToBoneSpace> vertexSpaceToBoneSpace;
+    std::vector<BoneSpaceToParentSpace> boneSpaceToParentSpace;
 };
 
 struct HullCollider
@@ -69,20 +73,8 @@ struct Mesh
 
 struct PerVertexBones
 {
-    std::array<float, 4> boneWeights;
+    std::array<float, 4> boneWeights {-1, -1, -1, -1};
     std::array<uint32_t, 4> boneIds;
-    
-    void Add(uint32_t id, float weight)
-    {
-        for (auto i = 0u; i < boneIds.size(); i++)
-        {
-            if (boneWeights[i] == 0.0)
-            {
-                boneIds[i] = id;
-                boneWeights[i] = weight;
-            }
-        }
-    }
 };
 
 struct Shader

@@ -13,7 +13,9 @@
 
 #include <algorithm>
 #include <array>
+#include <queue>
 #include <span>
+#include <unordered_map>
 
 namespace
 {
@@ -22,7 +24,7 @@ constexpr auto hullColliderFlags = concaveColliderFlags | aiProcess_JoinIdentica
 constexpr auto meshFlags = hullColliderFlags | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
 const auto supportedFileExtensions = std::array<std::string, 2> {".fbx", ".obj"};
 
-auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiMesh*
+auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiScene*
 {
     if (!nc::convert::ValidateInputFileExtension(path, supportedFileExtensions))
     {
@@ -56,7 +58,7 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
         throw nc::NcError("No vertices found for: ", path.string());
     }
 
-    return scene->mMeshes[0];
+    return scene;
 }
 
 auto ToVector3(const aiVector3D& in) -> nc::Vector3
@@ -118,6 +120,134 @@ auto ConvertToTriangles(std::span<const aiFace> faces, std::span<const aiVector3
     return out;
 }
 
+auto ConvertToXMMATRIX(const aiMatrix4x4* inputMatrix) -> DirectX::XMMATRIX
+{
+    return DirectX::XMMATRIX
+    {
+        inputMatrix->a1, inputMatrix->a2, inputMatrix->a3, inputMatrix->a4,
+        inputMatrix->b1, inputMatrix->b2, inputMatrix->b3, inputMatrix->b4,
+        inputMatrix->c1, inputMatrix->c2, inputMatrix->c3, inputMatrix->c4,
+        inputMatrix->d1, inputMatrix->d2, inputMatrix->d3, inputMatrix->d4
+    };
+}
+
+auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asset::PerVertexBones>
+{
+    auto perVertexBones = std::unordered_map<uint32_t, nc::asset::PerVertexBones>();
+
+    // Iterate through all the bones in the mesh
+    for (auto boneIndex = 0u; boneIndex < mesh->mNumBones; boneIndex++)
+    {
+        auto* currentBone = mesh->mBones[boneIndex];
+        
+        // Iterate through all the vertex weights each bone has
+        for (auto boneWeightIndex = 0u; boneWeightIndex < currentBone->mNumWeights; boneWeightIndex++)
+        {
+            auto vertexId = currentBone->mWeights[boneWeightIndex].mVertexId;
+            auto& currentPerVertexBones = perVertexBones[vertexId];
+            if (currentPerVertexBones.boneWeights[3] != -1)
+            {
+                throw nc::NcError("Cannot import a mesh with more than four bones influencing any single vertex.");
+            }
+
+            // Create a mapping from vertex to collection of bone weights and IDs
+            for (auto i = 0u; i < currentPerVertexBones.boneIds.size(); i++)
+            {
+                if (currentPerVertexBones.boneWeights[i] == -1)
+                {
+                    currentPerVertexBones.boneIds[i] = boneIndex;
+                    currentPerVertexBones.boneWeights[i] = currentBone->mWeights[boneWeightIndex].mWeight;
+                    break;
+                }
+            }
+
+            if (currentPerVertexBones.boneWeights[3] != -1)
+            {
+                if (currentPerVertexBones.boneWeights[0] +
+                    currentPerVertexBones.boneWeights[1] + 
+                    currentPerVertexBones.boneWeights[2] + 
+                    currentPerVertexBones.boneWeights[3] != 1)
+                {
+                    throw nc::NcError("The sum of bone weights affecting each vertex must equal 1.");
+                }
+            }
+        }
+    }
+    return perVertexBones;
+}
+
+/**
+ * @brief Converts the given aiNode* tree of bone spaces into a flattened vector where all siblings are contiguous.
+ * Tree:
+ * A
+ *    A1
+ *       A1A   A1B
+ *    B1
+ * 
+ * Vector:
+ * [A, A1, B1, A1A, A1B]
+ */
+auto GetBoneSpaceToParentSpaceMatrices(const aiNode* inputNode) -> std::vector<nc::asset::BoneSpaceToParentSpace>
+{
+    auto out = std::vector<nc::asset::BoneSpaceToParentSpace>();
+    auto unprocessedNodes = std::queue<const aiNode*>{};
+
+    if (!inputNode)
+    {
+        return out;
+    }
+
+    unprocessedNodes.push(inputNode);
+    const aiNode* currentNode = nullptr;
+
+    while (!unprocessedNodes.empty())
+    {
+        currentNode = unprocessedNodes.front();
+
+        // Get the index of the next available slot after the current node and it's children have been placed. (Siblings are always contiguous.)
+        auto nextAvailableSlot = static_cast<uint32_t>(unprocessedNodes.size() + out.size());
+        auto boneSpaceToParentSpace = nc::asset::BoneSpaceToParentSpace
+        {
+            .boneName = std::string(currentNode->mName.data),
+            .transformationMatrix = ConvertToXMMATRIX(&currentNode->mTransformation),
+            .numChildren = currentNode->mNumChildren,
+            .indexOfFirstChild = nextAvailableSlot
+        };
+
+        unprocessedNodes.pop();
+        out.push_back(std::move(boneSpaceToParentSpace));
+
+        for (auto childIndex = 0u; childIndex < currentNode->mNumChildren; childIndex++)
+        {
+            unprocessedNodes.push(currentNode->mChildren[childIndex]);
+        }
+    }
+    return out;
+}
+
+auto GetVertexToBoneSpaceMatrices(const aiMesh* mesh) -> std::vector<nc::asset::VertexSpaceToBoneSpace>
+{
+    auto out = std::vector<nc::asset::VertexSpaceToBoneSpace>();
+    out.reserve(mesh->mNumBones);
+
+    for (auto boneIndex = 0u; boneIndex < mesh->mNumBones; boneIndex++)
+    {
+        auto* currentBone = mesh->mBones[boneIndex];
+        auto boneName = std::string(currentBone->mName.data);
+        out.emplace(out.begin() + boneIndex, std::string{currentBone->mName.data}, ConvertToXMMATRIX(&currentBone->mOffsetMatrix));
+    }
+    return out;
+}
+
+auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
+{
+    return nc::asset::BonesData
+    {
+        GetVertexToBoneSpaceMatrices(mesh),
+        GetBoneSpaceToParentSpaceMatrices(rootNode)
+    };
+}
+
 auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVertex>
 {
     NC_ASSERT(static_cast<bool>(mesh->mNormals) &&
@@ -128,15 +258,33 @@ auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVer
     auto out = std::vector<nc::asset::MeshVertex>{};
     const auto nVertices = mesh->mNumVertices;
     out.reserve(nVertices);
+
+    if (mesh->HasBones())
+    {
+        const auto perVertexBones = GetBoneWeights(mesh);
+        for (auto i = 0u; i < nVertices; ++i)
+        {
+            const auto uv = mesh->mTextureCoords[0][i];
+            auto boneWeights = nc::Vector4(perVertexBones.at(i).boneWeights[0],
+                                        perVertexBones.at(i).boneWeights[1],
+                                        perVertexBones.at(i).boneWeights[2],
+                                        perVertexBones.at(i).boneWeights[3]);
+            out.emplace_back(
+                ToVector3(mesh->mVertices[i]), ToVector3(mesh->mNormals[i]), nc::Vector2{uv.x, uv.y},
+                ToVector3(mesh->mTangents[i]), ToVector3(mesh->mBitangents[i]), boneWeights, perVertexBones.at(i).boneIds
+            );
+        }
+        return out;
+    }
+
     for (auto i = 0u; i < nVertices; ++i)
     {
         const auto uv = mesh->mTextureCoords[0][i];
         out.emplace_back(
             ToVector3(mesh->mVertices[i]), ToVector3(mesh->mNormals[i]), nc::Vector2{uv.x, uv.y},
-            ToVector3(mesh->mTangents[i]), ToVector3(mesh->mBitangents[i])
+            ToVector3(mesh->mTangents[i]), ToVector3(mesh->mBitangents[i]), nc::Vector4{-1, -1, -1, -1}, std::array<uint32_t, 4>{UINT32_MAX, UINT32_MAX, UINT32_MAX, UINT32_MAX}
         );
     }
-
     return out;
 }
 } // anonymous namespace
@@ -148,7 +296,7 @@ class GeometryConverter::impl
     public:
         auto ImportConcaveCollider(const std::filesystem::path& path) -> asset::ConcaveCollider
         {
-            const auto mesh = ::ReadFbx(path, &m_importer, concaveColliderFlags);
+            const auto mesh = ::ReadFbx(path, &m_importer, concaveColliderFlags)->mMeshes[0];
             auto triangles = ::ConvertToTriangles(::ViewFaces(mesh), ::ViewVertices(mesh));
             if(auto count = Sanitize(triangles))
             {
@@ -164,7 +312,7 @@ class GeometryConverter::impl
 
         auto ImportHullCollider(const std::filesystem::path& path) -> asset::HullCollider
         {
-            const auto mesh = ::ReadFbx(path, &m_importer, hullColliderFlags);
+            const auto mesh = ::ReadFbx(path, &m_importer, hullColliderFlags)->mMeshes[0];
             auto convertedVertices = ::ConvertToVertices(::ViewVertices(mesh));
             if(auto count = Sanitize(convertedVertices))
             {
@@ -180,8 +328,8 @@ class GeometryConverter::impl
 
         auto ImportMesh(const std::filesystem::path& path) -> asset::Mesh
         {
-            const auto mesh = ::ReadFbx(path, &m_importer, meshFlags);
-            auto convertedVertices = ::ConvertToMeshVertices(mesh);
+            const auto scene = ::ReadFbx(path, &m_importer, meshFlags);
+            auto convertedVertices = ::ConvertToMeshVertices(scene->mMeshes[0]);
             if(auto count = Sanitize(convertedVertices))
             {
                 LOG("Warning: Bad values detected in mesh. {} values have been set to 0.", count);
@@ -191,7 +339,8 @@ class GeometryConverter::impl
                 GetMeshVertexExtents(convertedVertices),
                 FindFurthestDistanceFromOrigin(convertedVertices),
                 std::move(convertedVertices),
-                ::ConvertToIndices(::ViewFaces(mesh))
+                ::ConvertToIndices(::ViewFaces(scene->mMeshes[0])),
+                GetBonesData(scene->mMeshes[0], scene->mRootNode)
             };
         }
 

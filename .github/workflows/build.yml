@@ -2,7 +2,7 @@ name: Build
 
 on:
   pull_request:
-    branches: [ release, vnext ]
+    branches: [ vnext ]
     paths-ignore:
       - '**/*.md'
       - '**/*.txt'

@@ -163,12 +163,15 @@ auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asse
 
             if (currentPerVertexBones.boneWeights[3] != -1)
             {
-                if (currentPerVertexBones.boneWeights[0] +
-                    currentPerVertexBones.boneWeights[1] + 
-                    currentPerVertexBones.boneWeights[2] + 
-                    currentPerVertexBones.boneWeights[3] != 1)
+                auto boneWeightTotal = 
+                currentPerVertexBones.boneWeights[0] +
+                currentPerVertexBones.boneWeights[1] + 
+                currentPerVertexBones.boneWeights[2] + 
+                currentPerVertexBones.boneWeights[3];
+
+                if (!nc::FloatEqual(boneWeightTotal, 1.0f))
                 {
-                    throw nc::NcError("The sum of bone weights affecting each vertex must equal 1.");
+                    throw nc::NcError("The sum of bone weights affecting each vertex must equal 1. Current weight: ", std::to_string(boneWeightTotal));
                 }
             }
         }

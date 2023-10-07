@@ -70,6 +70,12 @@ namespace four_bones_one_bone_70_percent_fbx
 const auto filePath = collateralDirectory / "four_bones_one_bone_70_percent.fbx";
 } // namespace four_bones_one_bone_70_percent_fbx
 
+// Describes the collateral file real_world_model.fbx
+namespace real_world_model_fbx
+{
+const auto filePath = collateralDirectory / "real_world_model.fbx";
+} // namespace real_world_model_fbx
+
 // Describes the collateral file plane.fbx
 namespace plane_fbx
 {

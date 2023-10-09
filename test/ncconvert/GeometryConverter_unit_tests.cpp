@@ -235,3 +235,23 @@ TEST(GeometryConverterTest, GetBonesData_GetBonesWeight_ElementsCorrespond)
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[2].boneName, "Bone2");
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[3].boneName, "Bone3");
 }
+
+TEST(GeometryConverterTest, GetBonesData_ComplexMesh_ConvertedCorrectly)
+{
+    namespace test_data = collateral::real_world_model_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportMesh(test_data::filePath);
+
+    EXPECT_FLOAT_EQ(actual.vertices[0].boneWeights.x, 0.35232919f);  // Bone0
+    EXPECT_FLOAT_EQ(actual.vertices[0].boneWeights.y, 0.17152755f);  // Bone1
+    EXPECT_FLOAT_EQ(actual.vertices[0].boneWeights.z, 0.11047833f);  // Bone2
+    EXPECT_FLOAT_EQ(actual.vertices[0].boneWeights.w, 0.36566496f);  // Bone3
+    
+    const auto& bonesData = actual.bonesData.value();
+    EXPECT_EQ(bonesData.boneSpaceToParentSpace.size(), 383);
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace.size(), 283);
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "root");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[1].boneName, "DEF-spine.004");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[2].boneName, "DEF-spine.005");
+    EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[3].boneName, "DEF-spine.006");
+}

@@ -22,6 +22,7 @@ namespace
 constexpr auto concaveColliderFlags = aiProcess_Triangulate | aiProcess_ConvertToLeftHanded;
 constexpr auto hullColliderFlags = concaveColliderFlags | aiProcess_JoinIdenticalVertices;
 constexpr auto meshFlags = hullColliderFlags | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
+constexpr auto skeletalAnimationFlags = meshFlags | aiProcess_LimitBoneWeights;
 const auto supportedFileExtensions = std::array<std::string, 2> {".fbx", ".obj"};
 
 auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiScene*
@@ -290,6 +291,61 @@ auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVer
     }
     return out;
 }
+
+auto ConvertToSkeletalAnimationClips(const aiScene* scene) -> std::vector<nc::asset::SkeletalAnimationClip>
+{
+    auto skeletalAnimationClips = std::vector<nc::asset::SkeletalAnimationClip>{};
+    
+    if (scene->mNumAnimations == 0)
+    {
+        return skeletalAnimationClips;
+    }
+
+    skeletalAnimationClips.reserve(scene->mNumAnimations);
+
+    // There can be multiple animation clips in a single scene.
+    for (auto i = 0u; i < scene->mNumAnimations; i++)
+    {
+        auto skeletalAnimationClip = nc::asset::SkeletalAnimationClip{};
+        const auto* clip = scene->mAnimations[i];
+        skeletalAnimationClip.ticksPerSecond = clip->mTicksPerSecond == 0 ? 25.0f : clip->mTicksPerSecond; // Ticks per second is not required to be set in animation software.
+        skeletalAnimationClip.durationInSeconds = static_cast<uint32_t>(clip->mDuration * skeletalAnimationClip.ticksPerSecond);
+        skeletalAnimationClip.framesPerBone.reserve(clip->mNumChannels);
+
+        // A single channel represents one bone and all of its transformations for the animation clip.
+        for (auto j = 0u; j < clip->mNumChannels; j++)
+        {
+           // auto* framesPerBone = &skeletalAnimationClip.framesPerBone;
+            const auto* channel = clip->mChannels[j];
+            auto frames = nc::asset::SkeletalAnimationFrames{};
+            frames.positionFrames.reserve(channel->mNumPositionKeys);
+            frames.rotationFrames.reserve(channel->mNumRotationKeys);
+            frames.scaleFrames.reserve(channel->mNumScalingKeys);
+            
+            for (auto positionIndex = 0u; positionIndex < channel->mNumPositionKeys; positionIndex++)
+            {
+                const auto keyFrame = channel->mPositionKeys[positionIndex];
+                frames.positionFrames.emplace_back(keyFrame.mTime, nc::Vector3(keyFrame.mValue.x, keyFrame.mValue.y, keyFrame.mValue.z));
+            }
+
+            for (auto rotationIndex = 0u; rotationIndex < channel->mNumRotationKeys; rotationIndex++)
+            {
+                const auto keyFrame = channel->mRotationKeys[rotationIndex];
+                frames.rotationFrames.emplace_back(keyFrame.mTime, nc::Quaternion(keyFrame.mValue.x, keyFrame.mValue.y, keyFrame.mValue.z, keyFrame.mValue.w));
+            }
+
+            for (auto scaleIndex = 0u; scaleIndex < channel->mNumScalingKeys; scaleIndex++)
+            {
+                const auto keyFrame = channel->mScalingKeys[scaleIndex];
+                frames.scaleFrames.emplace_back(keyFrame.mTime, nc::Vector3(keyFrame.mValue.x, keyFrame.mValue.y, keyFrame.mValue.z));
+            }
+
+            //framesPerBone->emplace(channel->mNodeName, std::move(frames));
+        }
+    }
+    return skeletalAnimationClips;
+}
+
 } // anonymous namespace
 
 namespace nc::convert
@@ -345,6 +401,12 @@ class GeometryConverter::impl
                 ::ConvertToIndices(::ViewFaces(scene->mMeshes[0])),
                 GetBonesData(scene->mMeshes[0], scene->mRootNode)
             };
+        }
+
+        auto ImportSkeletalAnimations(const std::filesystem::path& path) -> std::vector<asset::SkeletalAnimationClip>
+        {
+            const auto scene = ::ReadFbx(path, &m_importer, skeletalAnimationFlags);
+            return ::ConvertToSkeletalAnimationClips(scene);
         }
 
     private:

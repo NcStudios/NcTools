@@ -8,5 +8,6 @@ struct CubeMap;
 struct HullCollider;
 struct Mesh;
 struct MeshVertex;
+struct SkeletalAnimationClip;
 struct Texture;
 } // namespace nc::asset

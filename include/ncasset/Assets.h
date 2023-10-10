@@ -6,6 +6,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace nc::asset
@@ -79,6 +80,40 @@ struct PerVertexBones
 
 struct Shader
 {
+};
+
+struct PositionFrame
+{
+    double timeInTicks;
+    Vector3 position;
+};
+
+struct RotationFrame
+{
+    double timeInTicks;
+    Quaternion rotation;
+};
+
+struct ScaleFrame
+{
+    double timeInTicks;
+    Vector3 scale;
+};
+
+struct SkeletalAnimationFrames
+{
+    // Vectors are not guaranteed to be the same length. 
+    // There could be no rotation data for a frame, for example.
+    std::vector<PositionFrame> positionFrames;
+    std::vector<RotationFrame> rotationFrames;
+    std::vector<ScaleFrame> scaleFrames;
+};
+
+struct SkeletalAnimationClip
+{
+    uint32_t durationInSeconds;
+    double ticksPerSecond;
+    std::unordered_map<std::string, SkeletalAnimationFrames> framesPerBone;
 };
 
 struct Texture

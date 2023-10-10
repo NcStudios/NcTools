@@ -12,7 +12,7 @@ set(ASSIMP_BUILD_OBJ_IMPORTER ON CACHE BOOL "" FORCE)
 
 FetchContent_Declare(assimp
                      GIT_REPOSITORY https://github.com/NcStudios/assimp.git
-                     GIT_TAG        origin/master
+                     GIT_TAG        e4370fda0f4e92d77381dc787ac8a9cab5971f8a # origin/master
                      GIT_SHALLOW    TRUE
 )
 

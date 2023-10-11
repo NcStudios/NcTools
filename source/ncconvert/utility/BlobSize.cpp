@@ -26,6 +26,20 @@ auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_
     }
     return out;
 }
+
+auto GetSkeletalAnimationClipSize(const nc::asset::SkeletalAnimationClip& asset) -> size_t
+{
+    auto baseSize = asset.name.size() + sizeof(uint32_t) + sizeof(double);
+    for (auto framesPerBonesIt=asset.framesPerBone.begin(); framesPerBonesIt!=asset.framesPerBone.end(); framesPerBonesIt++)
+    {
+        baseSize+=framesPerBonesIt->first.size();
+        const auto& frames = framesPerBonesIt->second;
+        for (auto positionIt=frames.positionFrames.begin(); positionIt!= frames.positionFrames.end(); positionIt++)
+        {
+            baseSize+=sizeof(double);
+        }
+    }
+}
 }  // anonymous namespace
 
 namespace nc::convert
@@ -58,6 +72,11 @@ auto GetBlobSize(const asset::Mesh& asset) -> size_t
 {
     constexpr auto baseSize = sizeof(asset::Mesh::extents) + sizeof(asset::Mesh::maxExtent) + sizeof(size_t) + sizeof(size_t);
     return baseSize + asset.vertices.size() * sizeof(asset::MeshVertex) + asset.indices.size() * sizeof(uint32_t) + sizeof(bool) + GetBonesSize(asset.bonesData);
+}
+
+auto GetBlobSize(const asset::SkeletalAnimationClip& asset) -> size_t
+{
+    return GetSkeletalAnimationClipSize(asset);
 }
 
 auto GetBlobSize(const asset::Texture& asset) -> size_t

@@ -111,7 +111,8 @@ struct SkeletalAnimationFrames
 
 struct SkeletalAnimationClip
 {
-    uint32_t durationInSeconds;
+    std::string name;
+    uint32_t durationInTicks;
     double ticksPerSecond;
     std::unordered_map<std::string, SkeletalAnimationFrames> framesPerBone;
 };

@@ -65,6 +65,12 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
     }
 }
 
+void Serialize(std::ostream& stream, const asset::SkeletalAnimationClip& data, size_t assetId)
+{
+    const auto assetSize = GetBlobSize(data);
+
+}
+
 void Serialize(std::ostream& stream, const asset::Texture& data, size_t assetId)
 {
     const auto assetSize = GetBlobSize(data);

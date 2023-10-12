@@ -1,6 +1,7 @@
 #include "Serialize.h"
 #include "builder/BonesWriter.h"
 #include "builder/DataWriter.h"
+#include "builder/SkeletalAnimationWriter.h"
 #include "utility/BlobSize.h"
 #include "ncasset/Assets.h"
 #include "ncasset/NcaHeader.h"
@@ -68,7 +69,13 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
 void Serialize(std::ostream& stream, const asset::SkeletalAnimationClip& data, size_t assetId)
 {
     const auto assetSize = GetBlobSize(data);
-
+    WriteHeader(stream, asset::MagicNumber::skeletalAnimationClip, assetId, assetSize);
+    Write(stream, data.name.size());
+    Write(stream, data.name.data(), data.name.size());
+    Write(stream, data.durationInTicks);
+    Write(stream, data.ticksPerSecond);
+    Write(stream, data.framesPerBone.size());
+    Write(stream, data.framesPerBone);
 }
 
 void Serialize(std::ostream& stream, const asset::Texture& data, size_t assetId)

@@ -2,6 +2,7 @@
 #include "Deserialize.h"
 #include "builder/BonesWriter.h"
 #include "builder/Serialize.h"
+#include "builder/SkeletalAnimationWriter.h"
 #include "utility/BlobSize.h"
 #include "ncasset/Assets.h"
 
@@ -349,6 +350,91 @@ TEST(SerializationTest, CubeMap_roundTrip_succeeds)
             0xD1, 0xD2, 0xD3, 0xD4, // down
             0xE1, 0xE2, 0xE3, 0xE4, // right
             0xF1, 0xF2, 0xF3, 0xF4,  // left
+        }
+    };
+
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, expectedAsset, assetId);
+    const auto [actualHeader, actualAsset] = nc::asset::DeserializeCubeMap(stream);
+
+    EXPECT_STREQ("CUBE", actualHeader.magicNumber);
+    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
+    EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
+
+    EXPECT_EQ(expectedAsset.faceSideLength, actualAsset.faceSideLength);
+    ASSERT_EQ(expectedAsset.pixelData.size(), actualAsset.pixelData.size());
+
+    EXPECT_TRUE(std::equal(expectedAsset.pixelData.cbegin(),
+                           expectedAsset.pixelData.cend(),
+                           actualAsset.pixelData.cbegin()));
+}
+
+TEST(SerializationTest, SkeletalAnimationClip_roundTrip_succeeds)
+{
+    constexpr auto assetId = 1234ull;
+
+    const auto firstBoneFrame = nc::asset::SkeletalAnimationFrames
+    {
+        std::vector<nc::asset::PositionFrame>
+        {
+            nc::asset::PositionFrame{0, nc::Vector3{0.0f, 0.0f, 0.0f}},
+            nc::asset::PositionFrame{1, nc::Vector3{0.1f, 0.1f, 0.1f}},
+            nc::asset::PositionFrame{2, nc::Vector3{0.2f, 0.2f, 0.2f}}
+        },
+
+        std::vector<nc::asset::RotationFrame>
+        {
+            nc::asset::RotationFrame{0, nc::Quaternion{1.0f, 1.0f, 1.0f, 1.0f}},
+            nc::asset::RotationFrame{1, nc::Quaternion{1.1f, 1.1f, 1.1f, 1.0f}},
+            nc::asset::RotationFrame{2, nc::Quaternion{1.2f, 1.2f, 1.2f, 1.0f}}
+        },
+
+        std::vector<nc::asset::ScaleFrame>
+        {
+            nc::asset::ScaleFrame{0, nc::Vector3{2.0f, 2.0f, 2.0f}},
+            nc::asset::ScaleFrame{1, nc::Vector3{2.1f, 2.1f, 2.1f}},
+            nc::asset::ScaleFrame{2, nc::Vector3{2.2f, 2.2f, 2.2f}}
+        }
+    };
+
+    const auto secondBoneFrame = nc::asset::SkeletalAnimationFrames
+    {
+        std::vector<nc::asset::PositionFrame>
+        {
+            nc::asset::PositionFrame{0, nc::Vector3{3.0f, 3.0f, 3.0f}},
+            nc::asset::PositionFrame{1, nc::Vector3{3.1f, 3.1f, 3.1f}},
+            nc::asset::PositionFrame{2, nc::Vector3{3.2f, 3.2f, 3.2f}}
+        },
+
+        std::vector<nc::asset::RotationFrame>
+        {
+            nc::asset::RotationFrame{0, nc::Quaternion{4.0f, 4.0f, 4.0f, 4.0f}},
+            nc::asset::RotationFrame{1, nc::Quaternion{4.1f, 4.1f, 4.1f, 4.0f}},
+            nc::asset::RotationFrame{2, nc::Quaternion{4.2f, 4.2f, 4.2f, 4.0f}}
+        },
+
+        std::vector<nc::asset::ScaleFrame>
+        {
+            nc::asset::ScaleFrame{0, nc::Vector3{5.0f, 5.0f, 5.0f}},
+            nc::asset::ScaleFrame{1, nc::Vector3{5.1f, 5.1f, 5.1f}},
+            nc::asset::ScaleFrame{2, nc::Vector3{5.2f, 5.2f, 5.2f}}
+        }
+    };
+
+    const auto skeletalAnimationFrames = std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames>
+    {
+        positionFrames = 
+    };
+
+
+    const auto expectedAsset = nc::asset::SkeletalAnimationClip{
+        .name = "Test",
+        .durationInTicks = 128,
+        .ticksPerSecond = 64,
+        std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames> 
+        {
+
         }
     };
 

@@ -29,16 +29,20 @@ auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_
 
 auto GetSkeletalAnimationClipSize(const nc::asset::SkeletalAnimationClip& asset) -> size_t
 {
-    auto baseSize = asset.name.size() + sizeof(uint32_t) + sizeof(double);
+    auto baseSize = sizeof(size_t) + asset.name.size() + sizeof(uint32_t) + sizeof(double) + sizeof(size_t); // name size, name, durationInTicks, ticksPerSecond, framesPerBone count
     for (auto framesPerBonesIt=asset.framesPerBone.begin(); framesPerBonesIt!=asset.framesPerBone.end(); framesPerBonesIt++)
     {
-        baseSize+=framesPerBonesIt->first.size();
+        baseSize+=sizeof(size_t); // name size (unordered_map key)
+        baseSize+=framesPerBonesIt->first.size(); // name (unordered_map key)
         const auto& frames = framesPerBonesIt->second;
-        for (auto positionIt=frames.positionFrames.begin(); positionIt!= frames.positionFrames.end(); positionIt++)
-        {
-            baseSize+=sizeof(double);
-        }
+        baseSize+=sizeof(size_t); // std::vector<nc::asset::PositionFrame> count
+        baseSize+=frames.positionFrames.size() * sizeof(nc::asset::PositionFrame); // std::vector<nc::asset::PositionFrame>
+        baseSize+=sizeof(size_t); // std::vector<nc::asset::RotationFrame> count
+        baseSize+=frames.rotationFrames.size() * sizeof(nc::asset::RotationFrame); // std::vector<nc::asset::RotationFrame>
+        baseSize+=sizeof(size_t); // std::vector<nc::asset::ScaleFrame> count
+        baseSize+=frames.scaleFrames.size() * sizeof(nc::asset::ScaleFrame); // std::vector<nc::asset::ScaleFrame>
     }
+    return baseSize;
 }
 }  // anonymous namespace
 

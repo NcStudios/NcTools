@@ -7,4 +7,5 @@ target_sources(nc-convert
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Inspect.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Manifest.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/SkeletalAnimationWriter.cpp
 )

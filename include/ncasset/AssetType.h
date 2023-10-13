@@ -10,6 +10,7 @@ enum class AssetType
     HullCollider,
     Mesh,
     Shader,
+    SkeletalAnimationClip,
     Texture
 };
 } // namespace nc::asset

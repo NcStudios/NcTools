@@ -138,6 +138,42 @@ TEST_F(BuildAndImportTest, Mesh_from_fbx)
     EXPECT_TRUE(std::ranges::all_of(asset.indices, [&nVertices](auto i){ return i < nVertices; }));
 }
 
+TEST_F(BuildAndImportTest, SkeletalAnimationClip_from_fbx)
+{
+    namespace test_data = collateral::simple_cube_animation_fbx;
+    const auto inFile = test_data::filePath;
+    const auto outFile = ncaTestOutDirectory / "simple_cube_animation.nca";
+    const auto target = nc::convert::Target(inFile, outFile);
+    auto builder = nc::convert::Builder{};
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::SkeletalAnimationClip, target));
+
+    const auto asset = nc::asset::ImportSkeletalAnimationClip(outFile);
+
+    // EXPECT_EQ(asset.extents, test_data::meshVertexExtents);
+    // EXPECT_FLOAT_EQ(asset.maxExtent, test_data::furthestDistanceFromOrigin);
+    // EXPECT_EQ(asset.vertices.size(), test_data::vertexCount);
+
+    // for (const auto& vertex : asset.vertices)
+    // {
+    //     // TODO: uvs
+    //     const auto foundVertex = std::ranges::find(test_data::possibleVertices, vertex.position);
+    //     const auto foundNormal = std::ranges::find(test_data::possibleNormals, vertex.normal);
+    //     const auto foundTangent = std::ranges::find(test_data::possibleTangents, vertex.tangent);
+    //     const auto foundBitangent = std::ranges::find(test_data::possibleBitangents, vertex.bitangent);
+    //     EXPECT_NE(foundVertex, test_data::possibleVertices.cend());
+    //     EXPECT_NE(foundNormal, test_data::possibleNormals.cend());
+    //     EXPECT_NE(foundTangent, test_data::possibleTangents.cend());
+    //     EXPECT_NE(foundBitangent, test_data::possibleBitangents.cend());
+    // }
+
+    // // should have triangular faces
+    // EXPECT_EQ(asset.indices.size() % 3, 0);
+
+    // // just verifying all indices point to a valid vertex
+    // const auto nVertices = asset.vertices.size();
+    // EXPECT_TRUE(std::ranges::all_of(asset.indices, [&nVertices](auto i){ return i < nVertices; }));
+}
+
 TEST_F(BuildAndImportTest, AudioClip_from_wav)
 {
     namespace test_data = collateral::sine;

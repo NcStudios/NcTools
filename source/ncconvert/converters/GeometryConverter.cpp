@@ -16,6 +16,7 @@
 #include <queue>
 #include <span>
 #include <unordered_map>
+#include <ctime>
 
 namespace
 {
@@ -60,6 +61,34 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
     }
 
     return scene;
+}
+
+auto ParseSkeletalAnimationClipName(const aiString& name) -> std::string
+{
+    // Blender adds a prefix of '<armature name>|' to animation clips. We just want the clip/action name.
+    auto nameAsString = std::string(name.C_Str());
+    auto pipeDelimiterPos = nameAsString.find_last_of('|');
+
+    if (pipeDelimiterPos == std::string::npos) // Allows support for non-blender imported files.
+    {
+        return nameAsString;
+    }
+
+    if (pipeDelimiterPos == nameAsString.size()) // Returns name in format like: clip_2023_10_13_18-33-59 if no name is given.
+    {
+        auto currentDateTime = time(0);
+        auto utcDateTime = gmtime(&currentDateTime);
+        std::string formattedTime = std::string("clip") + "_" +
+                                    std::to_string(1900 + utcDateTime->tm_year) + "_" +
+                                    std::to_string(1 + utcDateTime->tm_mon)  + "_" +
+                                    std::to_string(utcDateTime->tm_mday) + "_" +
+                                    std::to_string(utcDateTime->tm_hour) + "-" +
+                                    std::to_string(utcDateTime->tm_min) + "-" +
+                                    std::to_string(utcDateTime->tm_sec);
+        return formattedTime;
+    }
+
+    return nameAsString.substr(pipeDelimiterPos+1, nameAsString.size()-pipeDelimiterPos);
 }
 
 auto ToVector3(const aiVector3D& in) -> nc::Vector3
@@ -307,7 +336,7 @@ auto ConvertToSkeletalAnimationClips(const aiScene* scene) -> std::vector<nc::as
     for (const auto* animationClip : std::span(scene->mAnimations, scene->mNumAnimations))
     {
         auto skeletalAnimationClip = nc::asset::SkeletalAnimationClip{};
-        skeletalAnimationClip.name = std::string(animationClip->mName.C_Str());
+        skeletalAnimationClip.name = ParseSkeletalAnimationClipName(animationClip->mName);
         skeletalAnimationClip.ticksPerSecond = animationClip->mTicksPerSecond == 0 ? 25.0f : animationClip->mTicksPerSecond; // Ticks per second is not required to be set in animation software.
         skeletalAnimationClip.durationInTicks = static_cast<uint32_t>(animationClip->mDuration * skeletalAnimationClip.ticksPerSecond);
         skeletalAnimationClip.framesPerBone = std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames>{};

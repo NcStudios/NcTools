@@ -32,6 +32,12 @@
             "assetName": "myMesh"
         }
     ],
+    "skeletal-animation-clip": [
+        {
+            "sourcePath": "cube.fbx",
+            "assetName": "myMesh"
+        }
+    ],
     "texture": [
         {
             "sourcePath": "rgb_corners_4x8.png",

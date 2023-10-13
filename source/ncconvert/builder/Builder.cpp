@@ -97,8 +97,11 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::SkeletalAnimationClip:
         {
-            const auto asset = m_geometryConverter->ImportSkeletalAnimations(target.sourcePath);
-            convert::Serialize(outFile, asset.at(0), assetId); /** @todo handle multiples. */
+            const auto assets = m_geometryConverter->ImportSkeletalAnimations(target.sourcePath);
+            for (const auto& asset : assets)
+            {
+                convert::Serialize(outFile, asset, assetId);
+            }
             return true;
         }
         case asset::AssetType::Texture:

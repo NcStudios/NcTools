@@ -21,6 +21,7 @@ target_sources(NcAsset
         ${PROJECT_SOURCE_DIR}/source/ncasset/Import.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/NcaHeader.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncasset/SkeletalAnimationReader.cpp
 )
 
 target_link_libraries(NcAsset

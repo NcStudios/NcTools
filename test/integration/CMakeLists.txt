@@ -42,6 +42,7 @@ if(NC_TOOLS_BUILD_CONVERTER)
             ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
             ${PROJECT_SOURCE_DIR}/source/ncasset/Import.cpp
             ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
+            ${PROJECT_SOURCE_DIR}/source/ncasset/SkeletalAnimationReader.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/GeometryAnalysis.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/Sanitize.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/TextureAnalysis.cpp
@@ -130,6 +131,7 @@ target_sources(Serialize_integration_tests
         ${PROJECT_SOURCE_DIR}/source/ncasset/BonesReader.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncasset/SkeletalAnimationReader.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BonesWriter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/SkeletalAnimationWriter.cpp

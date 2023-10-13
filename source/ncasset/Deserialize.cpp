@@ -1,6 +1,7 @@
 #include "Deserialize.h"
 #include "BonesReader.h"
 #include "RawNcaBuffer.h"
+#include "SkeletalAnimationReader.h"
 #include "ncasset/Assets.h"
 
 #include "ncutility/NcError.h"
@@ -144,6 +145,7 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
     asset.indices.resize(indexCount);
     bytes.Read(asset.indices.data(), indexCount * sizeof(uint32_t));
     bytes.Read(&hasBones);
+
     if (hasBones)
     {
         auto vertexToBoneSpaceMatrixCount = size_t{};
@@ -158,6 +160,30 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
     if (bytes.RemainingByteCount() != 0)
     {
         throw NcError("Not all Mesh data was read from RawNcaBuffer");
+    }
+
+    return {header, asset};
+}
+
+auto DeserializeSkeletalAnimationClip(std::istream& stream) -> DeserializedResult<SkeletalAnimationClip>
+{
+    const auto header = DeserializeHeader(stream);
+    ::ValidateHeader(header, MagicNumber::skeletalAnimationClip);
+    auto bytes = RawNcaBuffer{stream, header.size};
+    auto asset = SkeletalAnimationClip{};
+    auto clipNameSize = size_t{};
+    bytes.Read(&clipNameSize);
+    asset.name.resize(clipNameSize);
+    bytes.Read(asset.name.data(), clipNameSize);
+    bytes.Read(&asset.durationInTicks);
+    bytes.Read(&asset.ticksPerSecond);
+    auto framesPerBoneSize = size_t{};
+    bytes.Read(&framesPerBoneSize);
+    asset.framesPerBone = ReadSkeletalAnimationFrames(bytes, framesPerBoneSize);
+    
+    if (bytes.RemainingByteCount() != 0)
+    {
+        throw NcError("Not all SkeletalAnimationClip data was read from RawNcaBuffer");
     }
 
     return {header, asset};

@@ -34,6 +34,9 @@ auto DeserializeHullCollider(std::istream& stream) -> DeserializedResult<HullCol
 /** @brief Construct a Mesh from data in a binary stream. */
 auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>;
 
+/** @brief Construct a SkeletalAnimationClip from data in a binary stream. */
+auto DeserializeSkeletalAnimationClip(std::istream& stream) -> DeserializedResult<SkeletalAnimationClip>;
+
 /** @brief Construct a Texture from data in a binary stream. */
 auto DeserializeTexture(std::istream& stream) -> DeserializedResult<Texture>;
 } // nc::asset

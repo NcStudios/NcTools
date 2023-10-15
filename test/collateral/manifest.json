@@ -28,8 +28,7 @@
     ],
     "mesh": [
         {
-            "sourcePath": "cube.fbx",
-            "assetName": "myMesh"
+            "sourcePath": "cube.fbx"
         }
     ],
     "texture": [

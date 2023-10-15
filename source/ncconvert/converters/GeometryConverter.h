@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <memory>
+#include <vector>
 
 namespace nc::convert
 {
@@ -19,8 +20,11 @@ class GeometryConverter
         /** Process an fbx file as geometry for a hull collider. */
         auto ImportHullCollider(const std::filesystem::path& path) -> asset::HullCollider;
 
-        /** Proecess an fbx file as geometry for a mesh renderer. */
+        /** Process an fbx file as geometry for a mesh renderer. */
         auto ImportMesh(const std::filesystem::path& path) -> asset::Mesh;
+
+        /** Return a list of all mesh names from the scene in the order they were returned in from the software. */
+        auto ParseInternalMeshNames(const std::filesystem::path& path) -> std::vector<std::string>;
 
     private:
         class impl;

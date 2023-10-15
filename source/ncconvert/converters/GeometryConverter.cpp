@@ -24,16 +24,11 @@ constexpr auto hullColliderFlags = concaveColliderFlags | aiProcess_JoinIdentica
 constexpr auto meshFlags = hullColliderFlags | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
 const auto supportedFileExtensions = std::array<std::string, 2> {".fbx", ".obj"};
 
-auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiScene*
+auto ImportScene(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiScene*
 {
     if (!nc::convert::ValidateInputFileExtension(path, supportedFileExtensions))
     {
         throw nc::NcError("Invalid input file: ", path.string());
-    }
-
-    if (!importer->ValidateFlags(flags))
-    {
-        throw nc::NcError("Unsupported import flags");
     }
 
     auto scene = importer->ReadFile(path.string(), flags);
@@ -44,13 +39,33 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
         ));
     }
 
+    return scene;
+}
+
+auto ReadFbxMeshNames(const std::filesystem::path& path, Assimp::Importer* importer) -> std::vector<std::string>
+{
+    auto* scene = ImportScene(path, importer, 0);
     if (scene->mNumMeshes == 0)
     {
         throw nc::NcError("Fbx contains no mesh data\n    file: ", path.string());
     }
-    else if (scene->mNumMeshes > 1)
+
+    auto meshNames = std::vector<std::string>{};
+    meshNames.reserve(scene->mNumMeshes);
+    for (const auto* mesh : std::span(scene->mMeshes, scene->mNumMeshes))
     {
-        LOG("Fbx {} has {} meshes. Only the first will be parsed.", path.string(), scene->mNumMeshes);
+        meshNames.push_back(std::string(mesh->mName.C_Str()));
+    }
+
+    return meshNames;
+}
+
+auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiScene*
+{
+    auto* scene = ImportScene(path, importer, flags);
+    if (scene->mNumMeshes == 0)
+    {
+        throw nc::NcError("Fbx contains no mesh data\n    file: ", path.string());
     }
 
     if (scene->mMeshes[0]->mNumVertices == 0)
@@ -347,6 +362,11 @@ class GeometryConverter::impl
             };
         }
 
+        auto ParseInternalMeshNames(const std::filesystem::path& path) -> const std::vector<std::string>
+        {
+            return ReadFbxMeshNames(path, &m_importer);
+        }
+
     private:
         Assimp::Importer m_importer;
 };
@@ -371,5 +391,10 @@ auto GeometryConverter::ImportHullCollider(const std::filesystem::path& path) ->
 auto GeometryConverter::ImportMesh(const std::filesystem::path& path) -> asset::Mesh
 {
     return m_impl->ImportMesh(path);
+}
+
+auto GeometryConverter::ParseInternalMeshNames(const std::filesystem::path& path) -> std::vector<std::string>
+{
+    return m_impl->ParseInternalMeshNames(path);
 }
 } // namespace nc::convert

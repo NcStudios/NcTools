@@ -38,6 +38,14 @@ auto BuildSingleTargetCommand(std::string_view type, std::string_view sourceName
     );
 }
 
+auto BuildSingleTargetCommand(std::string_view type, std::string_view sourceName) -> std::string
+{
+    const auto source = (collateral::collateralDirectory / sourceName).string();
+    return fmt::format(R"({} -t {} -s "{}" -o "{}")",
+        exeName, type, source, ncaTestOutDirectory.string()
+    );
+}
+
 class NcConvertIntegration : public ::testing::Test
 {
     public:
@@ -115,14 +123,14 @@ TEST_F(NcConvertIntegration, SingleTarget_hullCollider_wrongSourceType_fails)
 
 TEST_F(NcConvertIntegration, SingleTarget_mesh_succeeds)
 {
-    const auto cmd = BuildSingleTargetCommand("mesh", "cube.fbx", "myMesh");
+    const auto cmd = BuildSingleTargetCommand("mesh", "cube.fbx");
     ASSERT_EQ(RunCmd(cmd), ResultCode::Success);
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myMesh.nca"));
+    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "Cube.nca"));
 }
 
 TEST_F(NcConvertIntegration, SingleTarget_mesh_wrongSourceType_fails)
 {
-    const auto cmd = BuildSingleTargetCommand("mesh", "rgb_corners_4x8.png", "myMesh");
+    const auto cmd = BuildSingleTargetCommand("mesh", "rgb_corners_4x8.png");
     EXPECT_EQ(RunCmd(cmd), ResultCode::RuntimeError);
 }
 
@@ -152,11 +160,18 @@ TEST_F(NcConvertIntegration, SingleTarget_noSource_fails)
     EXPECT_EQ(RunCmd(cmd), ResultCode::ArgumentError);
 }
 
-TEST_F(NcConvertIntegration, SingleTarget_noName_fails)
+TEST_F(NcConvertIntegration, SingleTarget_noName_fails_if_not_canOutputMany)
+{
+    const auto source = (collateral::collateralDirectory / "rgb_corners_4x8.png").string();
+    const auto cmd = fmt::format(R"({} -t texture -s "{}")", exeName, source);
+    EXPECT_EQ(RunCmd(cmd), ResultCode::ArgumentError);
+}
+
+TEST_F(NcConvertIntegration, SingleTarget_noName_succeeds_if_canOutputMany)
 {
     const auto source = (collateral::collateralDirectory / "cube.fbx").string();
-    const auto cmd = fmt::format(R"({} -t mesh -s "{}")", exeName, "mesh", source);
-    EXPECT_EQ(RunCmd(cmd), ResultCode::ArgumentError);
+    const auto cmd = fmt::format(R"({} -t mesh -s "{}" -o "{}")", exeName, source, ncaTestOutDirectory.string());
+    EXPECT_EQ(RunCmd(cmd), ResultCode::Success);
 }
 
 TEST_F(NcConvertIntegration, Manifest_succeeds)
@@ -169,7 +184,7 @@ TEST_F(NcConvertIntegration, Manifest_succeeds)
     EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myConcaveCollider.nca"));
     EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myCubeMap.nca"));
     EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myHullCollider.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myMesh.nca"));
+    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "Cube.nca"));
     EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myTexture.nca"));
 }
 

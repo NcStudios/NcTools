@@ -1,6 +1,6 @@
 #include "Manifest.h"
 #include "Target.h"
-#include "utility/EnumConversion.h"
+#include "utility/EnumExtensions.h"
 #include "utility/Log.h"
 #include "utility/Path.h"
 
@@ -56,23 +56,21 @@ void ProcessOptions(GlobalManifestOptions& options, const std::filesystem::path&
     }
 }
 
-auto BuildTarget(const nlohmann::json& json, const std::filesystem::path& outputDirectory) -> nc::convert::Target
+auto BuildTarget(const nlohmann::json& json, nc::asset::AssetType type, const std::filesystem::path& outputDirectory) -> nc::convert::Target
 {
+    if (!nc::convert::CanOutputMany(type))
+    {
+        return nc::convert::Target{
+            json.at("sourcePath"),
+            nc::convert::AssetNameToNcaPath(json.at("assetName"), outputDirectory)
+        };
+    }
     return nc::convert::Target{
         json.at("sourcePath"),
-        nc::convert::AssetNameToNcaPath(json.at("assetName"), outputDirectory)
+        outputDirectory
     };
 }
 
-auto IsUpToDate(const nc::convert::Target& target) -> bool
-{
-    if (!std::filesystem::exists(target.destinationPath))
-    {
-        return false;
-    }
-
-    return std::filesystem::last_write_time(target.destinationPath) > std::filesystem::last_write_time(target.sourcePath);
-}
 } // anonymous namespace
 
 namespace nc::convert
@@ -99,16 +97,10 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
         const auto type = ToAssetType(typeTag);
         for (const auto& asset : json.at(typeTag))
         {
-            auto target = ::BuildTarget(asset, options.outputDirectory);
+            auto target = ::BuildTarget(asset, type, options.outputDirectory);
             if (!std::filesystem::is_regular_file(target.sourcePath))
             {
                 throw nc::NcError("Invalid source file: ", target.sourcePath.string());
-            }
-
-            if (::IsUpToDate(target))
-            {
-                LOG("Up-to-date: {}", target.destinationPath.string());
-                continue;
             }
 
             LOG("Adding build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());

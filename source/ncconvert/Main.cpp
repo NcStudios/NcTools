@@ -1,7 +1,7 @@
 #include "Config.h"
 #include "ReturnCodes.h"
 #include "builder/BuildOrchestrator.h"
-#include "utility/EnumConversion.h"
+#include "utility/EnumExtensions.h"
 
 #include "ncutility/NcError.h"
 
@@ -17,24 +17,25 @@ Options
   -h                      Display this information.
   -t <asset type>         Specify asset type for a single target.
   -s <source>             Parse a single asset from <source>.
-  -n <name>               Specify the asset name for a single target.
+  -n <name>               Specify the asset name for a single target. Omit if target can output multiple assets.
   -o <dir>                Output assets to <dir>.
   -m <manifest>           Perform conversions specified in <manifest>.
   -i <assetPath>          Print details about an existing asset file.
 
-Asset types               Supported file types
-  mesh                    fbx, obj
-  hull-collider           fbx, obj
-  concave-collider        fbx, obj
-  texture                 jpg, png, bmp
-  cube-map                jpg, png, bmp
-  audio-clip              wav
+Asset types               Supported file types      Can produce multiple assets
+  mesh                    fbx, obj                  true
+  hull-collider           fbx, obj                  false
+  concave-collider        fbx, obj                  false
+  texture                 jpg, png, bmp             false
+  cube-map                jpg, png, bmp             false
+  audio-clip              wav                       false
 
 Asset names
   The provided asset name is used to construct the output file path. It may
   optionally contain the ".nca" file extension and can be prefixed with
-  subdirectories ("meshes/level1/myMesh.nca"). Every asset should always have
-  a unique name.
+  subdirectories ("texture/level1/myTexture.nca"). Every asset should always have
+  a unique name. Some targets contain multiple assets (an FBX can contain multiple meshes)
+  and in those cases the asset name will be taken from the target's internal naming system.
 
 Json Manifest
   A provided manifest should be a json file containing an array of conversion
@@ -48,12 +49,10 @@ Json Manifest
       },
       "mesh": [
           {
-              "sourcePath": "path/to/mesh1.fbx",
-              "assetName": "myMesh1"
+              "sourcePath": "path/to/mesh1.fbx"
           },
           {
-              "sourcePath": "path/to/mesh2.fbx",
-              "assetName": "myMesh2"
+              "sourcePath": "path/to/mesh2.fbx"
           }
       ],
       "texture": [
@@ -170,7 +169,12 @@ bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
         }
         case nc::convert::OperationMode::SingleTarget:
         {
-            return out->targetPath.has_value() && out->targetType.has_value() && out->assetName.has_value();
+            return out->targetPath.has_value() && 
+                   out->targetType.has_value() && 
+                   (
+                      (nc::convert::CanOutputMany(out->targetType.value()) && !out->assetName.has_value()) ||
+                      (!nc::convert::CanOutputMany(out->targetType.value()) && out->assetName.has_value())
+                   );
         }
         case nc::convert::OperationMode::Manifest:
         {

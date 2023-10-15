@@ -3,7 +3,7 @@
 #include "BuildInstructions.h"
 #include "Inspect.h"
 #include "Target.h"
-#include "utility/EnumConversion.h"
+#include "utility/EnumExtensions.h"
 #include "utility/Log.h"
 
 #include "ncasset/AssetType.h"
@@ -57,11 +57,7 @@ void BuildOrchestrator::RunBuild()
     {
         for (const auto& target : instructions.GetTargetsForType(type))
         {
-            LOG("Building {}: {}", ToString(type), target.destinationPath.string());
-            if (!m_builder->Build(type, target))
-            {
-                LOG("Failed building: {}", target.destinationPath.string());
-            }
+            m_builder->Build(type, target, m_config.mode == OperationMode::Manifest);
         }
     }
 }

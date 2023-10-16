@@ -56,21 +56,43 @@ void ProcessOptions(GlobalManifestOptions& options, const std::filesystem::path&
     }
 }
 
-auto BuildTarget(const nlohmann::json& json, nc::asset::AssetType type, const std::filesystem::path& outputDirectory) -> nc::convert::Target
+auto IsUpToDate(const nc::convert::Target& target) -> bool
 {
-    if (!nc::convert::CanOutputMany(type))
+    if (!std::filesystem::exists(target.destinationPath))
     {
-        return nc::convert::Target{
-            json.at("sourcePath"),
-            nc::convert::AssetNameToNcaPath(json.at("assetName"), outputDirectory)
-        };
+        return false;
     }
-    return nc::convert::Target{
-        json.at("sourcePath"),
-        outputDirectory
-    };
+
+    return std::filesystem::last_write_time(target.destinationPath) > std::filesystem::last_write_time(target.sourcePath);
 }
 
+auto BuildManifestTarget(const nlohmann::json& json, nc::asset::AssetType type, const std::string& sourcePath, const std::string& internalName, const std::filesystem::path& outputDirectory) -> nc::convert::Target
+{
+    auto target = nc::convert::Target
+    {
+        sourcePath,
+        nc::convert::AssetNameToNcaPath(json.at("assetName"), outputDirectory)
+    };
+
+    if (!std::filesystem::is_regular_file(target.sourcePath))
+    {
+        throw nc::NcError("Invalid source file: ", target.sourcePath.string());
+    }
+
+    if (::IsUpToDate(target))
+    {
+        LOG("Up-to-date: {}", target.destinationPath.string());
+        return;
+    }
+
+    LOG("Adding build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
+    return target;
+}
+
+auto BuildManifestTarget(const nlohmann::json& json, nc::asset::AssetType type, const std::string& sourcePath, const std::filesystem::path& outputDirectory) -> nc::convert::Target
+{
+    return BuildManifestTarget(json, type, sourcePath, "", outputDirectory);
+}
 } // anonymous namespace
 
 namespace nc::convert
@@ -97,14 +119,30 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
         const auto type = ToAssetType(typeTag);
         for (const auto& asset : json.at(typeTag))
         {
-            auto target = ::BuildTarget(asset, type, options.outputDirectory);
-            if (!std::filesystem::is_regular_file(target.sourcePath))
+            if (CanOutputMany(type))
             {
-                throw nc::NcError("Invalid source file: ", target.sourcePath.string());
-            }
+                if (asset.contains("assetNames"))
+                {
+                    for (const auto& internalAsset : asset.at("assetNames"))
+                    {
+                        const auto& internalName = internalAsset.at("internalName");
+                        const auto& assetName = internalAsset.at("assetName");
 
-            LOG("Adding build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
-            instructions.at(type).push_back(std::move(target));
+                        auto target = BuildManifestTarget(assetName, type, asset.at("sourcePath"), internalName, options.outputDirectory);
+                        instructions.at(type).push_back(std::move(target));
+                    }
+                }
+                else
+                {
+                    auto target = BuildManifestTarget(asset, type, asset.at("sourcePath"), options.outputDirectory);
+                    instructions.at(type).push_back(std::move(target));
+                }
+            }
+            else
+            {
+                auto target = BuildManifestTarget(asset, type, asset.at("sourcePath"), options.outputDirectory);
+                instructions.at(type).push_back(std::move(target));
+            }
         }
     }
 }

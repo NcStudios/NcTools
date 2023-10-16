@@ -28,7 +28,17 @@
     ],
     "mesh": [
         {
-            "sourcePath": "cube.fbx"
+            "sourcePath": "cube.fbx",
+            "assetNames": [
+                {
+                    "internalName" : "Cube.001",
+                    "assetName" : "cube"
+                }
+            ]
+        },
+        {
+            "sourcePath": "cube.fbx",
+            "assetName": "cube"
         }
     ],
     "texture": [

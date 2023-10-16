@@ -44,16 +44,6 @@ auto GetAssetId(const std::filesystem::path& outPath) -> size_t
     const auto ncaName = outPath.filename();
     return nc::utility::Fnv1a(ncaName.string());
 }
-
-auto IsUpToDate(const nc::convert::Target& target) -> bool
-{
-    if (!std::filesystem::exists(target.destinationPath))
-    {
-        return false;
-    }
-
-    return std::filesystem::last_write_time(target.destinationPath) > std::filesystem::last_write_time(target.sourcePath);
-}
 } // anonymous namespace
 
 namespace nc::convert
@@ -67,7 +57,7 @@ Builder::Builder()
 
 Builder::~Builder() noexcept = default;
 
-auto Builder::Build(asset::AssetType type, const Target& target, bool forceUpdate) -> bool
+auto Builder::Build(asset::AssetType type, const Target& target, bool) -> bool
 {
     if (CanOutputMany(type))
     {
@@ -82,12 +72,12 @@ auto Builder::Build(asset::AssetType type, const Target& target, bool forceUpdat
                 .destinationPath = internalDestinationPath
             };
 
-            if (::IsUpToDate(internalTarget) && !forceUpdate)
-            {
-                LOG("Up-to-date: {}", internalDestinationPath);
-                LOG("Removing build target: {} -> {}", target.sourcePath.string(), internalDestinationPath);
-                continue;
-            }
+            // if (::IsUpToDate(internalTarget) && !forceUpdate)
+            // {
+            //     LOG("Up-to-date: {}", internalDestinationPath);
+            //     LOG("Removing build target: {} -> {}", target.sourcePath.string(), internalDestinationPath);
+            //     continue;
+            // }
 
             LOG("Building {}: {}", ToString(type), internalDestinationPath);
             if (!BuildAssets(type, internalTarget))
@@ -98,12 +88,12 @@ auto Builder::Build(asset::AssetType type, const Target& target, bool forceUpdat
         return true;
     }
 
-    if (::IsUpToDate(target) && !forceUpdate)
-    {
-        LOG("Up-to-date: {}", target.destinationPath.string());
-        LOG("Removing build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
-        return true;
-    }
+    // if (::IsUpToDate(target) && !forceUpdate)
+    // {
+    //     LOG("Up-to-date: {}", target.destinationPath.string());
+    //     LOG("Removing build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
+    //     return true;
+    // }
 
     LOG("Building {}: {}", ToString(type), target.destinationPath.string());
     if (!BuildAssets(type, target))

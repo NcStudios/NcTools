@@ -17,7 +17,7 @@ Options
   -h                      Display this information.
   -t <asset type>         Specify asset type for a single target.
   -s <source>             Parse a single asset from <source>.
-  -n <name>               Specify the asset name for a single target. Omit if target can output multiple assets.
+  -n <name>               Specify the asset name for a single target.
   -o <dir>                Output assets to <dir>.
   -m <manifest>           Perform conversions specified in <manifest>.
   -i <assetPath>          Print details about an existing asset file.
@@ -33,9 +33,8 @@ Asset types               Supported file types      Can produce multiple assets
 Asset names
   The provided asset name is used to construct the output file path. It may
   optionally contain the ".nca" file extension and can be prefixed with
-  subdirectories ("texture/level1/myTexture.nca"). Every asset should always have
-  a unique name. Some targets contain multiple assets (an FBX can contain multiple meshes)
-  and in those cases the asset name will be taken from the target's internal naming system.
+  subdirectories ("meshes/level1/myMesh.nca"). Every asset should always have
+  a unique name.
 
 Json Manifest
   A provided manifest should be a json file containing an array of conversion
@@ -49,10 +48,21 @@ Json Manifest
       },
       "mesh": [
           {
-              "sourcePath": "path/to/mesh1.fbx"
+              "sourcePath": "path/to/mesh1.fbx",
+              "assetNames": [
+                  {
+                      "internalName" : "mesh1head",
+                      "assetName" : "head"
+                  },
+                  {
+                      "internalName" : "mesh1shoulders",
+                      "assetName" : "shoulders"
+                  }
+              ]
           },
           {
-              "sourcePath": "path/to/mesh2.fbx"
+              "sourcePath": "path/to/mesh2.fbx",
+              "assetName": "mesh2"
           }
       ],
       "texture": [
@@ -169,12 +179,7 @@ bool ParseArgs(int argc, char** argv, nc::convert::Config* out)
         }
         case nc::convert::OperationMode::SingleTarget:
         {
-            return out->targetPath.has_value() && 
-                   out->targetType.has_value() && 
-                   (
-                      (nc::convert::CanOutputMany(out->targetType.value()) && !out->assetName.has_value()) ||
-                      (!nc::convert::CanOutputMany(out->targetType.value()) && out->assetName.has_value())
-                   );
+            return out->targetPath.has_value() && out->targetType.has_value() && out->assetName.has_value();
         }
         case nc::convert::OperationMode::Manifest:
         {

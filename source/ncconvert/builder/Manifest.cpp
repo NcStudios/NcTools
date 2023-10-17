@@ -113,7 +113,7 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
             // Types that CanOutputMany support both single target (legacy) mode and multiple output mode.
             if (CanOutputMany(type))
             {
-                // Multiple output mode
+                // // Multiple output mode
                 if (asset.contains("assetNames"))
                 {
                     for (const auto& internalAsset : asset.at("assetNames"))
@@ -130,16 +130,19 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
                     }
                     continue;
                 }
-
-                // Single target mode
-                auto target = BuildTarget(asset, asset.at("sourcePath"), std::nullopt, options.outputDirectory);
-                if (::IsUpToDate(target))
+                else if (asset.contains("assetName"))
                 {
-                    LOG("Up-to-date: {}", target.destinationPath.string());
+                    // Single target mode
+                    auto target = BuildTarget(asset, asset.at("sourcePath"), std::nullopt, options.outputDirectory);
+                    if (::IsUpToDate(target))
+                    {
+                        LOG("Up-to-date: {}", target.destinationPath.string());
+                        continue;
+                    }
+                    instructions.at(type).push_back(std::move(target));
                     continue;
                 }
-                instructions.at(type).push_back(std::move(target));
-                continue;
+                throw nc::NcError("Asset must contain either \"assetName\" or \"assetNames\".");
             }
 
             // Single target mode

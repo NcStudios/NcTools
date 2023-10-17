@@ -37,8 +37,8 @@
             ]
         },
         {
-            "sourcePath": "cube.fbx",
-            "assetName": "cube"
+            "sourcePath": "plane.fbx",
+            "assetName": "plane"
         }
     ],
     "texture": [

@@ -57,7 +57,7 @@ void BuildOrchestrator::RunBuild()
     {
         for (const auto& target : instructions.GetTargetsForType(type))
         {
-            m_builder->Build(type, target, m_config.mode == OperationMode::Manifest);
+            m_builder->Build(type, target);
         }
     }
 }

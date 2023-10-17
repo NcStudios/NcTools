@@ -46,9 +46,9 @@ void BuildInstructions::ReadTargets(const Config& config)
             LOG("Running in single target mode");
             auto& collection = m_instructions.at(config.targetType.value());
             auto sourcePath = config.targetPath.value();
-            auto destinationPath = nc::convert::CanOutputMany(config.targetType.value()) ? config.outputDirectory : AssetNameToNcaPath(config.assetName.value(), config.outputDirectory);
+            auto destinationPath = AssetNameToNcaPath(config.assetName.value(), config.outputDirectory);
             LOG("Adding build target: {} -> {}", sourcePath.string(), destinationPath.string());
-            collection.emplace_back(std::move(sourcePath), std::move(destinationPath));
+            collection.emplace_back(std::move(sourcePath), std::move(destinationPath), std::nullopt);
             break;
         }
         case OperationMode::Manifest:

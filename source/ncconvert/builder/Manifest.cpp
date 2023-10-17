@@ -66,12 +66,13 @@ auto IsUpToDate(const nc::convert::Target& target) -> bool
     return std::filesystem::last_write_time(target.destinationPath) > std::filesystem::last_write_time(target.sourcePath);
 }
 
-auto BuildManifestTarget(const nlohmann::json& json, nc::asset::AssetType type, const std::string& sourcePath, const std::string& internalName, const std::filesystem::path& outputDirectory) -> nc::convert::Target
+auto BuildTarget(const nlohmann::json& json, const std::string& sourcePath, const std::optional<std::string>& internalName, const std::filesystem::path& outputDirectory) -> nc::convert::Target
 {
     auto target = nc::convert::Target
     {
         sourcePath,
-        nc::convert::AssetNameToNcaPath(json.at("assetName"), outputDirectory)
+        nc::convert::AssetNameToNcaPath(json.at("assetName"), outputDirectory),
+        internalName
     };
 
     if (!std::filesystem::is_regular_file(target.sourcePath))
@@ -79,20 +80,10 @@ auto BuildManifestTarget(const nlohmann::json& json, nc::asset::AssetType type, 
         throw nc::NcError("Invalid source file: ", target.sourcePath.string());
     }
 
-    if (::IsUpToDate(target))
-    {
-        LOG("Up-to-date: {}", target.destinationPath.string());
-        return;
-    }
-
     LOG("Adding build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
     return target;
 }
 
-auto BuildManifestTarget(const nlohmann::json& json, nc::asset::AssetType type, const std::string& sourcePath, const std::filesystem::path& outputDirectory) -> nc::convert::Target
-{
-    return BuildManifestTarget(json, type, sourcePath, "", outputDirectory);
-}
 } // anonymous namespace
 
 namespace nc::convert
@@ -119,30 +110,47 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
         const auto type = ToAssetType(typeTag);
         for (const auto& asset : json.at(typeTag))
         {
+            // Types that CanOutputMany support both single target (legacy) mode and multiple output mode.
             if (CanOutputMany(type))
             {
+                // Multiple output mode
                 if (asset.contains("assetNames"))
                 {
                     for (const auto& internalAsset : asset.at("assetNames"))
                     {
                         const auto& internalName = internalAsset.at("internalName");
                         const auto& assetName = internalAsset.at("assetName");
-
-                        auto target = BuildManifestTarget(assetName, type, asset.at("sourcePath"), internalName, options.outputDirectory);
+                        auto target = BuildTarget(assetName, asset.at("sourcePath"), internalName, options.outputDirectory);
+                        if (::IsUpToDate(target))
+                        {
+                            LOG("Up-to-date: {}", target.destinationPath.string());
+                            continue;
+                        }
                         instructions.at(type).push_back(std::move(target));
                     }
+                    continue;
                 }
-                else
+
+                // Single target mode
+                auto target = BuildTarget(asset, asset.at("sourcePath"), std::nullopt, options.outputDirectory);
+                if (::IsUpToDate(target))
                 {
-                    auto target = BuildManifestTarget(asset, type, asset.at("sourcePath"), options.outputDirectory);
-                    instructions.at(type).push_back(std::move(target));
+                    LOG("Up-to-date: {}", target.destinationPath.string());
+                    continue;
                 }
-            }
-            else
-            {
-                auto target = BuildManifestTarget(asset, type, asset.at("sourcePath"), options.outputDirectory);
                 instructions.at(type).push_back(std::move(target));
+                continue;
             }
+
+            // Single target mode
+            auto target = BuildTarget(asset, asset.at("sourcePath"), std::nullopt, options.outputDirectory);
+            if (::IsUpToDate(target))
+            {
+                LOG("Up-to-date: {}", target.destinationPath.string());
+                continue;
+            }
+            instructions.at(type).push_back(std::move(target));
+            continue;
         }
     }
 }

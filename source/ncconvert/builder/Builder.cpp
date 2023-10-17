@@ -57,58 +57,10 @@ Builder::Builder()
 
 Builder::~Builder() noexcept = default;
 
-auto Builder::Build(asset::AssetType type, const Target& target, bool) -> bool
-{
-    if (CanOutputMany(type))
-    {
-        const auto internalAssetNames = ParseInternalAssetNames(type, target);
-
-        for (const auto& internalAssetName : internalAssetNames)
-        {           
-            auto internalDestinationPath = AssetNameToNcaPath(internalAssetName, target.destinationPath).string();
-            auto internalTarget = Target
-            {
-                .sourcePath = target.sourcePath,
-                .destinationPath = internalDestinationPath
-            };
-
-            // if (::IsUpToDate(internalTarget) && !forceUpdate)
-            // {
-            //     LOG("Up-to-date: {}", internalDestinationPath);
-            //     LOG("Removing build target: {} -> {}", target.sourcePath.string(), internalDestinationPath);
-            //     continue;
-            // }
-
-            LOG("Building {}: {}", ToString(type), internalDestinationPath);
-            if (!BuildAssets(type, internalTarget))
-            {
-                LOG("Failed building: {}", internalDestinationPath);
-            }
-        }
-        return true;
-    }
-
-    // if (::IsUpToDate(target) && !forceUpdate)
-    // {
-    //     LOG("Up-to-date: {}", target.destinationPath.string());
-    //     LOG("Removing build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
-    //     return true;
-    // }
-
-    LOG("Building {}: {}", ToString(type), target.destinationPath.string());
-    if (!BuildAssets(type, target))
-    {
-        LOG("Failed building: {}", target.destinationPath.string());
-    }
-
-    return true;
-}
-
-auto Builder::BuildAssets(asset::AssetType type, const Target& target) -> bool
+auto Builder::Build(asset::AssetType type, const Target& target) -> bool
 {
     auto outFile = ::OpenOutFile(target.destinationPath);
     const auto assetId = ::GetAssetId(target.destinationPath);
-
     switch (type)
     {
         case asset::AssetType::AudioClip:
@@ -137,7 +89,7 @@ auto Builder::BuildAssets(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::Mesh:
         {
-            const auto asset = m_geometryConverter->ImportMesh(target.sourcePath);
+            const auto asset = m_geometryConverter->ImportMesh(target.sourcePath, target.internalName);
             convert::Serialize(outFile, asset, assetId);
             return true;
         }
@@ -152,22 +104,8 @@ auto Builder::BuildAssets(asset::AssetType type, const Target& target) -> bool
             return true;
         }
     }
-
     throw NcError(fmt::format("Unknown AssetType: {} for {}",
         static_cast<int>(type), target.sourcePath.string()
     ));
 }
-
-const std::vector<std::string> Builder::ParseInternalAssetNames(asset::AssetType type, const Target& target)
-{
-    if (type == nc::asset::AssetType::Mesh)
-    {
-        return m_geometryConverter->ParseInternalMeshNames(target.sourcePath);
-    }
-
-    throw NcError(fmt::format("Unknown AssetType: {} for {}",
-        static_cast<int>(type), target.sourcePath.string()
-    ));
-}
-
 } // namespace nc::convert

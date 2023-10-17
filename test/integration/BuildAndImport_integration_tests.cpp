@@ -42,7 +42,7 @@ TEST_F(BuildAndImportTest, Texture_from_png)
     const auto outFile = ncaTestOutDirectory / "rgb_png.nca";
     const auto target = nc::convert::Target(inFile, outFile);
     auto builder = nc::convert::Builder{};
-    ASSERT_TRUE(builder.Build(nc::asset::AssetType::Texture, target, true));
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::Texture, target));
 
     const auto asset = nc::asset::ImportTexture(outFile);
 
@@ -65,7 +65,7 @@ TEST_F(BuildAndImportTest, ConcaveCollider_from_fbx)
     const auto outFile = ncaTestOutDirectory / "plane_concave.nca";
     const auto target = nc::convert::Target(inFile, outFile);
     auto builder = nc::convert::Builder{};
-    ASSERT_TRUE(builder.Build(nc::asset::AssetType::ConcaveCollider, target, true));
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::ConcaveCollider, target));
 
     const auto asset = nc::asset::ImportConcaveCollider(outFile);
 
@@ -87,7 +87,7 @@ TEST_F(BuildAndImportTest, HullCollider_from_fbx)
     const auto outFile = ncaTestOutDirectory / "cube_hull.nca";
     const auto target = nc::convert::Target(inFile, outFile);
     auto builder = nc::convert::Builder{};
-    ASSERT_TRUE(builder.Build(nc::asset::AssetType::HullCollider, target, true));
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::HullCollider, target));
 
     const auto asset = nc::asset::ImportHullCollider(outFile);
 
@@ -106,12 +106,12 @@ TEST_F(BuildAndImportTest, Mesh_from_fbx)
 {
     namespace test_data = collateral::cube_fbx;
     const auto inFile = test_data::filePath;
-    const auto outFile = ncaTestOutDirectory;
+    const auto outFile = ncaTestOutDirectory / "cube_mesh.nca";
     const auto target = nc::convert::Target(inFile, outFile);
     auto builder = nc::convert::Builder{};
-    ASSERT_TRUE(builder.Build(nc::asset::AssetType::Mesh, target, true));
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::Mesh, target));
 
-    const auto asset = nc::asset::ImportMesh(outFile / "Cube.nca");
+    const auto asset = nc::asset::ImportMesh(outFile);
 
     EXPECT_EQ(asset.extents, test_data::meshVertexExtents);
     EXPECT_FLOAT_EQ(asset.maxExtent, test_data::furthestDistanceFromOrigin);
@@ -145,7 +145,7 @@ TEST_F(BuildAndImportTest, AudioClip_from_wav)
     const auto outFile = ncaTestOutDirectory / "sine.nca";
     const auto target = nc::convert::Target(inFile, outFile);
     auto builder = nc::convert::Builder{};
-    ASSERT_TRUE(builder.Build(nc::asset::AssetType::AudioClip, target, true));
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::AudioClip, target));
 
     const auto asset = nc::asset::ImportAudioClip(outFile);
 
@@ -167,7 +167,7 @@ TEST_F(BuildAndImportTest, CubeMap_from_png)
     const auto outFile = ncaTestOutDirectory / "cube_map.nca";
     const auto target = nc::convert::Target(inFile, outFile);
     auto builder = nc::convert::Builder{};
-    ASSERT_TRUE(builder.Build(nc::asset::AssetType::CubeMap, target, true));
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::CubeMap, target));
 
     const auto asset = nc::asset::ImportCubeMap(outFile);
 

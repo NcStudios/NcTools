@@ -349,7 +349,7 @@ class GeometryConverter::impl
                         break;
                     }
                 }
-                if (mesh == nullptr) throw nc::NcError("An internal mesh name was provided but no mesh was found by that name: ", path.string());
+                if (mesh == nullptr) throw nc::NcError("An internal mesh name was provided but no mesh was found by that name: ", internalName.value());
             }
             else 
             {

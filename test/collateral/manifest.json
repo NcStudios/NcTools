@@ -28,8 +28,38 @@
     ],
     "mesh": [
         {
+            "sourcePath": "cube.fbx",
+            "assetNames": [
+                {
+                    "internalName" : "Cube.001",
+                    "assetName" : "myMultiOutputMesh"
+                }
+            ]
+        },
+        {
             "sourcePath": "plane.fbx",
-            "assetName": "plane"
+            "assetName": "myMesh"
+        },
+        {
+            "sourcePath": "multicube.fbx",
+            "assetNames": [
+                {
+                    "internalName" : "Cube 1 Mesh",
+                    "assetName" : "cube1"
+                },
+                {
+                    "internalName" : "Cube 2 Mesh",
+                    "assetName" : "cube2"
+                },
+                {
+                    "internalName" : "Cube 3 Mesh",
+                    "assetName" : "cube3"
+                },
+                {
+                    "internalName" : "Cube 1 A Mesh",
+                    "assetName" : "cube1a"
+                }
+            ]
         }
     ],
     "texture": [

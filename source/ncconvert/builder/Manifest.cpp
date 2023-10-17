@@ -66,12 +66,12 @@ auto IsUpToDate(const nc::convert::Target& target) -> bool
     return std::filesystem::last_write_time(target.destinationPath) > std::filesystem::last_write_time(target.sourcePath);
 }
 
-auto BuildTarget(const nlohmann::json& json, const std::string& sourcePath, const std::optional<std::string>& internalName, const std::filesystem::path& outputDirectory) -> nc::convert::Target
+auto BuildTarget(const std::string& assetName, const std::string& sourcePath, const std::optional<std::string>& internalName, const std::filesystem::path& outputDirectory) -> nc::convert::Target
 {
     auto target = nc::convert::Target
     {
         sourcePath,
-        nc::convert::AssetNameToNcaPath(json.at("assetName"), outputDirectory),
+        nc::convert::AssetNameToNcaPath(assetName, outputDirectory),
         internalName
     };
 
@@ -118,9 +118,7 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
                 {
                     for (const auto& internalAsset : asset.at("assetNames"))
                     {
-                        const auto& internalName = internalAsset.at("internalName");
-                        const auto& assetName = internalAsset.at("assetName");
-                        auto target = BuildTarget(assetName, asset.at("sourcePath"), internalName, options.outputDirectory);
+                        auto target = BuildTarget(internalAsset.at("assetName"), asset.at("sourcePath"), internalAsset.at("internalName"), options.outputDirectory);
                         if (::IsUpToDate(target))
                         {
                             LOG("Up-to-date: {}", target.destinationPath.string());
@@ -133,7 +131,7 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
                 else if (asset.contains("assetName"))
                 {
                     // Single target mode
-                    auto target = BuildTarget(asset, asset.at("sourcePath"), std::nullopt, options.outputDirectory);
+                    auto target = BuildTarget(asset.at("assetName"), asset.at("sourcePath"), std::nullopt, options.outputDirectory);
                     if (::IsUpToDate(target))
                     {
                         LOG("Up-to-date: {}", target.destinationPath.string());
@@ -146,7 +144,7 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
             }
 
             // Single target mode
-            auto target = BuildTarget(asset, asset.at("sourcePath"), std::nullopt, options.outputDirectory);
+            auto target = BuildTarget(asset.at("assetName"), asset.at("sourcePath"), std::nullopt, options.outputDirectory);
             if (::IsUpToDate(target))
             {
                 LOG("Up-to-date: {}", target.destinationPath.string());

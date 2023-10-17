@@ -76,6 +76,12 @@ namespace real_world_model_fbx
 const auto filePath = collateralDirectory / "real_world_model.fbx";
 } // namespace real_world_model_fbx
 
+// Describes the collateral file multicube.fbx
+namespace multicube_fbx
+{
+const auto filePath = collateralDirectory / "multicube.fbx";
+} // namespace multicube_fbx
+
 // Describes the collateral file plane.fbx
 namespace plane_fbx
 {

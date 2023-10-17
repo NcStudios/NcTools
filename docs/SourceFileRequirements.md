@@ -12,8 +12,8 @@ Audio clips can be converted from any stereo or mono WAV file.
 `concave-collider`, `hull-collider`, and `mesh` asset types are all generated from
 geometry data, and therefore have similar requirements. For `concave-collider` and `hull-collider`, only the first
 mesh in an input file will be processed, and non-geometry data in the input
-file is ignored. For `mesh` asset types, if nc-convert is called from the command line, only the first mesh in an input
-file will be processed. If the manifest is used, either the first mesh in an input file is processed, or every mesh in an 
+file is ignored. For `mesh` asset types, if nc-convert is called in single-target mode, only the first mesh in an input
+file will be processed. If the manifest is provided, either the first mesh in an input file is processed, or every mesh in an 
 input file is processed if the internal mesh names are specified.
 
 It is usually recommended for the input geometry to be centered around the origin.

@@ -5,6 +5,7 @@
 #include "converters/AudioConverter.h"
 #include "converters/GeometryConverter.h"
 #include "converters/TextureConverter.h"
+#include "utility/Log.h"
 
 #include "ncasset/Assets.h"
 
@@ -86,8 +87,22 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::Mesh:
         {
-            const auto asset = m_geometryConverter->ImportMesh(target.sourcePath, target.internalName);
-            convert::Serialize(outFile, asset, assetId);
+            try
+            {
+                const auto asset = m_geometryConverter->ImportMesh(target.sourcePath, target.internalName);
+                convert::Serialize(outFile, asset, assetId);
+            }
+            catch(const NcError& e)
+            {
+                if (std::string(e.what()).find(std::string("An internal mesh name was provided but no mesh")) != std::string::npos)
+                {
+                    LOG("Warning: ", e.what());
+                }
+                else
+                {
+                    throw e;
+                }
+            }
             return true;
         }
         case asset::AssetType::Shader:

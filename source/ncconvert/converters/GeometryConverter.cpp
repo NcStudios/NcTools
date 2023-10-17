@@ -348,7 +348,7 @@ class GeometryConverter::impl
                         break;
                     }
                 }
-                if (mesh == nullptr) throw nc::NcError("An internal mesh name was provided but no mesh was found by that name: ", internalName.value());
+                if (mesh == nullptr) throw nc::NcError("An internal mesh name was provided but no mesh was found by that name: {}. No asset will be created.", internalName.value());
             }
             else 
             {

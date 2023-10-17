@@ -3,7 +3,6 @@
 #include "ncasset/AssetType.h"
 
 #include <memory>
-#include <vector>
 
 namespace nc::convert
 {

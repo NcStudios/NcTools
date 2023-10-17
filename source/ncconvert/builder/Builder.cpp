@@ -2,12 +2,9 @@
 #include "BuildInstructions.h"
 #include "Serialize.h"
 #include "Target.h"
-#include "utility/EnumExtensions.h"
 #include "converters/AudioConverter.h"
 #include "converters/GeometryConverter.h"
 #include "converters/TextureConverter.h"
-#include "utility/Log.h"
-#include "utility/Path.h"
 
 #include "ncasset/Assets.h"
 

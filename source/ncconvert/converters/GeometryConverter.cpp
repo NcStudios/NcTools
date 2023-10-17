@@ -24,11 +24,16 @@ constexpr auto hullColliderFlags = concaveColliderFlags | aiProcess_JoinIdentica
 constexpr auto meshFlags = hullColliderFlags | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
 const auto supportedFileExtensions = std::array<std::string, 2> {".fbx", ".obj"};
 
-auto ImportScene(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiScene*
+auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiScene*
 {
     if (!nc::convert::ValidateInputFileExtension(path, supportedFileExtensions))
     {
         throw nc::NcError("Invalid input file: ", path.string());
+    }
+
+    if (!importer->ValidateFlags(flags))
+    {
+        throw nc::NcError("Unsupported import flags");
     }
 
     auto scene = importer->ReadFile(path.string(), flags);
@@ -39,12 +44,6 @@ auto ImportScene(const std::filesystem::path& path, Assimp::Importer* importer, 
         ));
     }
 
-    return scene;
-}
-
-auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsigned flags) -> const aiScene*
-{
-    auto* scene = ImportScene(path, importer, flags);
     if (scene->mNumMeshes == 0)
     {
         throw nc::NcError("Fbx contains no mesh data\n    file: ", path.string());

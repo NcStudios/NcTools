@@ -57,7 +57,11 @@ void BuildOrchestrator::RunBuild()
     {
         for (const auto& target : instructions.GetTargetsForType(type))
         {
-            m_builder->Build(type, target);
+            LOG("Building {}: {}", ToString(type), target.destinationPath.string());
+            if (!m_builder->Build(type, target))
+            {
+                LOG("Failed building: {}", target.destinationPath.string());
+            }
         }
     }
 }

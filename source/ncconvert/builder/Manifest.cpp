@@ -56,17 +56,7 @@ void ProcessOptions(GlobalManifestOptions& options, const std::filesystem::path&
     }
 }
 
-auto IsUpToDate(const nc::convert::Target& target) -> bool
-{
-    if (!std::filesystem::exists(target.destinationPath))
-    {
-        return false;
-    }
-
-    return std::filesystem::last_write_time(target.destinationPath) > std::filesystem::last_write_time(target.sourcePath);
-}
-
-auto BuildTarget(const std::string& assetName, const std::string& sourcePath, const std::optional<std::string>& internalName, const std::filesystem::path& outputDirectory) -> nc::convert::Target
+auto BuildTarget(const std::string& assetName, const std::string& sourcePath, const std::filesystem::path& outputDirectory, const std::optional<std::string>& internalName = std::nullopt) -> nc::convert::Target
 {
     auto target = nc::convert::Target
     {
@@ -80,10 +70,18 @@ auto BuildTarget(const std::string& assetName, const std::string& sourcePath, co
         throw nc::NcError("Invalid source file: ", target.sourcePath.string());
     }
 
-    LOG("Adding build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
     return target;
 }
 
+auto IsUpToDate(const nc::convert::Target& target) -> bool
+{
+    if (!std::filesystem::exists(target.destinationPath))
+    {
+        return false;
+    }
+
+    return std::filesystem::last_write_time(target.destinationPath) > std::filesystem::last_write_time(target.sourcePath);
+}
 } // anonymous namespace
 
 namespace nc::convert
@@ -118,7 +116,7 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
                 {
                     for (const auto& internalAsset : asset.at("assetNames"))
                     {
-                        auto target = BuildTarget(internalAsset.at("assetName"), asset.at("sourcePath"), internalAsset.at("internalName"), options.outputDirectory);
+                        auto target = BuildTarget(internalAsset.at("assetName"), asset.at("sourcePath"), options.outputDirectory, internalAsset.at("internalName"));
                         if (::IsUpToDate(target))
                         {
                             LOG("Up-to-date: {}", target.destinationPath.string());
@@ -131,7 +129,7 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
                 else if (asset.contains("assetName"))
                 {
                     // Single target mode
-                    auto target = BuildTarget(asset.at("assetName"), asset.at("sourcePath"), std::nullopt, options.outputDirectory);
+                    auto target = BuildTarget(asset.at("assetName"), asset.at("sourcePath"), options.outputDirectory);
                     if (::IsUpToDate(target))
                     {
                         LOG("Up-to-date: {}", target.destinationPath.string());
@@ -144,14 +142,13 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
             }
 
             // Single target mode
-            auto target = BuildTarget(asset.at("assetName"), asset.at("sourcePath"), std::nullopt, options.outputDirectory);
+            auto target = BuildTarget(asset.at("assetName"), asset.at("sourcePath"), options.outputDirectory);
             if (::IsUpToDate(target))
             {
                 LOG("Up-to-date: {}", target.destinationPath.string());
                 continue;
             }
             instructions.at(type).push_back(std::move(target));
-            continue;
         }
     }
 }

@@ -2,7 +2,6 @@
 #include "Config.h"
 #include "Manifest.h"
 #include "Target.h"
-#include "utility/EnumExtensions.h"
 #include "utility/Log.h"
 #include "utility/Path.h"
 
@@ -48,7 +47,7 @@ void BuildInstructions::ReadTargets(const Config& config)
             auto sourcePath = config.targetPath.value();
             auto destinationPath = AssetNameToNcaPath(config.assetName.value(), config.outputDirectory);
             LOG("Adding build target: {} -> {}", sourcePath.string(), destinationPath.string());
-            collection.emplace_back(std::move(sourcePath), std::move(destinationPath), std::nullopt);
+            collection.emplace_back(std::move(sourcePath), std::move(destinationPath));
             break;
         }
         case OperationMode::Manifest:

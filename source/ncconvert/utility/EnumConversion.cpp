@@ -29,29 +29,6 @@ auto ToAssetType(std::string type) -> asset::AssetType
     throw NcError("Failed to parse asset type from: " + type);
 }
 
-auto CanOutputMany(asset::AssetType type) -> bool
-{
-    switch(type)
-    {
-        case asset::AssetType::AudioClip:
-            return false;
-        case asset::AssetType::CubeMap:
-            return false;
-        case asset::AssetType::ConcaveCollider:
-            return false;
-        case asset::AssetType::HullCollider:
-            return false;
-        case asset::AssetType::Mesh:
-            return true;
-        case asset::AssetType::SkeletalAnimationClip:
-            return true;
-        case asset::AssetType::Texture:
-            return false;
-        default:
-            break;
-    }
-}
-
 auto ToString(asset::AssetType type) -> std::string
 {
     switch(type)

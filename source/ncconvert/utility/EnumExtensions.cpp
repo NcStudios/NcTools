@@ -21,6 +21,8 @@ auto CanOutputMany(asset::AssetType type) -> bool
             return false;
         case asset::AssetType::Mesh:
             return true;
+        case asset::AssetType::SkeletalAnimationClip:
+            return true;
         case asset::AssetType::Texture:
             return false;
         default:

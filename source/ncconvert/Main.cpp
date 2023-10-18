@@ -1,7 +1,7 @@
 #include "Config.h"
 #include "ReturnCodes.h"
 #include "builder/BuildOrchestrator.h"
-#include "utility/EnumConversion.h"
+#include "utility/EnumExtensions.h"
 
 #include "ncutility/NcError.h"
 
@@ -22,13 +22,13 @@ Options
   -m <manifest>           Perform conversions specified in <manifest>.
   -i <assetPath>          Print details about an existing asset file.
 
-Asset types               Supported file types
-  mesh                    fbx, obj
-  hull-collider           fbx, obj
-  concave-collider        fbx, obj
-  texture                 jpg, png, bmp
-  cube-map                jpg, png, bmp
-  audio-clip              wav
+Asset types               Supported file types      Can produce multiple assets
+  mesh                    fbx, obj                  true
+  hull-collider           fbx, obj                  false
+  concave-collider        fbx, obj                  false
+  texture                 jpg, png, bmp             false
+  cube-map                jpg, png, bmp             false
+  audio-clip              wav                       false
 
 Asset names
   The provided asset name is used to construct the output file path. It may
@@ -49,11 +49,20 @@ Json Manifest
       "mesh": [
           {
               "sourcePath": "path/to/mesh1.fbx",
-              "assetName": "myMesh1"
+              "assetNames": [
+                  {
+                      "internalName" : "mesh1head",
+                      "assetName" : "head"
+                  },
+                  {
+                      "internalName" : "mesh1shoulders",
+                      "assetName" : "shoulders"
+                  }
+              ]
           },
           {
               "sourcePath": "path/to/mesh2.fbx",
-              "assetName": "myMesh2"
+              "assetName": "mesh2"
           }
       ],
       "texture": [

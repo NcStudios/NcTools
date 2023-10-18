@@ -50,15 +50,6 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
     {
         throw nc::NcError("Fbx contains no mesh data\n    file: ", path.string());
     }
-    else if (scene->mNumMeshes > 1)
-    {
-        LOG("Fbx {} has {} meshes. Only the first will be parsed.", path.string(), scene->mNumMeshes);
-    }
-
-    if (scene->mMeshes[0]->mNumVertices == 0)
-    {
-        throw nc::NcError("No vertices found for: ", path.string());
-    }
 
     return scene;
 }
@@ -381,6 +372,12 @@ class GeometryConverter::impl
         auto ImportConcaveCollider(const std::filesystem::path& path) -> asset::ConcaveCollider
         {
             const auto mesh = ::ReadFbx(path, &m_importer, concaveColliderFlags)->mMeshes[0];
+
+            if (mesh->mNumVertices == 0)
+            {
+                throw nc::NcError("No vertices found for: ", path.string());
+            }
+
             auto triangles = ::ConvertToTriangles(::ViewFaces(mesh), ::ViewVertices(mesh));
             if(auto count = Sanitize(triangles))
             {
@@ -397,6 +394,12 @@ class GeometryConverter::impl
         auto ImportHullCollider(const std::filesystem::path& path) -> asset::HullCollider
         {
             const auto mesh = ::ReadFbx(path, &m_importer, hullColliderFlags)->mMeshes[0];
+
+            if (mesh->mNumVertices == 0)
+            {
+                throw nc::NcError("No vertices found for: ", path.string());
+            }
+
             auto convertedVertices = ::ConvertToVertices(::ViewVertices(mesh));
             if(auto count = Sanitize(convertedVertices))
             {
@@ -410,9 +413,34 @@ class GeometryConverter::impl
             };
         }
 
-        auto ImportMesh(const std::filesystem::path& path) -> asset::Mesh
+        auto ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& internalName) -> asset::Mesh
         {
             const auto scene = ::ReadFbx(path, &m_importer, meshFlags);
+
+            aiMesh* mesh = nullptr;
+
+            if (internalName.has_value())
+            {
+                for (auto* sceneMesh : std::span(scene->mMeshes, scene->mNumMeshes))
+                {
+                    if (std::string{sceneMesh->mName.C_Str()} == internalName)
+                    {
+                        mesh = sceneMesh;
+                        break;
+                    }
+                }
+                if (mesh == nullptr) throw nc::NcError("An internal mesh name was provided but no mesh was found by that name: {}. No asset will be created.", internalName.value());
+            }
+            else 
+            {
+                mesh = scene->mMeshes[0];
+            }
+
+            if (mesh->mNumVertices == 0)
+            {
+                throw nc::NcError("No vertices found for: ", path.string());
+            }
+
             auto convertedVertices = ::ConvertToMeshVertices(scene->mMeshes[0]);
             if(auto count = Sanitize(convertedVertices))
             {
@@ -455,9 +483,9 @@ auto GeometryConverter::ImportHullCollider(const std::filesystem::path& path) ->
     return m_impl->ImportHullCollider(path);
 }
 
-auto GeometryConverter::ImportMesh(const std::filesystem::path& path) -> asset::Mesh
+auto GeometryConverter::ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& internalName) -> asset::Mesh
 {
-    return m_impl->ImportMesh(path);
+    return m_impl->ImportMesh(path, internalName);
 }
 
 auto GeometryConverter::ImportSkeletalAnimations(const std::filesystem::path& path) -> std::vector<asset::SkeletalAnimationClip>

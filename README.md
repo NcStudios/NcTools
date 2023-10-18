@@ -39,11 +39,20 @@ You can also use a JSON manifest file to convert many files at once:
     "mesh": [
         {
             "sourcePath": "path/to/mesh1.fbx",
-            "assetName": "myMesh1"
+            "assetNames": [
+                {
+                    "internalName" : "mesh1head",
+                    "assetName" : "head"
+                },
+                {
+                    "internalName" : "mesh1shoulders",
+                    "assetName" : "shoulders"
+                }
+            ]
         },
         {
             "sourcePath": "path/to/mesh2.fbx",
-            "assetName": "myMesh2"
+            "assetName": "mesh2"
         }
     ],
     "texture": [

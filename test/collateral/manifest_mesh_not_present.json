@@ -56,16 +56,10 @@
                     "assetName" : "cube3"
                 },
                 {
-                    "internalName" : "Cube 1 A Mesh",
-                    "assetName" : "cube1a"
+                    "internalName" : "I don't exist",
+                    "assetName" : "idontexist"
                 }
             ]
-        }
-    ],
-    "skeletal-animation-clip": [
-        {
-            "sourcePath": "cube.fbx",
-            "assetName": "myMesh"
         }
     ],
     "texture": [

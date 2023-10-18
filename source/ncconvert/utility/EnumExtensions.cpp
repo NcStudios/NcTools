@@ -1,4 +1,4 @@
-#include "EnumConversion.h"
+#include "EnumExtensions.h"
 
 #include "fmt/format.h"
 #include "ncutility/NcError.h"
@@ -7,6 +7,31 @@
 
 namespace nc::convert
 {
+auto CanOutputMany(asset::AssetType type) -> bool
+{
+    switch(type)
+    {
+        case asset::AssetType::AudioClip:
+            return false;
+        case asset::AssetType::CubeMap:
+            return false;
+        case asset::AssetType::ConcaveCollider:
+            return false;
+        case asset::AssetType::HullCollider:
+            return false;
+        case asset::AssetType::Mesh:
+            return true;
+        case asset::AssetType::Texture:
+            return false;
+        default:
+            break;
+    }
+
+    throw NcError(
+        fmt::format("Unknown AssetType: {}", static_cast<int>(type))
+    );
+}
+
 auto ToAssetType(std::string type) -> asset::AssetType
 {
     std::ranges::transform(type, type.begin(), [](char c) { return std::tolower(c); });

@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
-#include "utility/EnumConversion.h"
+#include "utility/EnumExtensions.h"
 
 #include "ncutility/NcError.h"
 
-TEST(EnumConversionTest, ToAssetType_fromString_succeeds)
+TEST(EnumExtensionsTest, ToAssetType_fromString_succeeds)
 {
     EXPECT_EQ(nc::convert::ToAssetType("audio-clip"), nc::asset::AssetType::AudioClip);
     EXPECT_EQ(nc::convert::ToAssetType("concave-collider"), nc::asset::AssetType::ConcaveCollider);
@@ -14,12 +14,12 @@ TEST(EnumConversionTest, ToAssetType_fromString_succeeds)
     EXPECT_EQ(nc::convert::ToAssetType("texture"), nc::asset::AssetType::Texture);
 }
 
-TEST(EnumConversionTest, ToAssetType_badString_throws)
+TEST(EnumExtensionsTest, ToAssetType_badString_throws)
 {
     EXPECT_THROW(nc::convert::ToAssetType("not-an-asset"), nc::NcError);
 }
 
-TEST(EnumConversionTest, ToString_fromAssetType_succeeds)
+TEST(EnumExtensionsTest, ToString_fromAssetType_succeeds)
 {
     EXPECT_EQ(nc::convert::ToString(nc::asset::AssetType::AudioClip), "audio-clip");
     EXPECT_EQ(nc::convert::ToString(nc::asset::AssetType::ConcaveCollider), "concave-collider");
@@ -30,7 +30,7 @@ TEST(EnumConversionTest, ToString_fromAssetType_succeeds)
     EXPECT_EQ(nc::convert::ToString(nc::asset::AssetType::Texture), "texture");
 }
 
-TEST(EnumConversionTest, ToString_badAssetType_throws)
+TEST(EnumExtensionsTest, ToString_badAssetType_throws)
 {
     EXPECT_THROW(nc::convert::ToString(static_cast<nc::asset::AssetType>(999)), nc::NcError);
 }

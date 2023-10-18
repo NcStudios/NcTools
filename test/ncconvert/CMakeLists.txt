@@ -41,34 +41,34 @@ target_link_libraries(AudioConverter_unit_tests
 
 add_test(AudioConverter_unit_tests AudioConverter_unit_tests)
 
-## EnumConversion Tests ###
-add_executable(EnumConversion_unit_tests
-    EnumConversion_unit_tests.cpp
+## EnumExtensions Tests ###
+add_executable(EnumExtensions_unit_tests
+    EnumExtensions_unit_tests.cpp
 )
 
-target_compile_options(EnumConversion_unit_tests
+target_compile_options(EnumExtensions_unit_tests
     PUBLIC
         ${NC_TOOLS_COMPILE_OPTIONS}
 )
 
-target_include_directories(EnumConversion_unit_tests
+target_include_directories(EnumExtensions_unit_tests
     PRIVATE
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/source/ncconvert
 )
 
-target_sources(EnumConversion_unit_tests
+target_sources(EnumExtensions_unit_tests
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/EnumConversion.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/EnumExtensions.cpp
 )
 
-target_link_libraries(EnumConversion_unit_tests
+target_link_libraries(EnumExtensions_unit_tests
     PRIVATE
         gtest_main
         NcMath
 )
 
-add_test(EnumConversion_unit_tests EnumConversion_unit_tests)
+add_test(EnumExtensions_unit_tests EnumExtensions_unit_tests)
 
 ## GeometryConverter Tests ###
 if(NC_TOOLS_BUILD_CONVERTER)

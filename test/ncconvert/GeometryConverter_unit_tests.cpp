@@ -123,7 +123,7 @@ TEST(GeometryConverterTest, GetBoneWeights_fiveBonesPerVertex_importFails)
     }
     catch(const nc::NcError& e)
     {
-        EXPECT_TRUE(std::string(e.what()).find(std::string("more than four bones")));
+        EXPECT_TRUE(std::string(e.what()).find(std::string("more than four bones")) != std::string::npos);
         threwNcError = true;
     }
     
@@ -141,7 +141,7 @@ TEST(GeometryConverterTest, GetBoneWeights_weightsNotEqual100_importFails)
     }
     catch(const nc::NcError& e)
     {
-        EXPECT_TRUE(std::string(e.what()).find(std::string("affecting each vertex must equal 1")));
+        EXPECT_TRUE(std::string(e.what()).find(std::string("affecting each vertex must equal 1")) != std::string::npos);
         threwNcError = true;
     }
     

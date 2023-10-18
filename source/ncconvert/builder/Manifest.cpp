@@ -1,6 +1,6 @@
 #include "Manifest.h"
 #include "Target.h"
-#include "utility/EnumConversion.h"
+#include "utility/EnumExtensions.h"
 #include "utility/Log.h"
 #include "utility/Path.h"
 
@@ -56,12 +56,21 @@ void ProcessOptions(GlobalManifestOptions& options, const std::filesystem::path&
     }
 }
 
-auto BuildTarget(const nlohmann::json& json, const std::filesystem::path& outputDirectory) -> nc::convert::Target
+auto BuildTarget(const std::string& assetName, const std::string& sourcePath, const std::filesystem::path& outputDirectory, const std::optional<std::string>& internalName = std::nullopt) -> nc::convert::Target
 {
-    return nc::convert::Target{
-        json.at("sourcePath"),
-        nc::convert::AssetNameToNcaPath(json.at("assetName"), outputDirectory)
+    auto target = nc::convert::Target
+    {
+        sourcePath,
+        nc::convert::AssetNameToNcaPath(assetName, outputDirectory),
+        internalName
     };
+
+    if (!std::filesystem::is_regular_file(target.sourcePath))
+    {
+        throw nc::NcError("Invalid source file: ", target.sourcePath.string());
+    }
+
+    return target;
 }
 
 auto IsUpToDate(const nc::convert::Target& target) -> bool
@@ -99,19 +108,46 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
         const auto type = ToAssetType(typeTag);
         for (const auto& asset : json.at(typeTag))
         {
-            auto target = ::BuildTarget(asset, options.outputDirectory);
-            if (!std::filesystem::is_regular_file(target.sourcePath))
+            // Types that CanOutputMany support both single target (legacy) mode and multiple output mode.
+            if (CanOutputMany(type))
             {
-                throw nc::NcError("Invalid source file: ", target.sourcePath.string());
+                // // Multiple output mode
+                if (asset.contains("assetNames"))
+                {
+                    for (const auto& internalAsset : asset.at("assetNames"))
+                    {
+                        auto target = BuildTarget(internalAsset.at("assetName"), asset.at("sourcePath"), options.outputDirectory, internalAsset.at("internalName"));
+                        if (::IsUpToDate(target))
+                        {
+                            LOG("Up-to-date: {}", target.destinationPath.string());
+                            continue;
+                        }
+                        instructions.at(type).push_back(std::move(target));
+                    }
+                    continue;
+                }
+                else if (asset.contains("assetName"))
+                {
+                    // Single target mode
+                    auto target = BuildTarget(asset.at("assetName"), asset.at("sourcePath"), options.outputDirectory);
+                    if (::IsUpToDate(target))
+                    {
+                        LOG("Up-to-date: {}", target.destinationPath.string());
+                        continue;
+                    }
+                    instructions.at(type).push_back(std::move(target));
+                    continue;
+                }
+                throw nc::NcError("Asset must contain either \"assetName\" or \"assetNames\".");
             }
 
+            // Single target mode
+            auto target = BuildTarget(asset.at("assetName"), asset.at("sourcePath"), options.outputDirectory);
             if (::IsUpToDate(target))
             {
                 LOG("Up-to-date: {}", target.destinationPath.string());
                 continue;
             }
-
-            LOG("Adding build target: {} -> {}", target.sourcePath.string(), target.destinationPath.string());
             instructions.at(type).push_back(std::move(target));
         }
     }

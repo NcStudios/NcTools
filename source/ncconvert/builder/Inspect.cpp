@@ -1,6 +1,6 @@
 #include "Inspect.h"
 #include "utility/Log.h"
-#include "utility/EnumConversion.h"
+#include "utility/EnumExtensions.h"
 
 #include "ncasset/Import.h"
 #include "ncutility/NcError.h"

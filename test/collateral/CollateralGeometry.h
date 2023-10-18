@@ -82,6 +82,12 @@ namespace simple_cube_animation_fbx
 const auto filePath = collateralDirectory / "simple_cube_animation.fbx";
 } // namespace simple_cube_animation_fbx
 
+// Describes the collateral file multicube.fbx
+namespace multicube_fbx
+{
+const auto filePath = collateralDirectory / "multicube.fbx";
+} // namespace multicube_fbx
+
 // Describes the collateral file plane.fbx
 namespace plane_fbx
 {

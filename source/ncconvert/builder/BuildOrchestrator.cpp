@@ -3,7 +3,7 @@
 #include "BuildInstructions.h"
 #include "Inspect.h"
 #include "Target.h"
-#include "utility/EnumConversion.h"
+#include "utility/EnumExtensions.h"
 #include "utility/Log.h"
 
 #include "ncasset/AssetType.h"

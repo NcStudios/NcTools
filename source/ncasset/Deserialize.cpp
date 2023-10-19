@@ -165,12 +165,12 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
     return {header, asset};
 }
 
-auto DeserializeSkeletalAnimationClip(std::istream& stream) -> DeserializedResult<SkeletalAnimationClip>
+auto DeserializeSkeletalAnimation(std::istream& stream) -> DeserializedResult<SkeletalAnimation>
 {
     const auto header = DeserializeHeader(stream);
     ::ValidateHeader(header, MagicNumber::skeletalAnimationClip);
     auto bytes = RawNcaBuffer{stream, header.size};
-    auto asset = SkeletalAnimationClip{};
+    auto asset = SkeletalAnimation{};
     auto clipNameSize = size_t{};
     bytes.Read(&clipNameSize);
     asset.name.resize(clipNameSize);
@@ -183,7 +183,7 @@ auto DeserializeSkeletalAnimationClip(std::istream& stream) -> DeserializedResul
     
     if (bytes.RemainingByteCount() != 0)
     {
-        throw NcError("Not all SkeletalAnimationClip data was read from RawNcaBuffer");
+        throw NcError("Not all SkeletalAnimation data was read from RawNcaBuffer");
     }
 
     return {header, asset};

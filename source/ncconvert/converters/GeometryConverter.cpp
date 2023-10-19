@@ -54,7 +54,7 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
     return scene;
 }
 
-auto ParseSkeletalAnimationClipName(const aiString& name) -> std::string
+auto ParseSkeletalAnimationName(const aiString& name) -> std::string
 {
     // Blender adds a prefix of '<armature name>|' to animation clips. We just want the clip/action name.
     auto nameAsString = std::string(name.C_Str());
@@ -312,54 +312,40 @@ auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVer
     return out;
 }
 
-auto ConvertToSkeletalAnimationClips(const aiScene* scene) -> std::vector<nc::asset::SkeletalAnimationClip>
+auto ConvertToSkeletalAnimation(const aiAnimation* animationClip) -> nc::asset::SkeletalAnimation
 {
-    auto skeletalAnimationClips = std::vector<nc::asset::SkeletalAnimationClip>{};
-    
-    if (scene->mNumAnimations == 0)
+    auto skeletalAnimationClip = nc::asset::SkeletalAnimation{};
+    skeletalAnimationClip.name = ParseSkeletalAnimationName(animationClip->mName);
+    skeletalAnimationClip.ticksPerSecond = animationClip->mTicksPerSecond == 0 ? 25.0f : animationClip->mTicksPerSecond; // Ticks per second is not required to be set in animation software.
+    skeletalAnimationClip.durationInTicks = static_cast<uint32_t>(animationClip->mDuration * skeletalAnimationClip.ticksPerSecond);
+    skeletalAnimationClip.framesPerBone = std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames>{};
+    skeletalAnimationClip.framesPerBone.reserve(animationClip->mNumChannels);
+
+    // A single channel represents one bone and all of its transformations for the animation clip.
+    for (const auto* channel : std::span(animationClip->mChannels, animationClip->mNumChannels))
     {
-        return skeletalAnimationClips;
-    }
-
-    skeletalAnimationClips.reserve(scene->mNumAnimations);
-
-    // There can be multiple animation clips in a single scene.
-    for (const auto* animationClip : std::span(scene->mAnimations, scene->mNumAnimations))
-    {
-        auto skeletalAnimationClip = nc::asset::SkeletalAnimationClip{};
-        skeletalAnimationClip.name = ParseSkeletalAnimationClipName(animationClip->mName);
-        skeletalAnimationClip.ticksPerSecond = animationClip->mTicksPerSecond == 0 ? 25.0f : animationClip->mTicksPerSecond; // Ticks per second is not required to be set in animation software.
-        skeletalAnimationClip.durationInTicks = static_cast<uint32_t>(animationClip->mDuration * skeletalAnimationClip.ticksPerSecond);
-        skeletalAnimationClip.framesPerBone = std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames>{};
-        skeletalAnimationClip.framesPerBone.reserve(animationClip->mNumChannels);
-
-        // A single channel represents one bone and all of its transformations for the animation clip.
-        for (const auto* channel : std::span(animationClip->mChannels, animationClip->mNumChannels))
+        auto frames = nc::asset::SkeletalAnimationFrames{};
+        frames.positionFrames.reserve(channel->mNumPositionKeys);
+        frames.rotationFrames.reserve(channel->mNumRotationKeys);
+        frames.scaleFrames.reserve(channel->mNumScalingKeys);
+        
+        for (const auto& positionKey : std::span(channel->mPositionKeys, channel->mNumPositionKeys))
         {
-            auto frames = nc::asset::SkeletalAnimationFrames{};
-            frames.positionFrames.reserve(channel->mNumPositionKeys);
-            frames.rotationFrames.reserve(channel->mNumRotationKeys);
-            frames.scaleFrames.reserve(channel->mNumScalingKeys);
-            
-            for (const auto& positionKey : std::span(channel->mPositionKeys, channel->mNumPositionKeys))
-            {
-                frames.positionFrames.emplace_back(positionKey.mTime, nc::Vector3(positionKey.mValue.x, positionKey.mValue.y, positionKey.mValue.z));
-            }
-
-            for (const auto& rotationKey : std::span(channel->mRotationKeys, channel->mNumRotationKeys))
-            {
-                frames.rotationFrames.emplace_back(rotationKey.mTime, nc::Quaternion(rotationKey.mValue.x, rotationKey.mValue.y, rotationKey.mValue.z, rotationKey.mValue.w));
-            }
-
-            for (const auto& scaleKey : std::span(channel->mScalingKeys, channel->mNumScalingKeys))
-            {
-                frames.scaleFrames.emplace_back(scaleKey.mTime, nc::Vector3(scaleKey.mValue.x, scaleKey.mValue.y, scaleKey.mValue.z));
-            }
-            skeletalAnimationClip.framesPerBone.emplace(std::string(channel->mNodeName.C_Str()), std::move(frames));
+            frames.positionFrames.emplace_back(positionKey.mTime, nc::Vector3(positionKey.mValue.x, positionKey.mValue.y, positionKey.mValue.z));
         }
-        skeletalAnimationClips.push_back(std::move(skeletalAnimationClip));
+
+        for (const auto& rotationKey : std::span(channel->mRotationKeys, channel->mNumRotationKeys))
+        {
+            frames.rotationFrames.emplace_back(rotationKey.mTime, nc::Quaternion(rotationKey.mValue.x, rotationKey.mValue.y, rotationKey.mValue.z, rotationKey.mValue.w));
+        }
+
+        for (const auto& scaleKey : std::span(channel->mScalingKeys, channel->mNumScalingKeys))
+        {
+            frames.scaleFrames.emplace_back(scaleKey.mTime, nc::Vector3(scaleKey.mValue.x, scaleKey.mValue.y, scaleKey.mValue.z));
+        }
+        skeletalAnimationClip.framesPerBone.emplace(std::string(channel->mNodeName.C_Str()), std::move(frames));
     }
-    return skeletalAnimationClips;
+    return skeletalAnimationClip;
 }
 
 } // anonymous namespace
@@ -456,10 +442,35 @@ class GeometryConverter::impl
             };
         }
 
-        auto ImportSkeletalAnimations(const std::filesystem::path& path) -> std::vector<asset::SkeletalAnimationClip>
+        auto ImportSkeletalAnimation(const std::filesystem::path& path, const std::optional<std::string>& internalName) -> asset::SkeletalAnimation
         {
             const auto scene = ::ReadFbx(path, &m_importer, skeletalAnimationFlags);
-            return ::ConvertToSkeletalAnimationClips(scene);
+
+            if (scene->mNumAnimations == 0)
+            {
+                throw nc::NcError("No skeletal animations found for: ", path.string());
+            }
+
+            aiAnimation* animation = nullptr;
+
+            if (internalName.has_value())
+            {
+                for (auto* sceneAnimation : std::span(scene->mAnimations, scene->mNumAnimations))
+                {
+                    if (std::string{sceneAnimation->mName.C_Str()} == internalName)
+                    {
+                        animation = sceneAnimation;
+                        break;
+                    }
+                }
+                if (animation == nullptr) throw nc::NcError("An internal skeletal animation name was provided but no animation was found by that name: {}. No asset will be created.", internalName.value());
+            }
+            else 
+            {
+                animation = scene->mAnimations[0];
+            }
+
+            return ::ConvertToSkeletalAnimation(animation);
         }
 
     private:
@@ -488,8 +499,8 @@ auto GeometryConverter::ImportMesh(const std::filesystem::path& path, const std:
     return m_impl->ImportMesh(path, internalName);
 }
 
-auto GeometryConverter::ImportSkeletalAnimations(const std::filesystem::path& path) -> std::vector<asset::SkeletalAnimationClip>
+auto GeometryConverter::ImportSkeletalAnimation(const std::filesystem::path& path, const std::optional<std::string>& internalName) -> asset::SkeletalAnimation
 {
-    return m_impl->ImportSkeletalAnimations(path);
+    return m_impl->ImportSkeletalAnimation(path, internalName);
 }
 } // namespace nc::convert

@@ -103,9 +103,9 @@ void Inspect(const std::filesystem::path& ncaPath)
             LOG("Shader not supported");
             break;
         }
-        case asset::AssetType::SkeletalAnimationClip:
+        case asset::AssetType::SkeletalAnimation:
         {
-            const auto asset = asset::ImportSkeletalAnimationClip(ncaPath);
+            const auto asset = asset::ImportSkeletalAnimation(ncaPath);
             LOG(skeletalAnimationClipTemplate, asset.name, asset.durationInTicks, asset.ticksPerSecond, asset.framesPerBone.size());
             break;
         }

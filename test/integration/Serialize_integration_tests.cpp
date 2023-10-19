@@ -371,7 +371,7 @@ TEST(SerializationTest, CubeMap_roundTrip_succeeds)
                            actualAsset.pixelData.cbegin()));
 }
 
-TEST(SerializationTest, SkeletalAnimationClip_roundTrip_succeeds)
+TEST(SerializationTest, SkeletalAnimation_roundTrip_succeeds)
 {
     constexpr auto assetId = 1234ull;
 
@@ -429,7 +429,7 @@ TEST(SerializationTest, SkeletalAnimationClip_roundTrip_succeeds)
         {{std::string{"Bone1"}}, std::move(secondBoneFrame)}
     };
 
-    const auto expectedAsset = nc::asset::SkeletalAnimationClip{
+    const auto expectedAsset = nc::asset::SkeletalAnimation{
         .name = "Test",
         .durationInTicks = 128,
         .ticksPerSecond = 64,
@@ -438,7 +438,7 @@ TEST(SerializationTest, SkeletalAnimationClip_roundTrip_succeeds)
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
     nc::convert::Serialize(stream, expectedAsset, assetId);
-    const auto [actualHeader, actualAsset] = nc::asset::DeserializeSkeletalAnimationClip(stream);
+    const auto [actualHeader, actualAsset] = nc::asset::DeserializeSkeletalAnimation(stream);
 
     // EXPECT_STREQ("CUBE", actualHeader.magicNumber);
     // EXPECT_EQ(assetId, actualHeader.assetId);

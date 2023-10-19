@@ -138,16 +138,16 @@ TEST_F(BuildAndImportTest, Mesh_from_fbx)
     EXPECT_TRUE(std::ranges::all_of(asset.indices, [&nVertices](auto i){ return i < nVertices; }));
 }
 
-TEST_F(BuildAndImportTest, SkeletalAnimationClip_from_fbx)
+TEST_F(BuildAndImportTest, SkeletalAnimation_from_fbx)
 {
     namespace test_data = collateral::simple_cube_animation_fbx;
     const auto inFile = test_data::filePath;
     const auto outFile = ncaTestOutDirectory / "simple_cube_animation.nca";
     const auto target = nc::convert::Target(inFile, outFile);
     auto builder = nc::convert::Builder{};
-    ASSERT_TRUE(builder.Build(nc::asset::AssetType::SkeletalAnimationClip, target));
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::SkeletalAnimation, target));
 
-    const auto asset = nc::asset::ImportSkeletalAnimationClip(outFile);
+    const auto asset = nc::asset::ImportSkeletalAnimation(outFile);
 
     // EXPECT_EQ(asset.extents, test_data::meshVertexExtents);
     // EXPECT_FLOAT_EQ(asset.maxExtent, test_data::furthestDistanceFromOrigin);

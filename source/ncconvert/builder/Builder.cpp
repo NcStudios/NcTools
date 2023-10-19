@@ -109,12 +109,23 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         {
             throw NcError("Not implemented");
         }
-        case asset::AssetType::SkeletalAnimationClip:
+        case asset::AssetType::SkeletalAnimation:
         {
-            const auto assets = m_geometryConverter->ImportSkeletalAnimations(target.sourcePath);
-            for (const auto& asset : assets)
+            try
             {
+                const auto asset = m_geometryConverter->ImportSkeletalAnimation(target.sourcePath, target.internalName);
                 convert::Serialize(outFile, asset, assetId);
+            }
+            catch(const NcError& e)
+            {
+                if (std::string(e.what()).find(std::string("An internal skeletal animation name was provided but no animation")) != std::string::npos)
+                {
+                    LOG("Warning: ", e.what());
+                }
+                else
+                {
+                    throw e;
+                }
             }
             return true;
         }

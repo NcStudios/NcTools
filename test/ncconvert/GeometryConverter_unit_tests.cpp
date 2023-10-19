@@ -256,9 +256,9 @@ TEST(GeometryConverterTest, GetBonesData_complexMesh_convertedCorrectly)
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[3].boneName, "DEF-spine.006");
 }
 
-TEST(GeometryConverterTest, ImportSkeletalAnimations_singleClip_convertedCorrectly)
+TEST(GeometryConverterTest, ImportSkeletalAnimation_singleClip_convertedCorrectly)
 {
     namespace test_data = collateral::simple_cube_animation_fbx;
     auto uut = nc::convert::GeometryConverter{};
-    const auto actual = uut.ImportSkeletalAnimations(test_data::filePath);
+    const auto actual = uut.ImportSkeletalAnimation(test_data::filePath, std::string("Armature|Wiggle"));
 }

@@ -109,7 +109,7 @@ struct SkeletalAnimationFrames
     std::vector<ScaleFrame> scaleFrames;
 };
 
-struct SkeletalAnimationClip
+struct SkeletalAnimation
 {
     std::string name;
     uint32_t durationInTicks;

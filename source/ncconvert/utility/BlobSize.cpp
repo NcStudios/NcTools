@@ -27,7 +27,7 @@ auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_
     return out;
 }
 
-auto GetSkeletalAnimationClipSize(const nc::asset::SkeletalAnimationClip& asset) -> size_t
+auto GetSkeletalAnimationSize(const nc::asset::SkeletalAnimation& asset) -> size_t
 {
     auto baseSize = sizeof(size_t) + asset.name.size() + sizeof(uint32_t) + sizeof(double) + sizeof(size_t); // name size, name, durationInTicks, ticksPerSecond, framesPerBone count
     for (auto framesPerBonesIt=asset.framesPerBone.begin(); framesPerBonesIt!=asset.framesPerBone.end(); framesPerBonesIt++)
@@ -78,9 +78,9 @@ auto GetBlobSize(const asset::Mesh& asset) -> size_t
     return baseSize + asset.vertices.size() * sizeof(asset::MeshVertex) + asset.indices.size() * sizeof(uint32_t) + sizeof(bool) + GetBonesSize(asset.bonesData);
 }
 
-auto GetBlobSize(const asset::SkeletalAnimationClip& asset) -> size_t
+auto GetBlobSize(const asset::SkeletalAnimation& asset) -> size_t
 {
-    return GetSkeletalAnimationClipSize(asset);
+    return GetSkeletalAnimationSize(asset);
 }
 
 auto GetBlobSize(const asset::Texture& asset) -> size_t

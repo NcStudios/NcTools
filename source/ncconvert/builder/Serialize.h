@@ -21,8 +21,8 @@ void Serialize(std::ostream& stream, const asset::HullCollider& data, size_t ass
 /** @brief Write a Mesh to a binary stream. */
 void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId);
 
-/** @brief Write a SkeletalAnimationClip to a binary stream. */
-void Serialize(std::ostream& stream, const asset::SkeletalAnimationClip& data, size_t assetId);
+/** @brief Write a SkeletalAnimation to a binary stream. */
+void Serialize(std::ostream& stream, const asset::SkeletalAnimation& data, size_t assetId);
 
 /** @brief Write a Texture to a binary stream. */
 void Serialize(std::ostream& stream, const asset::Texture& data, size_t assetId);

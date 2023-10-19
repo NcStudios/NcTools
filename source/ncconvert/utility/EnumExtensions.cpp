@@ -21,7 +21,7 @@ auto CanOutputMany(asset::AssetType type) -> bool
             return false;
         case asset::AssetType::Mesh:
             return true;
-        case asset::AssetType::SkeletalAnimationClip:
+        case asset::AssetType::SkeletalAnimation:
             return true;
         case asset::AssetType::Texture:
             return false;
@@ -48,8 +48,8 @@ auto ToAssetType(std::string type) -> asset::AssetType
         return asset::AssetType::HullCollider;
     else if(type == "mesh")
         return asset::AssetType::Mesh;
-    else if(type == "skeletal-animation-clip")
-        return asset::AssetType::SkeletalAnimationClip;
+    else if(type == "skeletal-animation")
+        return asset::AssetType::SkeletalAnimation;
     else if(type == "texture")
         return asset::AssetType::Texture;
 
@@ -70,8 +70,8 @@ auto ToString(asset::AssetType type) -> std::string
             return "hull-collider";
         case asset::AssetType::Mesh:
             return "mesh";
-        case asset::AssetType::SkeletalAnimationClip:
-            return "skeletal-animation-clip";
+        case asset::AssetType::SkeletalAnimation:
+            return "skeletal-animation";
         case asset::AssetType::Texture:
             return "texture";
         default:

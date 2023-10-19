@@ -21,8 +21,8 @@ auto GetBlobSize(const asset::HullCollider& asset) -> size_t;
 /** @brief Get the serialized size in bytes for a Mesh. */
 auto GetBlobSize(const asset::Mesh& asset) -> size_t;
 
-/** @brief Get the serialized size in bytes for a SkeletalAnimationClip. */
-auto GetBlobSize(const asset::SkeletalAnimationClip& asset) -> size_t;
+/** @brief Get the serialized size in bytes for a SkeletalAnimation. */
+auto GetBlobSize(const asset::SkeletalAnimation& asset) -> size_t;
 
 /** @brief Get the serialized size in bytes for a Texture. */
 auto GetBlobSize(const asset::Texture& asset) -> size_t;

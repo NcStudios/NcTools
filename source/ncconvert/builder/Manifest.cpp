@@ -126,19 +126,6 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
                     }
                     continue;
                 }
-                else if (asset.contains("assetName"))
-                {
-                    // Single target mode
-                    auto target = BuildTarget(asset.at("assetName"), asset.at("sourcePath"), options.outputDirectory);
-                    if (::IsUpToDate(target))
-                    {
-                        LOG("Up-to-date: {}", target.destinationPath.string());
-                        continue;
-                    }
-                    instructions.at(type).push_back(std::move(target));
-                    continue;
-                }
-                throw nc::NcError("Asset must contain either \"assetName\" or \"assetNames\".");
             }
 
             // Single target mode

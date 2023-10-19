@@ -14,7 +14,7 @@ geometry data, and therefore have similar requirements. For `concave-collider` a
 mesh in an input file will be processed, and non-geometry data in the input
 file is ignored. For `mesh` asset types, if nc-convert is called in single-target mode, only the first mesh in an input
 file will be processed. If the manifest is provided, either the first mesh in an input file is processed, or every mesh in an 
-input file is processed if the internal mesh names are specified.
+input file is processed if the sub-resource names are specified.
 
 It is usually recommended for the input geometry to be centered around the origin.
 This makes `Transform` operations within NcEngine less surprising. Additionally,

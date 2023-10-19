@@ -51,11 +51,11 @@ Json Manifest
               "sourcePath": "path/to/mesh1.fbx",
               "assetNames": [
                   {
-                      "internalName" : "mesh1head",
+                      "subResourceName" : "mesh1head",
                       "assetName" : "head"
                   },
                   {
-                      "internalName" : "mesh1shoulders",
+                      "subResourceName" : "mesh1shoulders",
                       "assetName" : "shoulders"
                   }
               ]

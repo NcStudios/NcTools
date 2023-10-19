@@ -21,8 +21,8 @@ class GeometryConverter
         /** Process an fbx file as geometry for a hull collider. */
         auto ImportHullCollider(const std::filesystem::path& path) -> asset::HullCollider;
 
-        /** Process an fbx file as geometry for a mesh renderer. Supply an internalName of the mesh to extract if there are multiple meshes in the fbx file. */
-        auto ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& internalName = std::nullopt) -> asset::Mesh;
+        /** Process an fbx file as geometry for a mesh renderer. Supply a subResourceName of the mesh to extract if there are multiple meshes in the fbx file. */
+        auto ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& subResourceName = std::nullopt) -> asset::Mesh;
 
     private:
         class impl;

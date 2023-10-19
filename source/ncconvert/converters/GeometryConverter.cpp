@@ -52,6 +52,35 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
     return scene;
 }
 
+auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& subResourceName = std::nullopt) -> aiMesh*
+{
+    aiMesh* mesh = nullptr;
+
+    if (scene->mNumMeshes == 0)
+    {
+        throw nc::NcError("No meshes found in scene.");
+    }
+
+    if (subResourceName.has_value())
+    {
+        for (auto* sceneMesh : std::span(scene->mMeshes, scene->mNumMeshes))
+        {
+            if (std::string{sceneMesh->mName.C_Str()} == subResourceName)
+            {
+                mesh = sceneMesh;
+                break;
+            }
+        }
+        if (mesh == nullptr) throw nc::NcError("A sub-resource name was provided but no mesh was found by that name: {}. No asset will be created.", subResourceName.value());
+    }
+    else 
+    {
+        mesh = scene->mMeshes[0];
+    }
+
+    return mesh;
+}
+
 auto ToVector3(const aiVector3D& in) -> nc::Vector3
 {
     return nc::Vector3{in.x, in.y, in.z};
@@ -332,35 +361,17 @@ class GeometryConverter::impl
             };
         }
 
-        auto ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& internalName) -> asset::Mesh
+        auto ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& subResourceName) -> asset::Mesh
         {
             const auto scene = ::ReadFbx(path, &m_importer, meshFlags);
-
-            aiMesh* mesh = nullptr;
-
-            if (internalName.has_value())
-            {
-                for (auto* sceneMesh : std::span(scene->mMeshes, scene->mNumMeshes))
-                {
-                    if (std::string{sceneMesh->mName.C_Str()} == internalName)
-                    {
-                        mesh = sceneMesh;
-                        break;
-                    }
-                }
-                if (mesh == nullptr) throw nc::NcError("An internal mesh name was provided but no mesh was found by that name: {}. No asset will be created.", internalName.value());
-            }
-            else 
-            {
-                mesh = scene->mMeshes[0];
-            }
+            auto mesh = GetMeshFromScene(scene, subResourceName);
 
             if (mesh->mNumVertices == 0)
             {
                 throw nc::NcError("No vertices found for: ", path.string());
             }
 
-            auto convertedVertices = ::ConvertToMeshVertices(scene->mMeshes[0]);
+            auto convertedVertices = ::ConvertToMeshVertices(mesh);
             if(auto count = Sanitize(convertedVertices))
             {
                 LOG("Warning: Bad values detected in mesh. {} values have been set to 0.", count);
@@ -370,8 +381,8 @@ class GeometryConverter::impl
                 GetMeshVertexExtents(convertedVertices),
                 FindFurthestDistanceFromOrigin(convertedVertices),
                 std::move(convertedVertices),
-                ::ConvertToIndices(::ViewFaces(scene->mMeshes[0])),
-                GetBonesData(scene->mMeshes[0], scene->mRootNode)
+                ::ConvertToIndices(::ViewFaces(mesh)),
+                GetBonesData(mesh, scene->mRootNode)
             };
         }
 
@@ -396,9 +407,9 @@ auto GeometryConverter::ImportHullCollider(const std::filesystem::path& path) ->
     return m_impl->ImportHullCollider(path);
 }
 
-auto GeometryConverter::ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& internalName) -> asset::Mesh
+auto GeometryConverter::ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& subResourceName) -> asset::Mesh
 {
-    return m_impl->ImportMesh(path, internalName);
+    return m_impl->ImportMesh(path, subResourceName);
 }
 
 } // namespace nc::convert

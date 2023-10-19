@@ -56,13 +56,13 @@ void ProcessOptions(GlobalManifestOptions& options, const std::filesystem::path&
     }
 }
 
-auto BuildTarget(const std::string& assetName, const std::string& sourcePath, const std::filesystem::path& outputDirectory, const std::optional<std::string>& internalName = std::nullopt) -> nc::convert::Target
+auto BuildTarget(const std::string& assetName, const std::string& sourcePath, const std::filesystem::path& outputDirectory, const std::optional<std::string>& subResourceName = std::nullopt) -> nc::convert::Target
 {
     auto target = nc::convert::Target
     {
         sourcePath,
         nc::convert::AssetNameToNcaPath(assetName, outputDirectory),
-        internalName
+        subResourceName
     };
 
     if (!std::filesystem::is_regular_file(target.sourcePath))
@@ -114,9 +114,9 @@ void ReadManifest(const std::filesystem::path& manifestPath, std::unordered_map<
                 // // Multiple output mode
                 if (asset.contains("assetNames"))
                 {
-                    for (const auto& internalAsset : asset.at("assetNames"))
+                    for (const auto& subResource : asset.at("assetNames"))
                     {
-                        auto target = BuildTarget(internalAsset.at("assetName"), asset.at("sourcePath"), options.outputDirectory, internalAsset.at("internalName"));
+                        auto target = BuildTarget(subResource.at("assetName"), asset.at("sourcePath"), options.outputDirectory, subResource.at("subResourceName"));
                         if (::IsUpToDate(target))
                         {
                             LOG("Up-to-date: {}", target.destinationPath.string());

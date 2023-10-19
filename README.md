@@ -41,11 +41,11 @@ You can also use a JSON manifest file to convert many files at once:
             "sourcePath": "path/to/mesh1.fbx",
             "assetNames": [
                 {
-                    "internalName" : "mesh1head",
+                    "subResourceName" : "mesh1head",
                     "assetName" : "head"
                 },
                 {
-                    "internalName" : "mesh1shoulders",
+                    "subResourceName" : "mesh1shoulders",
                     "assetName" : "shoulders"
                 }
             ]

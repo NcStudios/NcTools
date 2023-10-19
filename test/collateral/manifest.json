@@ -31,7 +31,7 @@
             "sourcePath": "cube.fbx",
             "assetNames": [
                 {
-                    "internalName" : "Cube.001",
+                    "subResourceName" : "Cube.001",
                     "assetName" : "myMultiOutputMesh"
                 }
             ]
@@ -44,19 +44,19 @@
             "sourcePath": "multicube.fbx",
             "assetNames": [
                 {
-                    "internalName" : "Cube 1 Mesh",
+                    "subResourceName" : "Cube 1 Mesh",
                     "assetName" : "cube1"
                 },
                 {
-                    "internalName" : "Cube 2 Mesh",
+                    "subResourceName" : "Cube 2 Mesh",
                     "assetName" : "cube2"
                 },
                 {
-                    "internalName" : "Cube 3 Mesh",
+                    "subResourceName" : "Cube 3 Mesh",
                     "assetName" : "cube3"
                 },
                 {
-                    "internalName" : "Cube 1 A Mesh",
+                    "subResourceName" : "Cube 1 A Mesh",
                     "assetName" : "cube1a"
                 }
             ]

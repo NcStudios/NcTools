@@ -179,22 +179,14 @@ TEST_F(NcConvertIntegration, Manifest_succeeds)
     EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "wiggle.nca"));
 }
 
-TEST_F(NcConvertIntegration, Manifest_succeeds_givenMeshNotPresent_meshSkipped)
+TEST_F(NcConvertIntegration, Manifest_subResourceMeshNotPresent_manifestFails)
 {
+    // Added a mesh entry called "idontexist" in the manifest.
+
     const auto manifestPath = (collateral::collateralDirectory / "manifest_mesh_not_present.json").string();
     const auto cmd = fmt::format(R"({} -m "{}")", exeName, manifestPath);
     const auto result = RunCmd(cmd);
-    ASSERT_EQ(result, ResultCode::Success);
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myAudioClip.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myConcaveCollider.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myCubeMap.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myHullCollider.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myMesh.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myMultiOutputMesh.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "myTexture.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "cube1.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "cube2.nca"));
-    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "cube3.nca"));
+    ASSERT_EQ(result, ResultCode::RuntimeError);
 }
 
 TEST_F(NcConvertIntegration, Manifest_noManifestPath_fails)

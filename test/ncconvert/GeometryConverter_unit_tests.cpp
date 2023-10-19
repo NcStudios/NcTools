@@ -74,6 +74,18 @@ TEST(GeometryConverterTest, ImportedMesh_convertsToNca)
     EXPECT_TRUE(std::ranges::all_of(actual.indices, [&nVertices](auto i){ return i < nVertices; }));
 }
 
+TEST(GeometryConverterTest, ImportedMesh_multipleSubResources_specifiedMeshParsed)
+{
+    namespace test_data = collateral::plane_and_cube_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto cubeMesh = uut.ImportMesh(test_data::filePath, std::string{"Cube Mesh"});
+    const auto planeMesh = uut.ImportMesh(test_data::filePath, std::string{"Plane Mesh"});
+
+    EXPECT_NE(cubeMesh.vertices.size(), planeMesh.vertices.size());
+    EXPECT_EQ(cubeMesh.vertices.size(), 24);
+    EXPECT_EQ(planeMesh.vertices.size(), 4);
+}
+
 TEST(GeometryConverterTest, GetBoneWeights_singleBone_1WeightAllVertices)
 {
     namespace test_data = collateral::single_bone_four_vertex_fbx;

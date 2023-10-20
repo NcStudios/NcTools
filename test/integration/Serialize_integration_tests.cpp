@@ -440,15 +440,38 @@ TEST(SerializationTest, SkeletalAnimation_roundTrip_succeeds)
     nc::convert::Serialize(stream, expectedAsset, assetId);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeSkeletalAnimation(stream);
 
-    // EXPECT_STREQ("CUBE", actualHeader.magicNumber);
-    // EXPECT_EQ(assetId, actualHeader.assetId);
-    // EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
-    // EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
+    EXPECT_EQ(actualAsset.name, std::string{"Test"});
+    EXPECT_EQ(actualAsset.durationInTicks, 128);
+    EXPECT_EQ(actualAsset.ticksPerSecond, 64);
+    EXPECT_EQ(actualAsset.framesPerBone.size(), 2);
 
-    // EXPECT_EQ(expectedAsset.faceSideLength, actualAsset.faceSideLength);
-    // ASSERT_EQ(expectedAsset.pixelData.size(), actualAsset.pixelData.size());
+    const auto& firstBoneFrames = actualAsset.framesPerBone.at("Bone0");
+    EXPECT_EQ(firstBoneFrames.positionFrames.at(0).timeInTicks, 0);
+    EXPECT_EQ(firstBoneFrames.positionFrames.at(1).timeInTicks, 1);
+    EXPECT_EQ(firstBoneFrames.positionFrames.at(2).timeInTicks, 2);
+    EXPECT_FLOAT_EQ(firstBoneFrames.positionFrames.at(0).position.x, 0.0f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.positionFrames.at(0).position.y, 0.0f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.positionFrames.at(0).position.z, 0.0f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.rotationFrames.at(1).rotation.x, 1.1f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.rotationFrames.at(1).rotation.y, 1.1f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.rotationFrames.at(1).rotation.z, 1.1f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.rotationFrames.at(1).rotation.w, 1.0f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.scaleFrames.at(2).scale.x, 2.2f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.scaleFrames.at(2).scale.y, 2.2f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.scaleFrames.at(2).scale.z, 2.2f);
 
-    // EXPECT_TRUE(std::equal(expectedAsset.pixelData.cbegin(),
-    //                        expectedAsset.pixelData.cend(),
-    //                        actualAsset.pixelData.cbegin()));
+    const auto& secondBoneFrames = actualAsset.framesPerBone.at("Bone1");
+    EXPECT_EQ(secondBoneFrames.positionFrames.at(0).timeInTicks, 0);
+    EXPECT_EQ(secondBoneFrames.positionFrames.at(1).timeInTicks, 1);
+    EXPECT_EQ(secondBoneFrames.positionFrames.at(2).timeInTicks, 2);
+    EXPECT_FLOAT_EQ(secondBoneFrames.positionFrames.at(0).position.x, 3.0f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.positionFrames.at(0).position.y, 3.0f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.positionFrames.at(0).position.z, 3.0f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.rotationFrames.at(1).rotation.x, 4.1f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.rotationFrames.at(1).rotation.y, 4.1f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.rotationFrames.at(1).rotation.z, 4.1f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.rotationFrames.at(1).rotation.w, 4.0f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.scaleFrames.at(2).scale.x, 5.2f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.scaleFrames.at(2).scale.y, 5.2f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.scaleFrames.at(2).scale.z, 5.2f);
 }

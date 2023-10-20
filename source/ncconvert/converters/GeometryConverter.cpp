@@ -80,29 +80,24 @@ auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& su
 
 auto GetAnimationFromMesh(const aiScene* scene, const std::optional<std::string>& subResourceName = std::nullopt) -> aiAnimation*
 {
-     if (scene->mNumAnimations == 0)
-    {
-        throw nc::NcError("No animations found in scene.");
-    }
+    NC_ASSERT(scene->mNumAnimations != 0, "No animations found in scene.");
 
     aiAnimation* animation = nullptr;
 
-    if (subResourceName.has_value())
+    if (!subResourceName.has_value())
     {
-        for (auto* sceneAnimation : std::span(scene->mAnimations, scene->mNumAnimations))
+        return scene->mAnimations[0];
+    }
+
+    for (auto* sceneAnimation : std::span(scene->mAnimations, scene->mNumAnimations))
+    {
+        if (std::string{sceneAnimation->mName.C_Str()} == subResourceName)
         {
-            if (std::string{sceneAnimation->mName.C_Str()} == subResourceName)
-            {
-                animation = sceneAnimation;
-                break;
-            }
+            animation = sceneAnimation;
+            break;
         }
-        if (animation == nullptr) throw nc::NcError("A sub-resource name was provided but no animation was found by that name: {}. No asset will be created.", subResourceName.value());
     }
-    else 
-    {
-        animation = scene->mAnimations[0];
-    }
+    if (animation == nullptr) throw nc::NcError("A sub-resource name was provided but no animation was found by that name: {}. No asset will be created.", subResourceName.value());
 
     return animation;
 }

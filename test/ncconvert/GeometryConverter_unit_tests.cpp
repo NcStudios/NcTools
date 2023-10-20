@@ -273,4 +273,9 @@ TEST(GeometryConverterTest, ImportSkeletalAnimation_singleClip_convertedCorrectl
     namespace test_data = collateral::simple_cube_animation_fbx;
     auto uut = nc::convert::GeometryConverter{};
     const auto actual = uut.ImportSkeletalAnimation(test_data::filePath, std::string("Armature|Wiggle"));
+
+    EXPECT_EQ(actual.name, std::string("Armature|Wiggle"));
+    EXPECT_EQ(actual.durationInTicks, 60);
+    EXPECT_EQ(actual.ticksPerSecond, 24);
+    EXPECT_EQ(actual.framesPerBone.size(), 4);
 }

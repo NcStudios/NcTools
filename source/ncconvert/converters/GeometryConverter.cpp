@@ -56,27 +56,22 @@ auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& su
 {
     aiMesh* mesh = nullptr;
 
-    if (scene->mNumMeshes == 0)
-    {
-        throw nc::NcError("No meshes found in scene.");
-    }
+    NC_ASSERT(scene->mNumMeshes != 0, "No meshes found in scene.");
 
-    if (subResourceName.has_value())
+    if (!subResourceName.has_value())
     {
-        for (auto* sceneMesh : std::span(scene->mMeshes, scene->mNumMeshes))
+        return scene->mMeshes[0];
+    }
+    
+    for (auto* sceneMesh : std::span(scene->mMeshes, scene->mNumMeshes))
+    {
+        if (std::string{sceneMesh->mName.C_Str()} == subResourceName)
         {
-            if (std::string{sceneMesh->mName.C_Str()} == subResourceName)
-            {
-                mesh = sceneMesh;
-                break;
-            }
+            mesh = sceneMesh;
+            break;
         }
-        if (mesh == nullptr) throw nc::NcError("A sub-resource name was provided but no mesh was found by that name: {}. No asset will be created.", subResourceName.value());
     }
-    else 
-    {
-        mesh = scene->mMeshes[0];
-    }
+    if (mesh == nullptr) throw nc::NcError("A sub-resource name was provided but no mesh was found by that name: {}. No asset will be created.", subResourceName.value());
 
     return mesh;
 }

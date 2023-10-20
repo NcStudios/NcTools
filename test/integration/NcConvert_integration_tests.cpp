@@ -182,7 +182,6 @@ TEST_F(NcConvertIntegration, Manifest_succeeds)
 TEST_F(NcConvertIntegration, Manifest_subResourceMeshNotPresent_manifestFails)
 {
     // Added a mesh entry called "idontexist" in the manifest.
-
     const auto manifestPath = (collateral::collateralDirectory / "manifest_mesh_not_present.json").string();
     const auto cmd = fmt::format(R"({} -m "{}")", exeName, manifestPath);
     const auto result = RunCmd(cmd);

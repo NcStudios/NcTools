@@ -97,22 +97,8 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::SkeletalAnimation:
         {
-            try
-            {
-                const auto asset = m_geometryConverter->ImportSkeletalAnimation(target.sourcePath, target.internalName);
-                convert::Serialize(outFile, asset, assetId);
-            }
-            catch(const NcError& e)
-            {
-                if (std::string(e.what()).find(std::string("An internal skeletal animation name was provided but no animation")) != std::string::npos)
-                {
-                    LOG("Warning: ", e.what());
-                }
-                else
-                {
-                    throw e;
-                }
-            }
+            const auto asset = m_geometryConverter->ImportSkeletalAnimation(target.sourcePath, target.subResourceName);
+            convert::Serialize(outFile, asset, assetId);
             return true;
         }
         case asset::AssetType::Texture:

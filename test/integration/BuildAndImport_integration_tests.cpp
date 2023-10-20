@@ -143,7 +143,7 @@ TEST_F(BuildAndImportTest, SkeletalAnimation_from_fbx)
     namespace test_data = collateral::simple_cube_animation_fbx;
     const auto inFile = test_data::filePath;
     const auto outFile = ncaTestOutDirectory / "simple_cube_animation.nca";
-    const auto target = nc::convert::Target(inFile, outFile);
+    const auto target = nc::convert::Target(inFile, outFile, std::string{"Armature|Wiggle"});
     auto builder = nc::convert::Builder{};
     ASSERT_TRUE(builder.Build(nc::asset::AssetType::SkeletalAnimation, target));
 

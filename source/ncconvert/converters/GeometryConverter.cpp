@@ -54,42 +54,14 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
     return scene;
 }
 
-auto ParseSkeletalAnimationName(const aiString& name) -> std::string
-{
-    // Blender adds a prefix of '<armature name>|' to animation clips. We just want the clip/action name.
-    auto nameAsString = std::string(name.C_Str());
-    auto pipeDelimiterPos = nameAsString.find_last_of('|');
-
-    if (pipeDelimiterPos == std::string::npos) // Allows support for non-blender imported files.
-    {
-        return nameAsString;
-    }
-
-    if (pipeDelimiterPos == nameAsString.size()) // Returns name in format like: clip_2023_10_13_18-33-59 if no name is given.
-    {
-        auto currentDateTime = time(0);
-        auto utcDateTime = gmtime(&currentDateTime);
-        std::string formattedTime = std::string("clip") + "_" +
-                                    std::to_string(1900 + utcDateTime->tm_year) + "_" +
-                                    std::to_string(1 + utcDateTime->tm_mon)  + "_" +
-                                    std::to_string(utcDateTime->tm_mday) + "_" +
-                                    std::to_string(utcDateTime->tm_hour) + "-" +
-                                    std::to_string(utcDateTime->tm_min) + "-" +
-                                    std::to_string(utcDateTime->tm_sec);
-        return formattedTime;
-    }
-
-    return nameAsString.substr(pipeDelimiterPos+1, nameAsString.size()-pipeDelimiterPos);
-}
-
 auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& subResourceName = std::nullopt) -> aiMesh*
 {
-    aiMesh* mesh = nullptr;
-
     if (scene->mNumMeshes == 0)
     {
         throw nc::NcError("No meshes found in scene.");
     }
+
+    aiMesh* mesh = nullptr;
 
     if (subResourceName.has_value())
     {
@@ -109,6 +81,35 @@ auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& su
     }
 
     return mesh;
+}
+
+auto GetAnimationFromMesh(const aiScene* scene, const std::optional<std::string>& subResourceName = std::nullopt) -> aiAnimation*
+{
+     if (scene->mNumAnimations == 0)
+    {
+        throw nc::NcError("No animations found in scene.");
+    }
+
+    aiAnimation* animation = nullptr;
+
+    if (subResourceName.has_value())
+    {
+        for (auto* sceneAnimation : std::span(scene->mAnimations, scene->mNumAnimations))
+        {
+            if (std::string{sceneAnimation->mName.C_Str()} == subResourceName)
+            {
+                animation = sceneAnimation;
+                break;
+            }
+        }
+        if (animation == nullptr) throw nc::NcError("A sub-resource name was provided but no animation was found by that name: {}. No asset will be created.", subResourceName.value());
+    }
+    else 
+    {
+        animation = scene->mAnimations[0];
+    }
+
+    return animation;
 }
 
 auto ToVector3(const aiVector3D& in) -> nc::Vector3
@@ -344,9 +345,9 @@ auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVer
 auto ConvertToSkeletalAnimation(const aiAnimation* animationClip) -> nc::asset::SkeletalAnimation
 {
     auto skeletalAnimationClip = nc::asset::SkeletalAnimation{};
-    skeletalAnimationClip.name = ParseSkeletalAnimationName(animationClip->mName);
+    skeletalAnimationClip.name = std::string(animationClip->mName.C_Str());
     skeletalAnimationClip.ticksPerSecond = animationClip->mTicksPerSecond == 0 ? 25.0f : animationClip->mTicksPerSecond; // Ticks per second is not required to be set in animation software.
-    skeletalAnimationClip.durationInTicks = static_cast<uint32_t>(animationClip->mDuration * skeletalAnimationClip.ticksPerSecond);
+    skeletalAnimationClip.durationInTicks = static_cast<uint32_t>(animationClip->mDuration);
     skeletalAnimationClip.framesPerBone = std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames>{};
     skeletalAnimationClip.framesPerBone.reserve(animationClip->mNumChannels);
 
@@ -376,7 +377,6 @@ auto ConvertToSkeletalAnimation(const aiAnimation* animationClip) -> nc::asset::
     }
     return skeletalAnimationClip;
 }
-
 } // anonymous namespace
 
 namespace nc::convert
@@ -453,34 +453,10 @@ class GeometryConverter::impl
             };
         }
 
-        auto ImportSkeletalAnimation(const std::filesystem::path& path, const std::optional<std::string>& internalName) -> asset::SkeletalAnimation
+        auto ImportSkeletalAnimation(const std::filesystem::path& path, const std::optional<std::string>& subResourceName) -> asset::SkeletalAnimation
         {
             const auto scene = ::ReadFbx(path, &m_importer, skeletalAnimationFlags);
-
-            if (scene->mNumAnimations == 0)
-            {
-                throw nc::NcError("No skeletal animations found for: ", path.string());
-            }
-
-            aiAnimation* animation = nullptr;
-
-            if (internalName.has_value())
-            {
-                for (auto* sceneAnimation : std::span(scene->mAnimations, scene->mNumAnimations))
-                {
-                    if (std::string{sceneAnimation->mName.C_Str()} == internalName)
-                    {
-                        animation = sceneAnimation;
-                        break;
-                    }
-                }
-                if (animation == nullptr) throw nc::NcError("An internal skeletal animation name was provided but no animation was found by that name: {}. No asset will be created.", internalName.value());
-            }
-            else 
-            {
-                animation = scene->mAnimations[0];
-            }
-
+            auto animation = GetAnimationFromMesh(scene, subResourceName);
             return ::ConvertToSkeletalAnimation(animation);
         }
 
@@ -510,8 +486,8 @@ auto GeometryConverter::ImportMesh(const std::filesystem::path& path, const std:
     return m_impl->ImportMesh(path, subResourceName);
 }
 
-auto GeometryConverter::ImportSkeletalAnimation(const std::filesystem::path& path, const std::optional<std::string>& internalName) -> asset::SkeletalAnimation
+auto GeometryConverter::ImportSkeletalAnimation(const std::filesystem::path& path, const std::optional<std::string>& subResourceName) -> asset::SkeletalAnimation
 {
-    return m_impl->ImportSkeletalAnimation(path, internalName);
+    return m_impl->ImportSkeletalAnimation(path, subResourceName);
 }
 } // namespace nc::convert

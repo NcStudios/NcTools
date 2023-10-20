@@ -48,17 +48,32 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
     {
         throw nc::NcError("Fbx contains no mesh data\n    file: ", path.string());
     }
-    else if (scene->mNumMeshes > 1)
-    {
-        LOG("Fbx {} has {} meshes. Only the first will be parsed.", path.string(), scene->mNumMeshes);
-    }
-
-    if (scene->mMeshes[0]->mNumVertices == 0)
-    {
-        throw nc::NcError("No vertices found for: ", path.string());
-    }
 
     return scene;
+}
+
+auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& subResourceName = std::nullopt) -> aiMesh*
+{
+    aiMesh* mesh = nullptr;
+
+    NC_ASSERT(scene->mNumMeshes != 0, "No meshes found in scene.");
+
+    if (!subResourceName.has_value())
+    {
+        return scene->mMeshes[0];
+    }
+    
+    for (auto* sceneMesh : std::span(scene->mMeshes, scene->mNumMeshes))
+    {
+        if (std::string{sceneMesh->mName.C_Str()} == subResourceName)
+        {
+            mesh = sceneMesh;
+            break;
+        }
+    }
+    if (mesh == nullptr) throw nc::NcError("A sub-resource name was provided but no mesh was found by that name: {}. No asset will be created.", subResourceName.value());
+
+    return mesh;
 }
 
 auto ToVector3(const aiVector3D& in) -> nc::Vector3
@@ -300,6 +315,12 @@ class GeometryConverter::impl
         auto ImportConcaveCollider(const std::filesystem::path& path) -> asset::ConcaveCollider
         {
             const auto mesh = ::ReadFbx(path, &m_importer, concaveColliderFlags)->mMeshes[0];
+
+            if (mesh->mNumVertices == 0)
+            {
+                throw nc::NcError("No vertices found for: ", path.string());
+            }
+
             auto triangles = ::ConvertToTriangles(::ViewFaces(mesh), ::ViewVertices(mesh));
             if(auto count = Sanitize(triangles))
             {
@@ -316,6 +337,12 @@ class GeometryConverter::impl
         auto ImportHullCollider(const std::filesystem::path& path) -> asset::HullCollider
         {
             const auto mesh = ::ReadFbx(path, &m_importer, hullColliderFlags)->mMeshes[0];
+
+            if (mesh->mNumVertices == 0)
+            {
+                throw nc::NcError("No vertices found for: ", path.string());
+            }
+
             auto convertedVertices = ::ConvertToVertices(::ViewVertices(mesh));
             if(auto count = Sanitize(convertedVertices))
             {
@@ -329,10 +356,17 @@ class GeometryConverter::impl
             };
         }
 
-        auto ImportMesh(const std::filesystem::path& path) -> asset::Mesh
+        auto ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& subResourceName) -> asset::Mesh
         {
             const auto scene = ::ReadFbx(path, &m_importer, meshFlags);
-            auto convertedVertices = ::ConvertToMeshVertices(scene->mMeshes[0]);
+            auto mesh = GetMeshFromScene(scene, subResourceName);
+
+            if (mesh->mNumVertices == 0)
+            {
+                throw nc::NcError("No vertices found for: ", path.string());
+            }
+
+            auto convertedVertices = ::ConvertToMeshVertices(mesh);
             if(auto count = Sanitize(convertedVertices))
             {
                 LOG("Warning: Bad values detected in mesh. {} values have been set to 0.", count);
@@ -342,8 +376,8 @@ class GeometryConverter::impl
                 GetMeshVertexExtents(convertedVertices),
                 FindFurthestDistanceFromOrigin(convertedVertices),
                 std::move(convertedVertices),
-                ::ConvertToIndices(::ViewFaces(scene->mMeshes[0])),
-                GetBonesData(scene->mMeshes[0], scene->mRootNode)
+                ::ConvertToIndices(::ViewFaces(mesh)),
+                GetBonesData(mesh, scene->mRootNode)
             };
         }
 
@@ -368,8 +402,9 @@ auto GeometryConverter::ImportHullCollider(const std::filesystem::path& path) ->
     return m_impl->ImportHullCollider(path);
 }
 
-auto GeometryConverter::ImportMesh(const std::filesystem::path& path) -> asset::Mesh
+auto GeometryConverter::ImportMesh(const std::filesystem::path& path, const std::optional<std::string>& subResourceName) -> asset::Mesh
 {
-    return m_impl->ImportMesh(path);
+    return m_impl->ImportMesh(path, subResourceName);
 }
+
 } // namespace nc::convert

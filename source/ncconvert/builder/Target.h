@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <optional>
 
 namespace nc::convert
 {
@@ -9,5 +10,6 @@ struct Target
 {
     std::filesystem::path sourcePath;
     std::filesystem::path destinationPath;
+    std::optional<std::string> subResourceName = std::nullopt;
 };
 }

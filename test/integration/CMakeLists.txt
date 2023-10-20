@@ -52,7 +52,7 @@ if(NC_TOOLS_BUILD_CONVERTER)
             ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/GeometryConverter.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/TextureConverter.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/BlobSize.cpp
-            ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/EnumConversion.cpp
+            ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/EnumExtensions.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/Path.cpp
     )
 

@@ -56,8 +56,8 @@
                     "assetName" : "cube3"
                 },
                 {
-                    "subResourceName" : "Cube 1 A Mesh",
-                    "assetName" : "cube1a"
+                    "subResourceName" : "I don't exist",
+                    "assetName" : "idontexist"
                 }
             ]
         }

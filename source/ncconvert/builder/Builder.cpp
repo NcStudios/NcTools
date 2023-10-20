@@ -5,6 +5,7 @@
 #include "converters/AudioConverter.h"
 #include "converters/GeometryConverter.h"
 #include "converters/TextureConverter.h"
+#include "utility/Log.h"
 
 #include "ncasset/Assets.h"
 
@@ -58,7 +59,6 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
 {
     auto outFile = ::OpenOutFile(target.destinationPath);
     const auto assetId = ::GetAssetId(target.destinationPath);
-
     switch (type)
     {
         case asset::AssetType::AudioClip:
@@ -87,7 +87,7 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         }
         case asset::AssetType::Mesh:
         {
-            const auto asset = m_geometryConverter->ImportMesh(target.sourcePath);
+            const auto asset = m_geometryConverter->ImportMesh(target.sourcePath, target.subResourceName);
             convert::Serialize(outFile, asset, assetId);
             return true;
         }
@@ -102,7 +102,6 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
             return true;
         }
     }
-
     throw NcError(fmt::format("Unknown AssetType: {} for {}",
         static_cast<int>(type), target.sourcePath.string()
     ));

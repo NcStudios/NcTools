@@ -28,4 +28,11 @@ namespace nc::asset
      * @param bytes The byte stream to read from.
      */
     auto ReadMatrix(RawNcaBuffer& bytes) -> DirectX::XMMATRIX;
+
+    
+    /** @brief Read the mapping of bone names to the index the shader expects from a RawNcaBuffer byte stream.
+     * 
+     * @param bytes The byte stream to read from.
+     */
+    auto ReadBoneMapping(RawNcaBuffer& bytes, size_t elementsCount) -> std::unordered_map<std::string, uint32_t>;
 } // namespace nc::asset

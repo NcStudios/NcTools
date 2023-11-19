@@ -48,4 +48,22 @@ auto ReadBoneToParentMatrices(RawNcaBuffer& bytes, size_t matrixCount) -> std::v
     }
     return boneSpaceToParentSpaceMatrices;
 }
+
+auto ReadBoneMapping(RawNcaBuffer& bytes, size_t elementsCount) -> std::unordered_map<std::string, uint32_t>
+{
+    auto boneMapping = std::unordered_map<std::string, uint32_t>{};
+    boneMapping.reserve(elementsCount);
+    for (auto i = 0u; i < elementsCount; i++)
+    {
+        auto boneNameSize = size_t{};
+        bytes.Read(&boneNameSize);
+        auto boneName = std::string{};
+        boneName.resize(boneNameSize);
+        bytes.Read(boneName.data(), boneNameSize);
+        auto boneIndex = uint32_t{};
+        bytes.Read(&boneIndex);
+        boneMapping.emplace(boneName, boneIndex);
+    }
+    return boneMapping;
+}
 } // namespace nc::asset

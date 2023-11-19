@@ -153,6 +153,7 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
         auto boneSpaceToParentSpaceMatrixCount = size_t{};
         bytes.Read(&boneSpaceToParentSpaceMatrixCount);
         asset.bonesData = BonesData{};
+        asset.bonesData.value().boneMapping = ReadBoneMapping(bytes, vertexToBoneSpaceMatrixCount);
         asset.bonesData.value().vertexSpaceToBoneSpace = ReadVertexToBoneMatrices(bytes, vertexToBoneSpaceMatrixCount);
         asset.bonesData.value().boneSpaceToParentSpace = ReadBoneToParentMatrices(bytes, boneSpaceToParentSpaceMatrixCount);
     }

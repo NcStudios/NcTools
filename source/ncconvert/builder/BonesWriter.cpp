@@ -27,6 +27,16 @@ void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentS
     }
 }
 
+void Write(std::ostream& stream, const std::unordered_map<std::string, uint32_t>& boneMapping)
+{
+    for (const auto& [boneName, index] : boneMapping)
+    {
+        Write(stream, boneName.size());
+        Write(stream, boneName.data(), boneName.size());
+        Write(stream, index);
+    }
+}
+
 void Write(std::ostream& stream, const DirectX::XMMATRIX& matrix)
 {
     DirectX::XMFLOAT4X4 view;

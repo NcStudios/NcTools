@@ -14,6 +14,11 @@ auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_
         out += sizeof(size_t);
         out += sizeof(size_t);
 
+        for (const auto& [boneName, index] : bonesData.value().boneMapping)
+        {
+            out += sizeof(size_t) + boneName.size() + sizeof(uint32_t);
+        }
+
         for (const auto& vertexSpaceToBoneSpace : bonesData.value().vertexSpaceToBoneSpace)
         {
             out += sizeof(size_t) + vertexSpaceToBoneSpace.boneName.size() + matrixSize;

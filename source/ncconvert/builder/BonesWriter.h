@@ -22,6 +22,12 @@ void Write(std::ostream& stream, const std::vector<nc::asset::VertexSpaceToBoneS
  */
 void Write(std::ostream& stream, const std::vector<nc::asset::BoneSpaceToParentSpace>& boneSpaceToParentSpace);
 
+/** @brief Write the map of bone name to index the shader expects to a binary stream.
+ * 
+ * @param bytes The byte stream to write to.
+ */
+void Write(std::ostream& stream, const std::unordered_map<std::string, uint32_t>& boneMapping);
+
 /** @brief Write a DirectX::XMMATRIX to a binary stream.
  * 
  * @param bytes The byte stream to write to.

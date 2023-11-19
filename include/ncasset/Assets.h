@@ -34,6 +34,7 @@ struct BoneSpaceToParentSpace
 
 struct BonesData
 {
+    std::unordered_map<std::string, uint32_t> boneMapping;
     std::vector<VertexSpaceToBoneSpace> vertexSpaceToBoneSpace;
     std::vector<BoneSpaceToParentSpace> boneSpaceToParentSpace;
 };

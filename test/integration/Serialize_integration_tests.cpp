@@ -147,6 +147,7 @@ TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
             0, 1, 2,  1, 2, 0,  2, 0, 1
         },
         .bonesData = nc::asset::BonesData{
+            .boneMapping = std::unordered_map<std::string, uint32_t>{},
             .vertexSpaceToBoneSpace = std::vector<nc::asset::VertexSpaceToBoneSpace>(0),
             .boneSpaceToParentSpace = std::vector<nc::asset::BoneSpaceToParentSpace>(0)
         }
@@ -181,6 +182,9 @@ TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
             .numChildren = 0u,
             .indexOfFirstChild = 0u
         });
+
+        // Can't initialize above due to internal compiler error in MS.
+    expectedAsset.bonesData.value().boneMapping.emplace("Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0", 0);
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
     nc::convert::Serialize(stream, expectedAsset, assetId);

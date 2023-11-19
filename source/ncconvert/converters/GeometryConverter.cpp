@@ -73,7 +73,20 @@ auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& su
             break;
         }
     }
-    if (mesh == nullptr) throw nc::NcError("A sub-resource name was provided but no mesh was found by that name: {}. No asset will be created.", subResourceName.value());
+    if (mesh == nullptr) throw nc::NcError("A sub-resource name was provided but no mesh was found by that name: {}. No asset will be created. ", subResourceName.value());
+
+    if (mesh == nullptr)
+    {
+        auto subResourceNames = std::string{};
+        auto meshIndex = 0u;
+        for (auto* sceneMesh : std::span(scene->mMeshes, scene->mNumMeshes))
+        {
+            meshIndex++;
+            meshIndex == scene->mNumMeshes-1 ? subResourceNames.append(std::string{sceneMesh->mName.C_Str()} + ", ")
+            : subResourceNames.append(std::string{sceneMesh->mName.C_Str()} + " ");
+        }
+        throw nc::NcError(fmt::format("A sub-resource name was provided but no animation was found by that name: {}. No asset will be created. Found sub-resources: {}", subResourceName.value(), subResourceNames));
+    }
 
     return mesh;
 }
@@ -97,8 +110,18 @@ auto GetAnimationFromMesh(const aiScene* scene, const std::optional<std::string>
             break;
         }
     }
-    if (animation == nullptr) throw nc::NcError("A sub-resource name was provided but no animation was found by that name: {}. No asset will be created.", subResourceName.value());
-
+    if (animation == nullptr)
+    {
+        auto subResourceNames = std::string{};
+        auto animIndex = 0u;
+        for (auto* sceneAnimation : std::span(scene->mAnimations, scene->mNumAnimations))
+        {
+            animIndex++;
+            animIndex == scene->mNumAnimations-1 ? subResourceNames.append(std::string{sceneAnimation->mName.C_Str()} + ", ")
+            : subResourceNames.append(std::string{sceneAnimation->mName.C_Str()} + " ");
+        }
+        throw nc::NcError(fmt::format("A sub-resource name was provided but no animation was found by that name: {}. No asset will be created. Found sub-resources: {}", subResourceName.value(), subResourceNames));
+    }
     return animation;
 }
 
@@ -163,13 +186,13 @@ auto ConvertToTriangles(std::span<const aiFace> faces, std::span<const aiVector3
 
 auto ConvertToXMMATRIX(const aiMatrix4x4* inputMatrix) -> DirectX::XMMATRIX
 {
-    return DirectX::XMMATRIX
+    return DirectX::XMMatrixTranspose(DirectX::XMMATRIX
     {
         inputMatrix->a1, inputMatrix->a2, inputMatrix->a3, inputMatrix->a4,
         inputMatrix->b1, inputMatrix->b2, inputMatrix->b3, inputMatrix->b4,
         inputMatrix->c1, inputMatrix->c2, inputMatrix->c3, inputMatrix->c4,
         inputMatrix->d1, inputMatrix->d2, inputMatrix->d3, inputMatrix->d4
-    };
+    });
 }
 
 auto GetBoneWeights(const aiMesh* mesh) -> std::unordered_map<uint32_t, nc::asset::PerVertexBones>
@@ -283,12 +306,30 @@ auto GetVertexToBoneSpaceMatrices(const aiMesh* mesh) -> std::vector<nc::asset::
     return out;
 }
 
+auto GetBoneMapping(const std::vector<nc::asset::VertexSpaceToBoneSpace>& vertexSpaceToBoneSpaceMatrices) -> std::unordered_map<std::string, uint32_t>
+{
+    auto boneMapping = std::unordered_map<std::string, uint32_t>{};
+    boneMapping.reserve(vertexSpaceToBoneSpaceMatrices.size());
+
+    for (auto i = 0u; i < vertexSpaceToBoneSpaceMatrices.size(); i++)
+    {
+        boneMapping.emplace(vertexSpaceToBoneSpaceMatrices[i].boneName, i);
+    }
+
+    return boneMapping;
+}
+
 auto GetBonesData(const aiMesh* mesh, const aiNode* rootNode) -> nc::asset::BonesData
 {
+    auto vertexSpaceToBoneSpaces = GetVertexToBoneSpaceMatrices(mesh);
+    auto boneSpaceToParentSpaces = GetBoneSpaceToParentSpaceMatrices(rootNode);
+    auto boneMapping = GetBoneMapping(vertexSpaceToBoneSpaces);
+
     return nc::asset::BonesData
     {
-        GetVertexToBoneSpaceMatrices(mesh),
-        GetBoneSpaceToParentSpaceMatrices(rootNode)
+        std::move(boneMapping),
+        std::move(vertexSpaceToBoneSpaces),
+        std::move(boneSpaceToParentSpaces)
     };
 }
 

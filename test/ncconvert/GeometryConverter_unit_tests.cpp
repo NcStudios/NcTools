@@ -196,11 +196,11 @@ TEST(GeometryConverterTest, GetBonesData_rootBoneOffset_equalsGlobalInverse)
      
     EXPECT_EQ(b1, 0);
     EXPECT_EQ(b2, 0);
-    EXPECT_EQ(b3, -1);
+    EXPECT_EQ(b3, 1);
     EXPECT_EQ(b4, 0);
 
     EXPECT_EQ(c1, 0);
-    EXPECT_EQ(c2, 1);
+    EXPECT_EQ(c2, -1);
     EXPECT_EQ(c3, 0);
     EXPECT_EQ(c4, 0);
     

@@ -73,8 +73,6 @@ auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& su
             break;
         }
     }
-    if (mesh == nullptr) throw nc::NcError("A sub-resource name was provided but no mesh was found by that name: {}. No asset will be created. ", subResourceName.value());
-
     if (mesh == nullptr)
     {
         auto subResourceNames = std::string{};
@@ -521,4 +519,5 @@ auto GeometryConverter::ImportSkeletalAnimation(const std::filesystem::path& pat
 {
     return m_impl->ImportSkeletalAnimation(path, subResourceName);
 }
+
 } // namespace nc::convert

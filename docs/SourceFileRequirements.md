@@ -89,6 +89,14 @@ Vertical cross layout (3:4):
 ## Skeletal Animation Conversion
 > Supported file types: .fbx
 
-`skeletal-animation` assets can be converted from .FBX files with animation data.
-When exporting the .fbx from the modeling software, export with scaling set to "FBX Units Scale" (in Blender) or the equivalent in other modeling software.
+`skeletal-animation` assets can be converted from .fbx files with animation data.
+When exporting the .fbx from the modeling software, the following settings must be observed. (Using Blender as an example): 
+- Set "Apply Scalings" to "FBX Units Scale"
+- Check the "Apply Unit" box
+- Check the "Use Space Transform" box
+- Set "Forward" to "-Z Forward"
+- Set "Up" to "Y Up"
+
+![Alt text](image.png)
+
 There is also support for external animations such as Mixamo.

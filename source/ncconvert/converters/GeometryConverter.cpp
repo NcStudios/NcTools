@@ -373,12 +373,12 @@ auto ConvertToMeshVertices(const aiMesh* mesh) -> std::vector<nc::asset::MeshVer
 
 auto ConvertToSkeletalAnimation(const aiAnimation* animationClip) -> nc::asset::SkeletalAnimation
 {
-    auto skeletalAnimationClip = nc::asset::SkeletalAnimation{};
-    skeletalAnimationClip.name = std::string(animationClip->mName.C_Str());
-    skeletalAnimationClip.ticksPerSecond = animationClip->mTicksPerSecond == 0 ? 25.0f : animationClip->mTicksPerSecond; // Ticks per second is not required to be set in animation software.
-    skeletalAnimationClip.durationInTicks = static_cast<uint32_t>(animationClip->mDuration);
-    skeletalAnimationClip.framesPerBone = std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames>{};
-    skeletalAnimationClip.framesPerBone.reserve(animationClip->mNumChannels);
+    auto skeletalAnimation = nc::asset::SkeletalAnimation{};
+    skeletalAnimation.name = std::string(animationClip->mName.C_Str());
+    skeletalAnimation.ticksPerSecond = animationClip->mTicksPerSecond == 0 ? 25.0f : animationClip->mTicksPerSecond; // Ticks per second is not required to be set in animation software.
+    skeletalAnimation.durationInTicks = static_cast<uint32_t>(animationClip->mDuration);
+    skeletalAnimation.framesPerBone = std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames>{};
+    skeletalAnimation.framesPerBone.reserve(animationClip->mNumChannels);
 
     // A single channel represents one bone and all of its transformations for the animation clip.
     for (const auto* channel : std::span(animationClip->mChannels, animationClip->mNumChannels))
@@ -402,9 +402,9 @@ auto ConvertToSkeletalAnimation(const aiAnimation* animationClip) -> nc::asset::
         {
             frames.scaleFrames.emplace_back(scaleKey.mTime, nc::Vector3(scaleKey.mValue.x, scaleKey.mValue.y, scaleKey.mValue.z));
         }
-        skeletalAnimationClip.framesPerBone.emplace(std::string(channel->mNodeName.C_Str()), std::move(frames));
+        skeletalAnimation.framesPerBone.emplace(std::string(channel->mNodeName.C_Str()), std::move(frames));
     }
-    return skeletalAnimationClip;
+    return skeletalAnimation;
 }
 } // anonymous namespace
 

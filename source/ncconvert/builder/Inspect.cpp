@@ -44,7 +44,7 @@ R"(Data
   bones data vertex to bone count {}
   bones data bone to parent count {})";
 
-constexpr auto skeletalAnimationClipTemplate =
+constexpr auto skeletalAnimationTemplate =
 R"(Data
   name              {}
   duration in ticks {}
@@ -106,7 +106,7 @@ void Inspect(const std::filesystem::path& ncaPath)
         case asset::AssetType::SkeletalAnimation:
         {
             const auto asset = asset::ImportSkeletalAnimation(ncaPath);
-            LOG(skeletalAnimationClipTemplate, asset.name, asset.durationInTicks, asset.ticksPerSecond, asset.framesPerBone.size());
+            LOG(skeletalAnimationTemplate, asset.name, asset.durationInTicks, asset.ticksPerSecond, asset.framesPerBone.size());
             break;
         }
         case asset::AssetType::Texture:

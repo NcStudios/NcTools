@@ -169,7 +169,7 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
 auto DeserializeSkeletalAnimation(std::istream& stream) -> DeserializedResult<SkeletalAnimation>
 {
     const auto header = DeserializeHeader(stream);
-    ::ValidateHeader(header, MagicNumber::skeletalAnimationClip);
+    ::ValidateHeader(header, MagicNumber::skeletalAnimation);
     auto bytes = RawNcaBuffer{stream, header.size};
     auto asset = SkeletalAnimation{};
     auto clipNameSize = size_t{};

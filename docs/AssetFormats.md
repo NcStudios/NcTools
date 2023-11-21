@@ -14,6 +14,7 @@ This document describes the data layouts for NcEngine assets and asset file type
     - [HullCollider](#hullcollider-blob-format)
     - [Mesh](#mesh-blob-format)
     - [Shader](#shader-blob-format)
+    - [SkeletalAnimation](#skeletalanimation-blob-format)
     - [Texture](#texture-blob-format)
 
 ## Nc Asset
@@ -94,20 +95,56 @@ CubeMap faces in pixel data array are ordered: front, back, up, down, right, lef
 ### Mesh Blob Format
 > Magic Number: 'MESH'
 
-| Name         | Type                | Size              |
-|--------------|---------------------|-------------------|
-| extents      | Vector3             | 12                |
-| max extent   | float               | 4                 |
-| vertex count | u64                 | 8                 |
-| index count  | u64                 | 8                 |
-| vertex list  | MeshVertex[]        | vertex count * 88 |
-| indices      | int[]               | index count * 4   |
-| bones data   | optional<BonesData> | 56                |
+| Name                 | Type                                 | Size              | Note
+|----------------------|--------------------------------------|-------------------|-------------
+| extents              | Vector3                              | 12                |
+| max extent           | float                                | 4                 |
+| vertex count         | u64                                  | 8                 |
+| index count          | u64                                  | 8                 |
+| vertex list          | MeshVertex[]                         | vertex count * 88 |
+| indices              | int[]                                | index count * 4   |
+| bones data has value | bool                                 | 1                 |
+| BonesData            | BonesData                            |                   | [BonesData](#bones-data-blob-format)
+
+### Bones Data Blob Format
+
+| Name                         | Type                                                | Size                                                    | Note
+|------------------------------|-----------------------------------------------------|---------------------------------------------------------|-------------
+| vertexSpaceToBoneSpace count | u64                                                 | 8                                                       |
+| boneSpaceToParentSpace count | u64                                                 | 8                                                       |
+| boneMapping                  | (u64 + string + u32) * vertexSpaceToBoneSpace count | (12 + sizeof(boneName)) * vertexSpaceToBoneSpace count  |
+| vertexSpaceToBoneSpace       | VertexSpaceToBoneSpace[]                            | (72 + sizeof(boneName)) * vertexSpaceToBoneSpace count  |
+| boneSpaceToParentSpace       | BoneSpaceToParentSpace[]                            | (136 + sizeof(boneName)) * vertexSpaceToBoneSpace count |
 
 ### Shader Blob Format
 > Magic Number: 'SHAD'
 
 TODO
+
+### SkeletalAnimation Blob Format
+> Magic Number: 'SKEL'
+
+| Name                       | Type             | Size                      | Note 
+|----------------------------|------------------|---------------------------|------
+| name size                  | u64              | 8                         |
+| name                       | string           | name.size()               |
+| durationInTicks            | u32              | 4                         |
+| ticksPerSecond             | double           | 8                         |
+| framesPerBone count        | u64              | 8                         |
+| framesPerBone list         | FramesPerBone[]  |                           | [FramesPerBone](#FramesPerBone-blob-format)
+
+### FramesPerBone Blob Format
+
+| Name                 | Type             | Size                      | Note 
+|----------------------|------------------|---------------------------|------
+| name size            | u64              | 8                         |
+| name                 | string           | name.size()               |
+| position frames size | u64              | 8                         |
+| position frames      | PositionFrames[] | position frames size * 20 |
+| rotation frames size | u64              | 8                         |
+| rotation frames      | RotationFrames[] | rotation frames size * 24 |
+| scale frames size    | u64              | 8                         |
+| scale frames         | ScaleFrames[]    | scale frames size * 20    |
 
 ### Texture Blob Format
 > Magic Number: 'TEXT'

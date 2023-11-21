@@ -147,31 +147,28 @@ TEST_F(BuildAndImportTest, SkeletalAnimation_from_fbx)
     auto builder = nc::convert::Builder{};
     ASSERT_TRUE(builder.Build(nc::asset::AssetType::SkeletalAnimation, target));
 
-    const auto asset = nc::asset::ImportSkeletalAnimation(outFile);
+    auto asset = nc::asset::ImportSkeletalAnimation(outFile);
 
-    // EXPECT_EQ(asset.extents, test_data::meshVertexExtents);
-    // EXPECT_FLOAT_EQ(asset.maxExtent, test_data::furthestDistanceFromOrigin);
-    // EXPECT_EQ(asset.vertices.size(), test_data::vertexCount);
+    EXPECT_EQ(asset.name, "Armature|Wiggle");
+    EXPECT_EQ(asset.durationInTicks, 60);
+    EXPECT_EQ(asset.ticksPerSecond, 24);
+    EXPECT_EQ(asset.framesPerBone.size(), 4);
 
-    // for (const auto& vertex : asset.vertices)
-    // {
-    //     // TODO: uvs
-    //     const auto foundVertex = std::ranges::find(test_data::possibleVertices, vertex.position);
-    //     const auto foundNormal = std::ranges::find(test_data::possibleNormals, vertex.normal);
-    //     const auto foundTangent = std::ranges::find(test_data::possibleTangents, vertex.tangent);
-    //     const auto foundBitangent = std::ranges::find(test_data::possibleBitangents, vertex.bitangent);
-    //     EXPECT_NE(foundVertex, test_data::possibleVertices.cend());
-    //     EXPECT_NE(foundNormal, test_data::possibleNormals.cend());
-    //     EXPECT_NE(foundTangent, test_data::possibleTangents.cend());
-    //     EXPECT_NE(foundBitangent, test_data::possibleBitangents.cend());
-    // }
+    EXPECT_EQ(asset.framesPerBone["Armature"].positionFrames.size(), 2);
+    EXPECT_EQ(asset.framesPerBone["Armature"].rotationFrames.size(), 2);
+    EXPECT_EQ(asset.framesPerBone["Armature"].rotationFrames.size(), 2);
 
-    // // should have triangular faces
-    // EXPECT_EQ(asset.indices.size() % 3, 0);
+    EXPECT_EQ(asset.framesPerBone["Root"].positionFrames.size(), 60);
+    EXPECT_EQ(asset.framesPerBone["Root"].rotationFrames.size(), 60);
+    EXPECT_EQ(asset.framesPerBone["Root"].rotationFrames.size(), 60);
+    
+    EXPECT_EQ(asset.framesPerBone["Tip"].positionFrames.size(), 2);
+    EXPECT_EQ(asset.framesPerBone["Tip"].rotationFrames.size(), 2);
+    EXPECT_EQ(asset.framesPerBone["Tip"].rotationFrames.size(), 2);
 
-    // // just verifying all indices point to a valid vertex
-    // const auto nVertices = asset.vertices.size();
-    // EXPECT_TRUE(std::ranges::all_of(asset.indices, [&nVertices](auto i){ return i < nVertices; }));
+    EXPECT_EQ(asset.framesPerBone["Tip_end"].positionFrames.size(), 61);
+    EXPECT_EQ(asset.framesPerBone["Tip_end"].rotationFrames.size(), 61);
+    EXPECT_EQ(asset.framesPerBone["Tip_end"].rotationFrames.size(), 61);
 }
 
 TEST_F(BuildAndImportTest, AudioClip_from_wav)

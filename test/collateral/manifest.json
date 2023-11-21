@@ -71,15 +71,6 @@
                     "assetName" : "wiggle"
                 }
             ]
-        },
-        {
-            "sourcePath": "simple_cube_animation.fbx",
-            "assetNames": [
-                {
-                    "subResourceName" : "Armature|Wiggle",
-                    "assetName" : "wiggle"
-                }
-            ]
         }
     ],
     "texture": [

@@ -21,6 +21,27 @@ This makes `Transform` operations within NcEngine less surprising. Additionally,
 NcEngine will treat the origin as the object's center of mass for physics
 calculations.
 
+If the mesh is intended for animation, it needs to have the following properties:
+
+- An armature with bones
+- All bone weights for each vertex must be normalized to sum 1.0
+- No more than four bone influences per vertices
+
+These properties can be set in the modeling software. To set them in Blender, for example:
+
+Normalizing bone weights:
+1. Select the mesh
+2. Change mode to Weight Paint
+3. Select all vertices
+4. Choose Weights -> Normalize All
+
+Limiting bone influences to four:
+1. Select the mesh
+2. Change mode to Weight Paint
+3. Select all vertices
+4. Choose Weights -> Limit Total
+5. Set the limit to 4 in the popup menu
+
 Geometry used for `hull-collider` generation should be convex.
 
 ## Image Conversion
@@ -64,3 +85,10 @@ Vertical cross layout (3:4):
     [-Y]
     [-Z]
 ```
+
+## Skeletal Animation Conversion
+> Supported file types: .fbx
+
+`skeletal-animation` assets can be converted from .FBX files with animation data.
+When exporting the .fbx from the modeling software, export with scaling set to "FBX Units Scale" (in Blender) or the equivalent in other modeling software.
+There is also support for external animations such as Mixamo.

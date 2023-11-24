@@ -90,7 +90,8 @@ Vertical cross layout (3:4):
 > Supported file types: .fbx
 
 `skeletal-animation` assets can be converted from .fbx files with animation data.
-When exporting the .fbx from the modeling software, the following settings must be observed. (Using Blender as an example): 
+When exporting the .fbx from the modeling software, the following settings must be observed. (Using Blender as an example):
+- Rotate the mesh -90 degrees on the X-axis
 - Set "Apply Scalings" to "FBX Units Scale"
 - Check the "Apply Unit" box
 - Check the "Use Space Transform" box

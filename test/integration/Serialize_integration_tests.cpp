@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
 #include "Deserialize.h"
-#include "builder/BonesWriter.h"
 #include "builder/Serialize.h"
 #include "utility/BlobSize.h"
 #include "ncasset/Assets.h"

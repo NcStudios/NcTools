@@ -10,7 +10,7 @@ target_compile_options(GetAssetType_unit_tests
 
 target_include_directories(GetAssetType_unit_tests
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/include/ncasset
+        ${PROJECT_SOURCE_DIR}/include
 )
 
 target_sources(GetAssetType_unit_tests

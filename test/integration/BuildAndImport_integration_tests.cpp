@@ -40,10 +40,7 @@ TEST_F(BuildAndImportTest, Texture_from_png)
     namespace test_data = collateral::rgb_corners;
     const auto inFile = test_data::pngFilePath;
     const auto outFile = ncaTestOutDirectory / "rgb_png.nca";
-    auto target = nc::convert::Target{};
-    target.sourcePath = inFile;
-    target.destinationPath = outFile;
-    // const auto target = nc::convert::Target{inFile, outFile};
+    const auto target = nc::convert::Target{inFile, outFile};
     auto builder = nc::convert::Builder{};
     ASSERT_TRUE(builder.Build(nc::asset::AssetType::Texture, target));
 
@@ -66,9 +63,7 @@ TEST_F(BuildAndImportTest, ConcaveCollider_from_fbx)
     namespace test_data = collateral::plane_fbx;
     const auto inFile = test_data::filePath;
     const auto outFile = ncaTestOutDirectory / "plane_concave.nca";
-    auto target = nc::convert::Target{};
-    target.sourcePath = inFile;
-    target.destinationPath = outFile;
+    const auto target = nc::convert::Target{inFile, outFile};
     auto builder = nc::convert::Builder{};
     ASSERT_TRUE(builder.Build(nc::asset::AssetType::ConcaveCollider, target));
 
@@ -90,9 +85,7 @@ TEST_F(BuildAndImportTest, HullCollider_from_fbx)
     namespace test_data = collateral::cube_fbx;
     const auto inFile = test_data::filePath;
     const auto outFile = ncaTestOutDirectory / "cube_hull.nca";
-    auto target = nc::convert::Target{};
-    target.sourcePath = inFile;
-    target.destinationPath = outFile;
+    const auto target = nc::convert::Target{inFile, outFile};
     auto builder = nc::convert::Builder{};
     ASSERT_TRUE(builder.Build(nc::asset::AssetType::HullCollider, target));
 
@@ -114,9 +107,7 @@ TEST_F(BuildAndImportTest, Mesh_from_fbx)
     namespace test_data = collateral::cube_fbx;
     const auto inFile = test_data::filePath;
     const auto outFile = ncaTestOutDirectory / "cube_mesh.nca";
-    auto target = nc::convert::Target{};
-    target.sourcePath = inFile;
-    target.destinationPath = outFile;
+    const auto target = nc::convert::Target{inFile, outFile};
     auto builder = nc::convert::Builder{};
     ASSERT_TRUE(builder.Build(nc::asset::AssetType::Mesh, target));
 
@@ -152,9 +143,7 @@ TEST_F(BuildAndImportTest, AudioClip_from_wav)
     namespace test_data = collateral::sine;
     const auto inFile = test_data::filePath;
     const auto outFile = ncaTestOutDirectory / "sine.nca";
-    auto target = nc::convert::Target{};
-    target.sourcePath = inFile;
-    target.destinationPath = outFile;
+    const auto target = nc::convert::Target{inFile, outFile};
     auto builder = nc::convert::Builder{};
     ASSERT_TRUE(builder.Build(nc::asset::AssetType::AudioClip, target));
 
@@ -176,9 +165,7 @@ TEST_F(BuildAndImportTest, CubeMap_from_png)
     namespace test_data = collateral::cube_map;
     const auto inFile = test_data::horizontalCrossFilePath;
     const auto outFile = ncaTestOutDirectory / "cube_map.nca";
-    auto target = nc::convert::Target{};
-    target.sourcePath = inFile;
-    target.destinationPath = outFile;
+    const auto target = nc::convert::Target{inFile, outFile};
     auto builder = nc::convert::Builder{};
     ASSERT_TRUE(builder.Build(nc::asset::AssetType::CubeMap, target));
 

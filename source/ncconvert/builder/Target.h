@@ -10,6 +10,6 @@ struct Target
 {
     std::filesystem::path sourcePath;
     std::filesystem::path destinationPath;
-    std::optional<std::string> subResourceName = std::nullopt;
+    std::optional<std::string> subResourceName;
 };
 }

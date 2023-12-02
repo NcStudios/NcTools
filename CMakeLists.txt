@@ -54,11 +54,9 @@ add_definitions(-DNC_ASSERT_ENABLED)
 
 include(FetchContent)
 
-### FOR TESTING - DO NOT CHECK IN
 FetchContent_Declare(NcCommon
                      GIT_REPOSITORY https://github.com/NcStudios/NcCommon.git
-                  #  GIT_TAG        d230e82740dfc589ce7fdb374194ce401c870d87 # origin/vnext
-                     GIT_TAG        b447156d4035d1e1f09d75839e98ae86fc48ebab
+                     GIT_TAG        f953b1a26f1619d4c7ba9cb88593d1b918279134 # origin/vnext
                      GIT_SHALLOW    FALSE
 )
 

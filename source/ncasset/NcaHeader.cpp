@@ -1,6 +1,7 @@
-#include "NcaHeader.h"
+#include "ncasset/NcaHeader.h"
 
 #include "ncutility/NcError.h"
+#include "ncutility/BinarySerialization.h"
 
 namespace nc::asset
 {
@@ -37,5 +38,24 @@ auto GetAssetType(const NcaHeader& header) -> AssetType
     }
 
     throw NcError("Unknown magic number in NcaHeader: ", header.magicNumber);
+}
+
+void Serialize(std::ostream& stream, const NcaHeader& header)
+{
+    constexpr char defaultAlgo[5] = "NONE"; // not yet supported
+    stream.write(header.magicNumber, 4);
+    stream.write(defaultAlgo, 4);
+    nc::serialize::Serialize(stream, header.assetId);
+    nc::serialize::Serialize(stream, header.size);
+}
+
+void Deserialize(std::istream& stream, NcaHeader& header)
+{
+    stream.read(reinterpret_cast<char*>(header.magicNumber), 4);
+    stream.read(header.compressionAlgorithm, 4);
+    header.magicNumber[4] = '\0';
+    header.compressionAlgorithm[4] = '\0';
+    nc::serialize::Deserialize(stream, header.assetId);
+    nc::serialize::Deserialize(stream, header.size);
 }
 } // namespace nc::asset

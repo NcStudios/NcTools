@@ -1,6 +1,8 @@
 name: Build
 
 on:
+  schedule:
+    - cron: '0 12 * * 5'
   pull_request:
     branches: [ release, vnext ]
     paths-ignore:
@@ -30,7 +32,7 @@ jobs:
             os: ubuntu-22.04
             generator: "Unix Makefiles"
             env: "CXX=/usr/bin/g++-12"
-            definitions: "-DCMAKE_BUILD_TYPE=Release"
+            definitions: "-DCMAKE_BUILD_TYPE=Debug"
             artifactName: "nc-convert-ubuntu22.04-x64"
 
     name: ${{ matrix.name }}
@@ -55,7 +57,7 @@ jobs:
         run: ${{ matrix.env }} cmake -G "${{ matrix.generator }}" -S ./ -B build ${{ matrix.definitions }} -DCMAKE_INSTALL_PREFIX=install
 
       - name: Build
-        run: cmake --build build --target install --config Release
+        run: cmake --build build --target install --config Debug
 
       - name: Run Tests
         run: ctest --test-dir build/test --output-on-failure --output-junit TestResults.xml

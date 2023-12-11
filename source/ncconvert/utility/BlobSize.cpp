@@ -33,7 +33,7 @@ namespace nc::convert
 auto GetBlobSize(const asset::AudioClip& asset) -> size_t
 {
     constexpr auto baseSize = sizeof(asset::AudioClip::samplesPerChannel);
-    return baseSize + asset.samplesPerChannel * sizeof(double) * 2ull;
+    return baseSize + asset.samplesPerChannel * sizeof(double) * 2ull + sizeof(size_t) * 2ull;
 }
 
 auto GetBlobSize(const asset::ConcaveCollider& asset) -> size_t

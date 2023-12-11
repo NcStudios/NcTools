@@ -1,6 +1,5 @@
 target_sources(nc-convert
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BonesWriter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Builder.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BuildInstructions.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BuildOrchestrator.cpp

@@ -3,6 +3,7 @@
 #include "AssetType.h"
 
 #include <cstddef>
+#include <iosfwd>
 #include <string_view>
 
 namespace nc::asset
@@ -44,4 +45,10 @@ struct NcaHeader
 
 /** @brief Get the AssetType for an NcaHeader. */
 auto GetAssetType(const NcaHeader& header) -> AssetType;
+
+/** @brief Serialize an NcaHeader to a stream. */
+void Serialize(std::ostream& stream, const NcaHeader& header);
+
+/** @brief Deserialize an NcaHeader from a stream. */
+void Deserialize(std::istream& stream, NcaHeader& header);
 } // namespace nc::asset

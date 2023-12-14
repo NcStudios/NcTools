@@ -38,15 +38,12 @@ if(NC_TOOLS_BUILD_CONVERTER)
 
     target_sources(BuildAndImport_integration_tests
         PRIVATE
-            ${PROJECT_SOURCE_DIR}/source/ncasset/BonesReader.cpp
             ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
             ${PROJECT_SOURCE_DIR}/source/ncasset/Import.cpp
-            ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
-            ${PROJECT_SOURCE_DIR}/source/ncasset/SkeletalAnimationReader.cpp
+            ${PROJECT_SOURCE_DIR}/source/ncasset/NcaHeader.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/GeometryAnalysis.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/Sanitize.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/TextureAnalysis.cpp
-            ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BonesWriter.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Builder.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/SkeletalAnimationWriter.cpp
@@ -106,6 +103,7 @@ if(NC_TOOLS_BUILD_CONVERTER)
 
     add_test(NcConvert_integration_tests NcConvert_integration_tests)
 endif()
+
 ### Serialization Tests ###
 add_executable(Serialize_integration_tests
     Serialize_integration_tests.cpp
@@ -128,11 +126,8 @@ target_include_directories(Serialize_integration_tests
 
 target_sources(Serialize_integration_tests
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/source/ncasset/BonesReader.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncasset/SkeletalAnimationReader.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/BonesWriter.cpp
+        ${PROJECT_SOURCE_DIR}/source/ncasset/NcaHeader.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/SkeletalAnimationWriter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/BlobSize.cpp

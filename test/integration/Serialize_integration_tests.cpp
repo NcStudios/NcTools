@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
 #include "Deserialize.h"
-#include "SkeletalAnimationReader.h"
-#include "builder/BonesWriter.h"
 #include "builder/Serialize.h"
 #include "builder/SkeletalAnimationWriter.h"
 #include "utility/BlobSize.h"

@@ -16,12 +16,9 @@ target_include_directories(NcAsset
 
 target_sources(NcAsset
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/source/ncasset/BonesReader.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/Import.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/NcaHeader.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncasset/RawNcaBuffer.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncasset/SkeletalAnimationReader.cpp
 )
 
 target_link_libraries(NcAsset

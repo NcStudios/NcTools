@@ -1,70 +1,50 @@
 #include "Serialize.h"
-#include "builder/BonesWriter.h"
-#include "builder/DataWriter.h"
-#include "builder/SkeletalAnimationWriter.h"
 #include "utility/BlobSize.h"
 #include "ncasset/Assets.h"
 #include "ncasset/NcaHeader.h"
+
+#include "ncutility/BinarySerialization.h"
+
+#include <cstring>
+#include <iostream>
+
+namespace
+{
+template<class T>
+void SerializeImpl(std::ostream& stream, const T& data, std::string_view magicNumber, size_t assetId)
+{
+    auto header = nc::asset::NcaHeader{"", "NONE", assetId, nc::convert::GetBlobSize(data)};
+    std::memcpy(header.magicNumber, magicNumber.data(), 5);
+    nc::serialize::Serialize(stream, header);
+    nc::serialize::Serialize(stream, data);
+}
+} // anonymous namespace
 
 namespace nc::convert
 {
 void Serialize(std::ostream& stream, const asset::AudioClip& data, size_t assetId)
 {
-    const auto assetSize = GetBlobSize(data);
-    WriteHeader(stream, asset::MagicNumber::audioClip, assetId, assetSize);
-    Write(stream, data.samplesPerChannel);
-    Write(stream, data.leftChannel.data(), data.leftChannel.size() * sizeof(double));
-    Write(stream, data.rightChannel.data(), data.rightChannel.size() * sizeof(double));
+    SerializeImpl(stream, data, asset::MagicNumber::audioClip, assetId);
 }
 
 void Serialize(std::ostream& stream, const asset::ConcaveCollider& data, size_t assetId)
 {
-    const auto assetSize = GetBlobSize(data);
-    WriteHeader(stream, asset::MagicNumber::concaveCollider, assetId, assetSize);
-    Write(stream, data.extents);
-    Write(stream, data.maxExtent);
-    Write(stream, data.triangles.size());
-    Write(stream, data.triangles.data(), data.triangles.size() * sizeof(Triangle));
+    SerializeImpl(stream, data, asset::MagicNumber::concaveCollider, assetId);
 }
 
 void Serialize(std::ostream& stream, const asset::CubeMap& data, size_t assetId)
 {
-    const auto assetSize = GetBlobSize(data);
-    WriteHeader(stream, asset::MagicNumber::cubeMap, assetId, assetSize);
-    Write(stream, data.faceSideLength);
-    Write(stream, data.pixelData.data(), data.pixelData.size());
+    SerializeImpl(stream, data, asset::MagicNumber::cubeMap, assetId);
 }
 
 void Serialize(std::ostream& stream, const asset::HullCollider& data, size_t assetId)
 {
-    const auto assetSize = GetBlobSize(data);
-    WriteHeader(stream, asset::MagicNumber::hullCollider, assetId, assetSize);
-    Write(stream, data.extents);
-    Write(stream, data.maxExtent);
-    Write(stream, data.vertices.size());
-    Write(stream, data.vertices.data(), data.vertices.size() * sizeof(Vector3));
+    SerializeImpl(stream, data, asset::MagicNumber::hullCollider, assetId);
 }
 
 void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
 {
-    const auto assetSize = GetBlobSize(data);
-    WriteHeader(stream, asset::MagicNumber::mesh, assetId, assetSize);
-    Write(stream, data.extents);
-    Write(stream, data.maxExtent);
-    Write(stream, data.vertices.size());
-    Write(stream, data.indices.size());
-    Write(stream, data.vertices.data(), data.vertices.size() * sizeof(asset::MeshVertex));
-    Write(stream, data.indices.data(), data.indices.size() * sizeof(uint32_t));
-    Write(stream, data.bonesData.has_value());
-    if (data.bonesData.has_value())
-    {
-        const auto& bonesData = data.bonesData.value();
-        Write(stream, bonesData.vertexSpaceToBoneSpace.size());
-        Write(stream, bonesData.boneSpaceToParentSpace.size());
-        Write(stream, bonesData.boneMapping);
-        Write(stream, bonesData.vertexSpaceToBoneSpace);
-        Write(stream, bonesData.boneSpaceToParentSpace);
-    }
+    SerializeImpl(stream, data, asset::MagicNumber::mesh, assetId);
 }
 
 void Serialize(std::ostream& stream, const asset::SkeletalAnimation& data, size_t assetId)
@@ -81,10 +61,6 @@ void Serialize(std::ostream& stream, const asset::SkeletalAnimation& data, size_
 
 void Serialize(std::ostream& stream, const asset::Texture& data, size_t assetId)
 {
-    const auto assetSize = GetBlobSize(data);
-    WriteHeader(stream, asset::MagicNumber::texture, assetId, assetSize);
-    Write(stream, data.width);
-    Write(stream, data.height);
-    Write(stream, data.pixelData.data(), data.pixelData.size());
+    SerializeImpl(stream, data, asset::MagicNumber::texture, assetId);
 }
 } // namespace nc::convert

@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "NcaHeader.h"
+#include "ncasset/NcaHeader.h"
 #include "ncutility/NcError.h"
 
 void SetMagicNumber(nc::asset::NcaHeader& header, std::string_view magicNumber)

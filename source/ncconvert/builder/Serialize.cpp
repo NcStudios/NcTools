@@ -49,14 +49,7 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
 
 void Serialize(std::ostream& stream, const asset::SkeletalAnimation& data, size_t assetId)
 {
-    const auto assetSize = GetBlobSize(data);
-    WriteHeader(stream, asset::MagicNumber::skeletalAnimation, assetId, assetSize);
-    Write(stream, data.name.size());
-    Write(stream, data.name.data(), data.name.size());
-    Write(stream, data.durationInTicks);
-    Write(stream, data.ticksPerSecond);
-    Write(stream, data.framesPerBone.size());
-    Write(stream, data.framesPerBone);
+    SerializeImpl(stream, data, asset::MagicNumber::skeletalAnimation, assetId);
 }
 
 void Serialize(std::ostream& stream, const asset::Texture& data, size_t assetId)

@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 #include "Deserialize.h"
 #include "builder/Serialize.h"
-#include "builder/SkeletalAnimationWriter.h"
 #include "utility/BlobSize.h"
 #include "ncasset/Assets.h"
 

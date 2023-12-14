@@ -46,7 +46,6 @@ if(NC_TOOLS_BUILD_CONVERTER)
             ${PROJECT_SOURCE_DIR}/source/ncconvert/analysis/TextureAnalysis.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Builder.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
-            ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/SkeletalAnimationWriter.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/AudioConverter.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/GeometryConverter.cpp
             ${PROJECT_SOURCE_DIR}/source/ncconvert/converters/TextureConverter.cpp
@@ -129,7 +128,6 @@ target_sources(Serialize_integration_tests
         ${PROJECT_SOURCE_DIR}/source/ncasset/Deserialize.cpp
         ${PROJECT_SOURCE_DIR}/source/ncasset/NcaHeader.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/Serialize.cpp
-        ${PROJECT_SOURCE_DIR}/source/ncconvert/builder/SkeletalAnimationWriter.cpp
         ${PROJECT_SOURCE_DIR}/source/ncconvert/utility/BlobSize.cpp
 )
 

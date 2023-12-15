@@ -369,17 +369,17 @@ auto ConvertToSkeletalAnimation(const aiAnimation* animationClip) -> nc::asset::
         
         for (const auto& positionKey : std::span(channel->mPositionKeys, channel->mNumPositionKeys))
         {
-            frames.positionFrames.emplace_back(positionKey.mTime, nc::Vector3(positionKey.mValue.x, positionKey.mValue.y, positionKey.mValue.z));
+            frames.positionFrames.emplace_back(static_cast<float>(positionKey.mTime), nc::Vector3(positionKey.mValue.x, positionKey.mValue.y, positionKey.mValue.z));
         }
 
         for (const auto& rotationKey : std::span(channel->mRotationKeys, channel->mNumRotationKeys))
         {
-            frames.rotationFrames.emplace_back(rotationKey.mTime, nc::Quaternion(rotationKey.mValue.x, rotationKey.mValue.y, rotationKey.mValue.z, rotationKey.mValue.w));
+            frames.rotationFrames.emplace_back(static_cast<float>(rotationKey.mTime), nc::Quaternion(rotationKey.mValue.x, rotationKey.mValue.y, rotationKey.mValue.z, rotationKey.mValue.w));
         }
 
         for (const auto& scaleKey : std::span(channel->mScalingKeys, channel->mNumScalingKeys))
         {
-            frames.scaleFrames.emplace_back(scaleKey.mTime, nc::Vector3(scaleKey.mValue.x, scaleKey.mValue.y, scaleKey.mValue.z));
+            frames.scaleFrames.emplace_back(static_cast<float>(scaleKey.mTime), nc::Vector3(scaleKey.mValue.x, scaleKey.mValue.y, scaleKey.mValue.z));
         }
         skeletalAnimation.framesPerBone.emplace(std::string(channel->mNodeName.C_Str()), std::move(frames));
     }

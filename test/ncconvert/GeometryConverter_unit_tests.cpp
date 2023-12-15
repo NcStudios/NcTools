@@ -279,3 +279,10 @@ TEST(GeometryConverterTest, ImportSkeletalAnimation_singleClip_convertedCorrectl
     EXPECT_EQ(actual.ticksPerSecond, 24);
     EXPECT_EQ(actual.framesPerBone.size(), 4);
 }
+
+TEST(GeometryConverterTest, ImportSkeletalAnimation_incorrectSubResourceName_throws)
+{
+    namespace test_data = collateral::simple_cube_animation_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    EXPECT_THROW(uut.ImportSkeletalAnimation(test_data::filePath, std::string("Armature|Wigglde")), nc::NcError);
+}

@@ -54,6 +54,15 @@ auto ReadFbx(const std::filesystem::path& path, Assimp::Importer* importer, unsi
     return scene;
 }
 
+template<class T>
+[[noreturn]] void SubResourceErrorHandler(const std::string& resource, std::span<T> items)
+{
+    auto ss = std::ostringstream{};
+    ss << "A sub-resource name was provided but no sub-resource was found by that name: " << resource << ".\nNo asset will created. Found sub-resources: \n";
+    std::ranges::for_each(items, [&ss](auto&& item){ ss << item->mName.C_Str() << ", "; });
+    throw nc::NcError(ss.str());
+}
+
 auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& subResourceName = std::nullopt) -> aiMesh*
 {
     NC_ASSERT(scene->mNumMeshes != 0, "No meshes found in scene.");
@@ -62,65 +71,36 @@ auto GetMeshFromScene(const aiScene* scene, const std::optional<std::string>& su
     {
         return scene->mMeshes[0];
     }
-    
-    aiMesh* mesh = nullptr;
 
-    for (auto* sceneMesh : std::span(scene->mMeshes, scene->mNumMeshes))
+    auto target = aiString{subResourceName.value()};
+    auto meshes = std::span(scene->mMeshes, scene->mNumMeshes);
+    auto pos = std::ranges::find(meshes, target, [](auto&& m) { return m->mName; });
+    if (pos != std::cend(meshes))
     {
-        if (std::string{sceneMesh->mName.C_Str()} == subResourceName)
-        {
-            mesh = sceneMesh;
-            break;
-        }
-    }
-    if (mesh == nullptr)
-    {
-        auto subResourceNames = std::string{};
-        auto meshIndex = 0u;
-        for (auto* sceneMesh : std::span(scene->mMeshes, scene->mNumMeshes))
-        {
-            meshIndex++;
-            meshIndex == scene->mNumMeshes-1 ? subResourceNames.append(std::string{sceneMesh->mName.C_Str()} + ", ")
-            : subResourceNames.append(std::string{sceneMesh->mName.C_Str()} + " ");
-        }
-        throw nc::NcError(fmt::format("A sub-resource name was provided but no animation was found by that name: {}. No asset will be created. Found sub-resources: {}", subResourceName.value(), subResourceNames));
+        return *pos;
     }
 
-    return mesh;
+    SubResourceErrorHandler<aiMesh*>(subResourceName.value(), meshes);
 }
 
 auto GetAnimationFromMesh(const aiScene* scene, const std::optional<std::string>& subResourceName = std::nullopt) -> aiAnimation*
 {
     NC_ASSERT(scene->mNumAnimations != 0, "No animations found in scene.");
 
-    aiAnimation* animation = nullptr;
-
     if (!subResourceName.has_value())
     {
         return scene->mAnimations[0];
     }
 
-    for (auto* sceneAnimation : std::span(scene->mAnimations, scene->mNumAnimations))
+    auto target = aiString{subResourceName.value()};
+    auto animations = std::span(scene->mAnimations, scene->mNumAnimations);
+    auto pos = std::ranges::find(animations, target, [](auto&& m) { return m->mName; });
+    if (pos != std::cend(animations))
     {
-        if (std::string{sceneAnimation->mName.C_Str()} == subResourceName)
-        {
-            animation = sceneAnimation;
-            break;
-        }
+        return *pos;
     }
-    if (animation == nullptr)
-    {
-        auto subResourceNames = std::string{};
-        auto animIndex = 0u;
-        for (auto* sceneAnimation : std::span(scene->mAnimations, scene->mNumAnimations))
-        {
-            animIndex++;
-            animIndex == scene->mNumAnimations-1 ? subResourceNames.append(std::string{sceneAnimation->mName.C_Str()} + ", ")
-            : subResourceNames.append(std::string{sceneAnimation->mName.C_Str()} + " ");
-        }
-        throw nc::NcError(fmt::format("A sub-resource name was provided but no animation was found by that name: {}. No asset will be created. Found sub-resources: {}", subResourceName.value(), subResourceNames));
-    }
-    return animation;
+
+    SubResourceErrorHandler<aiAnimation*>(subResourceName.value(), animations);
 }
 
 auto ToVector3(const aiVector3D& in) -> nc::Vector3
@@ -375,9 +355,8 @@ auto ConvertToSkeletalAnimation(const aiAnimation* animationClip) -> nc::asset::
 {
     auto skeletalAnimation = nc::asset::SkeletalAnimation{};
     skeletalAnimation.name = std::string(animationClip->mName.C_Str());
-    skeletalAnimation.ticksPerSecond = animationClip->mTicksPerSecond == 0 ? 25.0f : animationClip->mTicksPerSecond; // Ticks per second is not required to be set in animation software.
+    skeletalAnimation.ticksPerSecond = animationClip->mTicksPerSecond == 0 ? 25.0f : static_cast<float>(animationClip->mTicksPerSecond); // Ticks per second is not required to be set in animation software.
     skeletalAnimation.durationInTicks = static_cast<uint32_t>(animationClip->mDuration);
-    skeletalAnimation.framesPerBone = std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames>{};
     skeletalAnimation.framesPerBone.reserve(animationClip->mNumChannels);
 
     // A single channel represents one bone and all of its transformations for the animation clip.

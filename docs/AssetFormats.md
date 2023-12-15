@@ -129,7 +129,7 @@ TODO
 | name size                  | u64              | 8                         |
 | name                       | string           | name.size()               |
 | durationInTicks            | u32              | 4                         |
-| ticksPerSecond             | double           | 8                         |
+| ticksPerSecond             | float            | 4                         |
 | framesPerBone count        | u64              | 8                         |
 | framesPerBone list         | FramesPerBone[]  |                           | [FramesPerBone](#FramesPerBone-blob-format)
 

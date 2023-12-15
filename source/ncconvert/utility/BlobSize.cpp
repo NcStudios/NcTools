@@ -34,18 +34,22 @@ auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_
 
 auto GetSkeletalAnimationSize(const nc::asset::SkeletalAnimation& asset) -> size_t
 {
-    auto baseSize = sizeof(size_t) + asset.name.size() + sizeof(uint32_t) + sizeof(double) + sizeof(size_t); // name size, name, durationInTicks, ticksPerSecond, framesPerBone count
-    for (auto framesPerBonesIt=asset.framesPerBone.begin(); framesPerBonesIt!=asset.framesPerBone.end(); framesPerBonesIt++)
+    auto baseSize = sizeof(size_t)    + // name size
+                    asset.name.size() + // name
+                    sizeof(uint32_t)  + // durationInTicks
+                    sizeof(float)     + // ticksPerSecond
+                    sizeof(size_t);     // framesPerBone count
+
+    for (const auto& [name, frames] : asset.framesPerBone)
     {
-        baseSize+=sizeof(size_t); // name size (unordered_map key)
-        baseSize+=framesPerBonesIt->first.size(); // name (unordered_map key)
-        const auto& frames = framesPerBonesIt->second;
-        baseSize+=sizeof(size_t); // std::vector<nc::asset::PositionFrame> count
-        baseSize+=frames.positionFrames.size() * sizeof(nc::asset::PositionFrame); // std::vector<nc::asset::PositionFrame>
-        baseSize+=sizeof(size_t); // std::vector<nc::asset::RotationFrame> count
-        baseSize+=frames.rotationFrames.size() * sizeof(nc::asset::RotationFrame); // std::vector<nc::asset::RotationFrame>
-        baseSize+=sizeof(size_t); // std::vector<nc::asset::ScaleFrame> count
-        baseSize+=frames.scaleFrames.size() * sizeof(nc::asset::ScaleFrame); // std::vector<nc::asset::ScaleFrame>
+        baseSize+=sizeof(size_t);
+        baseSize+=name.size();
+        baseSize+=sizeof(size_t);
+        baseSize+=frames.positionFrames.size() * sizeof(nc::asset::PositionFrame);
+        baseSize+=sizeof(size_t);
+        baseSize+=frames.rotationFrames.size() * sizeof(nc::asset::RotationFrame);
+        baseSize+=sizeof(size_t);
+        baseSize+=frames.scaleFrames.size() * sizeof(nc::asset::ScaleFrame);
     }
     return baseSize;
 }

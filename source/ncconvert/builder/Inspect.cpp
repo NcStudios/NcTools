@@ -95,7 +95,9 @@ void Inspect(const std::filesystem::path& ncaPath)
         case asset::AssetType::Mesh:
         {
             const auto asset = asset::ImportMesh(ncaPath);
-            LOG(meshTemplate, asset.extents.x, asset.extents.y, asset.extents.z, asset.maxExtent, asset.vertices.size(), asset.indices.size(), asset.bonesData.value().vertexSpaceToBoneSpace.size(), asset.bonesData.value().boneSpaceToParentSpace.size());
+            auto vertexSpaceSize = asset.bonesData.has_value()? asset.bonesData.value().vertexSpaceToBoneSpace.size() : 0;
+            auto boneSpaceSize = asset.bonesData.has_value()? asset.bonesData.value().boneSpaceToParentSpace.size() : 0;
+            LOG(meshTemplate, asset.extents.x, asset.extents.y, asset.extents.z, asset.maxExtent, asset.vertices.size(), asset.indices.size(), vertexSpaceSize, boneSpaceSize);
             break;
         }
         case asset::AssetType::Shader:

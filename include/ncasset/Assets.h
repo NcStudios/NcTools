@@ -85,19 +85,19 @@ struct Shader
 
 struct PositionFrame
 {
-    double timeInTicks;
+    float timeInTicks;
     Vector3 position;
 };
 
 struct RotationFrame
 {
-    double timeInTicks;
+    float timeInTicks;
     Quaternion rotation;
 };
 
 struct ScaleFrame
 {
-    double timeInTicks;
+    float timeInTicks;
     Vector3 scale;
 };
 
@@ -114,7 +114,7 @@ struct SkeletalAnimation
 {
     std::string name;
     uint32_t durationInTicks;
-    double ticksPerSecond;
+    float ticksPerSecond;
     std::unordered_map<std::string, SkeletalAnimationFrames> framesPerBone;
 };
 

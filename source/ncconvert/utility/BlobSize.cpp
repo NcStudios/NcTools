@@ -42,14 +42,14 @@ auto GetSkeletalAnimationSize(const nc::asset::SkeletalAnimation& asset) -> size
 
     for (const auto& [name, frames] : asset.framesPerBone)
     {
-        baseSize+=sizeof(size_t);
-        baseSize+=name.size();
-        baseSize+=sizeof(size_t);
-        baseSize+=frames.positionFrames.size() * sizeof(nc::asset::PositionFrame);
-        baseSize+=sizeof(size_t);
-        baseSize+=frames.rotationFrames.size() * sizeof(nc::asset::RotationFrame);
-        baseSize+=sizeof(size_t);
-        baseSize+=frames.scaleFrames.size() * sizeof(nc::asset::ScaleFrame);
+        baseSize += sizeof(size_t);
+        baseSize += name.size();
+        baseSize += sizeof(size_t);
+        baseSize += frames.positionFrames.size() * sizeof(nc::asset::PositionFrame);
+        baseSize += sizeof(size_t);
+        baseSize += frames.rotationFrames.size() * sizeof(nc::asset::RotationFrame);
+        baseSize += sizeof(size_t);
+        baseSize += frames.scaleFrames.size() * sizeof(nc::asset::ScaleFrame);
     }
     return baseSize;
 }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project("nc-tools" VERSION "2.0.0" LANGUAGES CXX)
+project("nc-tools" VERSION "3.0.0" LANGUAGES CXX)
 
 if(${PROJECT_SOURCE_DIR} EQUAL ${PROJECT_BINARY_DIR})
     message(FATAL_ERROR "Don't be a fool, out-of-source build with your tool.")
@@ -54,6 +54,7 @@ add_definitions(-DNC_ASSERT_ENABLED)
 
 include(FetchContent)
 
+# TODO: before merge, update this tag
 FetchContent_Declare(NcCommon
                      GIT_REPOSITORY https://github.com/NcStudios/NcCommon.git
                      GIT_TAG        f953b1a26f1619d4c7ba9cb88593d1b918279134 # origin/vnext

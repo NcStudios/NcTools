@@ -13,7 +13,7 @@ set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "" FORCE)
 
 FetchContent_Declare(assimp
                      GIT_REPOSITORY https://github.com/NcStudios/assimp.git
-                     GIT_TAG        70eddc418e2bae64e78a41cf3cf4e7b95d36bc64 # origin/master
+                     GIT_TAG        v5.3.0+nc.1
                      GIT_SHALLOW    TRUE
 )
 

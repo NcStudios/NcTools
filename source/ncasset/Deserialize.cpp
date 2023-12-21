@@ -74,6 +74,11 @@ auto DeserializeMesh(std::istream& stream) -> DeserializedResult<Mesh>
     return DeserializeImpl<Mesh>(stream, MagicNumber::mesh);
 }
 
+auto DeserializeSkeletalAnimation(std::istream& stream) -> DeserializedResult<SkeletalAnimation>
+{
+    return DeserializeImpl<SkeletalAnimation>(stream, MagicNumber::skeletalAnimation);
+}
+
 auto DeserializeTexture(std::istream& stream) -> DeserializedResult<Texture>
 {
     return DeserializeImpl<Texture>(stream, MagicNumber::texture);

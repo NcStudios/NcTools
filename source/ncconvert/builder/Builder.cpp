@@ -95,6 +95,12 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         {
             throw NcError("Not implemented");
         }
+        case asset::AssetType::SkeletalAnimation:
+        {
+            const auto asset = m_geometryConverter->ImportSkeletalAnimation(target.sourcePath, target.subResourceName);
+            convert::Serialize(outFile, asset, assetId);
+            return true;
+        }
         case asset::AssetType::Texture:
         {
             const auto asset = m_textureConverter->ImportTexture(target.sourcePath);

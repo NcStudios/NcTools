@@ -37,10 +37,19 @@ R"(Data
 
 constexpr auto meshTemplate =
 R"(Data
-  extents       {}, {}, {}
-  max extent    {}
-  vertex count  {}
-  index count   {})";
+  extents                         {}, {}, {}
+  max extent                      {}
+  vertex count                    {}
+  index count                     {}
+  bones data vertex to bone count {}
+  bones data bone to parent count {})";
+
+constexpr auto skeletalAnimationTemplate =
+R"(Data
+  name              {}
+  duration in ticks {}
+  ticks per seconds {}
+  frames per bone   {})";
 
 constexpr auto textureTemplate =
 R"(Data
@@ -86,12 +95,20 @@ void Inspect(const std::filesystem::path& ncaPath)
         case asset::AssetType::Mesh:
         {
             const auto asset = asset::ImportMesh(ncaPath);
-            LOG(meshTemplate, asset.extents.x, asset.extents.y, asset.extents.z, asset.maxExtent, asset.vertices.size(), asset.indices.size());
+            auto vertexSpaceSize = asset.bonesData.has_value()? asset.bonesData.value().vertexSpaceToBoneSpace.size() : 0;
+            auto boneSpaceSize = asset.bonesData.has_value()? asset.bonesData.value().boneSpaceToParentSpace.size() : 0;
+            LOG(meshTemplate, asset.extents.x, asset.extents.y, asset.extents.z, asset.maxExtent, asset.vertices.size(), asset.indices.size(), vertexSpaceSize, boneSpaceSize);
             break;
         }
         case asset::AssetType::Shader:
         {
             LOG("Shader not supported");
+            break;
+        }
+        case asset::AssetType::SkeletalAnimation:
+        {
+            const auto asset = asset::ImportSkeletalAnimation(ncaPath);
+            LOG(skeletalAnimationTemplate, asset.name, asset.durationInTicks, asset.ticksPerSecond, asset.framesPerBone.size());
             break;
         }
         case asset::AssetType::Texture:

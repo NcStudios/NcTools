@@ -6,6 +6,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace nc::asset
@@ -33,6 +34,7 @@ struct BoneSpaceToParentSpace
 
 struct BonesData
 {
+    std::unordered_map<std::string, uint32_t> boneMapping;
     std::vector<VertexSpaceToBoneSpace> vertexSpaceToBoneSpace;
     std::vector<BoneSpaceToParentSpace> boneSpaceToParentSpace;
 };
@@ -79,6 +81,41 @@ struct PerVertexBones
 
 struct Shader
 {
+};
+
+struct PositionFrame
+{
+    float timeInTicks;
+    Vector3 position;
+};
+
+struct RotationFrame
+{
+    float timeInTicks;
+    Quaternion rotation;
+};
+
+struct ScaleFrame
+{
+    float timeInTicks;
+    Vector3 scale;
+};
+
+struct SkeletalAnimationFrames
+{
+    // Vectors are not guaranteed to be the same length. 
+    // There could be no rotation data for a frame, for example.
+    std::vector<PositionFrame> positionFrames;
+    std::vector<RotationFrame> rotationFrames;
+    std::vector<ScaleFrame> scaleFrames;
+};
+
+struct SkeletalAnimation
+{
+    std::string name;
+    uint32_t durationInTicks;
+    float ticksPerSecond;
+    std::unordered_map<std::string, SkeletalAnimationFrames> framesPerBone;
 };
 
 struct Texture

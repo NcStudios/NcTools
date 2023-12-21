@@ -138,6 +138,39 @@ TEST_F(BuildAndImportTest, Mesh_from_fbx)
     EXPECT_TRUE(std::ranges::all_of(asset.indices, [&nVertices](auto i){ return i < nVertices; }));
 }
 
+TEST_F(BuildAndImportTest, SkeletalAnimation_from_fbx)
+{
+    namespace test_data = collateral::simple_cube_animation_fbx;
+    const auto inFile = test_data::filePath;
+    const auto outFile = ncaTestOutDirectory / "simple_cube_animation.nca";
+    const auto target = nc::convert::Target(inFile, outFile, std::string{"Armature|Wiggle"});
+    auto builder = nc::convert::Builder{};
+    ASSERT_TRUE(builder.Build(nc::asset::AssetType::SkeletalAnimation, target));
+
+    auto asset = nc::asset::ImportSkeletalAnimation(outFile);
+
+    EXPECT_EQ(asset.name, "Armature|Wiggle");
+    EXPECT_EQ(asset.durationInTicks, 60);
+    EXPECT_EQ(asset.ticksPerSecond, 24);
+    EXPECT_EQ(asset.framesPerBone.size(), 4);
+
+    EXPECT_EQ(asset.framesPerBone["Armature"].positionFrames.size(), 2);
+    EXPECT_EQ(asset.framesPerBone["Armature"].rotationFrames.size(), 2);
+    EXPECT_EQ(asset.framesPerBone["Armature"].rotationFrames.size(), 2);
+
+    EXPECT_EQ(asset.framesPerBone["Root"].positionFrames.size(), 60);
+    EXPECT_EQ(asset.framesPerBone["Root"].rotationFrames.size(), 60);
+    EXPECT_EQ(asset.framesPerBone["Root"].rotationFrames.size(), 60);
+    
+    EXPECT_EQ(asset.framesPerBone["Tip"].positionFrames.size(), 2);
+    EXPECT_EQ(asset.framesPerBone["Tip"].rotationFrames.size(), 2);
+    EXPECT_EQ(asset.framesPerBone["Tip"].rotationFrames.size(), 2);
+
+    EXPECT_EQ(asset.framesPerBone["Tip_end"].positionFrames.size(), 61);
+    EXPECT_EQ(asset.framesPerBone["Tip_end"].rotationFrames.size(), 61);
+    EXPECT_EQ(asset.framesPerBone["Tip_end"].rotationFrames.size(), 61);
+}
+
 TEST_F(BuildAndImportTest, AudioClip_from_wav)
 {
     namespace test_data = collateral::sine;

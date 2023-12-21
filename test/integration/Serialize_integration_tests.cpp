@@ -144,6 +144,7 @@ TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
             0, 1, 2,  1, 2, 0,  2, 0, 1
         },
         .bonesData = nc::asset::BonesData{
+            .boneMapping = std::unordered_map<std::string, uint32_t>{},
             .vertexSpaceToBoneSpace = std::vector<nc::asset::VertexSpaceToBoneSpace>(0),
             .boneSpaceToParentSpace = std::vector<nc::asset::BoneSpaceToParentSpace>(0)
         }
@@ -178,6 +179,9 @@ TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
             .numChildren = 0u,
             .indexOfFirstChild = 0u
         });
+
+        // Can't initialize above due to internal compiler error in MS.
+    expectedAsset.bonesData.value().boneMapping.emplace("Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0", 0);
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
     nc::convert::Serialize(stream, expectedAsset, assetId);
@@ -366,4 +370,109 @@ TEST(SerializationTest, CubeMap_roundTrip_succeeds)
     EXPECT_TRUE(std::equal(expectedAsset.pixelData.cbegin(),
                            expectedAsset.pixelData.cend(),
                            actualAsset.pixelData.cbegin()));
+}
+
+TEST(SerializationTest, SkeletalAnimation_roundTrip_succeeds)
+{
+    constexpr auto assetId = 1234ull;
+
+    const auto firstBoneFrame = nc::asset::SkeletalAnimationFrames
+    {
+        std::vector<nc::asset::PositionFrame>
+        {
+            nc::asset::PositionFrame{0, nc::Vector3{0.0f, 0.0f, 0.0f}},
+            nc::asset::PositionFrame{1, nc::Vector3{0.1f, 0.1f, 0.1f}},
+            nc::asset::PositionFrame{2, nc::Vector3{0.2f, 0.2f, 0.2f}}
+        },
+
+        std::vector<nc::asset::RotationFrame>
+        {
+            nc::asset::RotationFrame{0, nc::Quaternion{1.0f, 1.0f, 1.0f, 1.0f}},
+            nc::asset::RotationFrame{1, nc::Quaternion{1.1f, 1.1f, 1.1f, 1.0f}},
+            nc::asset::RotationFrame{2, nc::Quaternion{1.2f, 1.2f, 1.2f, 1.0f}}
+        },
+
+        std::vector<nc::asset::ScaleFrame>
+        {
+            nc::asset::ScaleFrame{0, nc::Vector3{2.0f, 2.0f, 2.0f}},
+            nc::asset::ScaleFrame{1, nc::Vector3{2.1f, 2.1f, 2.1f}},
+            nc::asset::ScaleFrame{2, nc::Vector3{2.2f, 2.2f, 2.2f}}
+        }
+    };
+
+    const auto secondBoneFrame = nc::asset::SkeletalAnimationFrames
+    {
+        std::vector<nc::asset::PositionFrame>
+        {
+            nc::asset::PositionFrame{0, nc::Vector3{3.0f, 3.0f, 3.0f}},
+            nc::asset::PositionFrame{1, nc::Vector3{3.1f, 3.1f, 3.1f}},
+            nc::asset::PositionFrame{2, nc::Vector3{3.2f, 3.2f, 3.2f}}
+        },
+
+        std::vector<nc::asset::RotationFrame>
+        {
+            nc::asset::RotationFrame{0, nc::Quaternion{4.0f, 4.0f, 4.0f, 4.0f}},
+            nc::asset::RotationFrame{1, nc::Quaternion{4.1f, 4.1f, 4.1f, 4.0f}},
+            nc::asset::RotationFrame{2, nc::Quaternion{4.2f, 4.2f, 4.2f, 4.0f}}
+        },
+
+        std::vector<nc::asset::ScaleFrame>
+        {
+            nc::asset::ScaleFrame{0, nc::Vector3{5.0f, 5.0f, 5.0f}},
+            nc::asset::ScaleFrame{1, nc::Vector3{5.1f, 5.1f, 5.1f}},
+            nc::asset::ScaleFrame{2, nc::Vector3{5.2f, 5.2f, 5.2f}}
+        }
+    };
+
+    const auto skeletalAnimationFrames = std::unordered_map<std::string, nc::asset::SkeletalAnimationFrames>
+    {
+        {{std::string{"Bone0"}}, std::move(firstBoneFrame)},
+        {{std::string{"Bone1"}}, std::move(secondBoneFrame)}
+    };
+
+    const auto expectedAsset = nc::asset::SkeletalAnimation{
+        .name = "Test",
+        .durationInTicks = 128,
+        .ticksPerSecond = 64,
+        .framesPerBone = std::move(skeletalAnimationFrames)
+    };
+
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, expectedAsset, assetId);
+    const auto [actualHeader, actualAsset] = nc::asset::DeserializeSkeletalAnimation(stream);
+
+    EXPECT_EQ(actualAsset.name, std::string{"Test"});
+    EXPECT_EQ(actualAsset.durationInTicks, 128);
+    EXPECT_EQ(actualAsset.ticksPerSecond, 64);
+    EXPECT_EQ(actualAsset.framesPerBone.size(), 2);
+
+    const auto& firstBoneFrames = actualAsset.framesPerBone.at("Bone0");
+    EXPECT_EQ(firstBoneFrames.positionFrames.at(0).timeInTicks, 0);
+    EXPECT_EQ(firstBoneFrames.positionFrames.at(1).timeInTicks, 1);
+    EXPECT_EQ(firstBoneFrames.positionFrames.at(2).timeInTicks, 2);
+    EXPECT_FLOAT_EQ(firstBoneFrames.positionFrames.at(0).position.x, 0.0f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.positionFrames.at(0).position.y, 0.0f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.positionFrames.at(0).position.z, 0.0f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.rotationFrames.at(1).rotation.x, 1.1f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.rotationFrames.at(1).rotation.y, 1.1f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.rotationFrames.at(1).rotation.z, 1.1f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.rotationFrames.at(1).rotation.w, 1.0f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.scaleFrames.at(2).scale.x, 2.2f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.scaleFrames.at(2).scale.y, 2.2f);
+    EXPECT_FLOAT_EQ(firstBoneFrames.scaleFrames.at(2).scale.z, 2.2f);
+
+    const auto& secondBoneFrames = actualAsset.framesPerBone.at("Bone1");
+    EXPECT_EQ(secondBoneFrames.positionFrames.at(0).timeInTicks, 0);
+    EXPECT_EQ(secondBoneFrames.positionFrames.at(1).timeInTicks, 1);
+    EXPECT_EQ(secondBoneFrames.positionFrames.at(2).timeInTicks, 2);
+    EXPECT_FLOAT_EQ(secondBoneFrames.positionFrames.at(0).position.x, 3.0f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.positionFrames.at(0).position.y, 3.0f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.positionFrames.at(0).position.z, 3.0f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.rotationFrames.at(1).rotation.x, 4.1f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.rotationFrames.at(1).rotation.y, 4.1f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.rotationFrames.at(1).rotation.z, 4.1f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.rotationFrames.at(1).rotation.w, 4.0f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.scaleFrames.at(2).scale.x, 5.2f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.scaleFrames.at(2).scale.y, 5.2f);
+    EXPECT_FLOAT_EQ(secondBoneFrames.scaleFrames.at(2).scale.z, 5.2f);
 }

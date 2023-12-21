@@ -9,27 +9,7 @@ namespace nc::convert
 {
 auto CanOutputMany(asset::AssetType type) -> bool
 {
-    switch(type)
-    {
-        case asset::AssetType::AudioClip:
-            return false;
-        case asset::AssetType::CubeMap:
-            return false;
-        case asset::AssetType::ConcaveCollider:
-            return false;
-        case asset::AssetType::HullCollider:
-            return false;
-        case asset::AssetType::Mesh:
-            return true;
-        case asset::AssetType::Texture:
-            return false;
-        default:
-            break;
-    }
-
-    throw NcError(
-        fmt::format("Unknown AssetType: {}", static_cast<int>(type))
-    );
+    return type == asset::AssetType::Mesh || type == asset::AssetType::SkeletalAnimation;
 }
 
 auto ToAssetType(std::string type) -> asset::AssetType
@@ -46,6 +26,8 @@ auto ToAssetType(std::string type) -> asset::AssetType
         return asset::AssetType::HullCollider;
     else if(type == "mesh")
         return asset::AssetType::Mesh;
+    else if(type == "skeletal-animation")
+        return asset::AssetType::SkeletalAnimation;
     else if(type == "texture")
         return asset::AssetType::Texture;
 
@@ -66,6 +48,8 @@ auto ToString(asset::AssetType type) -> std::string
             return "hull-collider";
         case asset::AssetType::Mesh:
             return "mesh";
+        case asset::AssetType::SkeletalAnimation:
+            return "skeletal-animation";
         case asset::AssetType::Texture:
             return "texture";
         default:

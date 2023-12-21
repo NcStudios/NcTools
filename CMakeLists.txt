@@ -54,11 +54,10 @@ add_definitions(-DNC_ASSERT_ENABLED)
 
 include(FetchContent)
 
-# TODO: before merge, update this tag
 FetchContent_Declare(NcCommon
                      GIT_REPOSITORY https://github.com/NcStudios/NcCommon.git
-                     GIT_TAG        f953b1a26f1619d4c7ba9cb88593d1b918279134 # origin/vnext
-                     GIT_SHALLOW    FALSE
+                     GIT_TAG        v1.1.0
+                     GIT_SHALLOW    TRUE
 )
 
 FetchContent_MakeAvailable(NcCommon)

@@ -47,6 +47,11 @@ void Serialize(std::ostream& stream, const asset::Mesh& data, size_t assetId)
     SerializeImpl(stream, data, asset::MagicNumber::mesh, assetId);
 }
 
+void Serialize(std::ostream& stream, const asset::SkeletalAnimation& data, size_t assetId)
+{
+    SerializeImpl(stream, data, asset::MagicNumber::skeletalAnimation, assetId);
+}
+
 void Serialize(std::ostream& stream, const asset::Texture& data, size_t assetId)
 {
     SerializeImpl(stream, data, asset::MagicNumber::texture, assetId);

@@ -14,6 +14,11 @@ auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_
         out += sizeof(size_t);
         out += sizeof(size_t);
 
+        for (const auto& [boneName, index] : bonesData.value().boneMapping)
+        {
+            out += sizeof(size_t) + boneName.size() + sizeof(uint32_t);
+        }
+
         for (const auto& vertexSpaceToBoneSpace : bonesData.value().vertexSpaceToBoneSpace)
         {
             out += sizeof(size_t) + vertexSpaceToBoneSpace.boneName.size() + matrixSize;
@@ -25,6 +30,28 @@ auto GetBonesSize(const std::optional<nc::asset::BonesData>& bonesData) -> size_
         }
     }
     return out;
+}
+
+auto GetSkeletalAnimationSize(const nc::asset::SkeletalAnimation& asset) -> size_t
+{
+    auto baseSize = sizeof(size_t)    + // name size
+                    asset.name.size() + // name
+                    sizeof(uint32_t)  + // durationInTicks
+                    sizeof(float)     + // ticksPerSecond
+                    sizeof(size_t);     // framesPerBone count
+
+    for (const auto& [name, frames] : asset.framesPerBone)
+    {
+        baseSize += sizeof(size_t);
+        baseSize += name.size();
+        baseSize += sizeof(size_t);
+        baseSize += frames.positionFrames.size() * sizeof(nc::asset::PositionFrame);
+        baseSize += sizeof(size_t);
+        baseSize += frames.rotationFrames.size() * sizeof(nc::asset::RotationFrame);
+        baseSize += sizeof(size_t);
+        baseSize += frames.scaleFrames.size() * sizeof(nc::asset::ScaleFrame);
+    }
+    return baseSize;
 }
 }  // anonymous namespace
 
@@ -58,6 +85,11 @@ auto GetBlobSize(const asset::Mesh& asset) -> size_t
 {
     constexpr auto baseSize = sizeof(asset::Mesh::extents) + sizeof(asset::Mesh::maxExtent) + sizeof(size_t) + sizeof(size_t);
     return baseSize + asset.vertices.size() * sizeof(asset::MeshVertex) + asset.indices.size() * sizeof(uint32_t) + sizeof(bool) + GetBonesSize(asset.bonesData);
+}
+
+auto GetBlobSize(const asset::SkeletalAnimation& asset) -> size_t
+{
+    return GetSkeletalAnimationSize(asset);
 }
 
 auto GetBlobSize(const asset::Texture& asset) -> size_t

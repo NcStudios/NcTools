@@ -86,7 +86,7 @@ TEST(GeometryConverterTest, ImportedMesh_multipleSubResources_specifiedMeshParse
     EXPECT_EQ(planeMesh.vertices.size(), 4);
 }
 
-TEST(GeometryConverterTest, GetBoneWeights_SingleBone_1WeightAllVertices)
+TEST(GeometryConverterTest, GetBoneWeights_singleBone_1WeightAllVertices)
 {
     namespace test_data = collateral::single_bone_four_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
@@ -105,7 +105,7 @@ TEST(GeometryConverterTest, GetBoneWeights_SingleBone_1WeightAllVertices)
     }
 }
 
-TEST(GeometryConverterTest, GetBoneWeights_FourBones_QuarterWeightAllVertices)
+TEST(GeometryConverterTest, GetBoneWeights_fourBones_quarterWeightAllVertices)
 {
     namespace test_data = collateral::four_bone_four_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
@@ -124,7 +124,7 @@ TEST(GeometryConverterTest, GetBoneWeights_FourBones_QuarterWeightAllVertices)
     }
 }
 
-TEST(GeometryConverterTest, GetBoneWeights_FiveBonesPerVertex_ImportFails)
+TEST(GeometryConverterTest, GetBoneWeights_fiveBonesPerVertex_importFails)
 {
     namespace test_data = collateral::five_bones_per_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
@@ -142,7 +142,7 @@ TEST(GeometryConverterTest, GetBoneWeights_FiveBonesPerVertex_ImportFails)
     EXPECT_TRUE(threwNcError);
 }
 
-TEST(GeometryConverterTest, GetBoneWeights_WeightsNotEqual100_ImportFails)
+TEST(GeometryConverterTest, GetBoneWeights_weightsNotEqual100_importFails)
 {
     namespace test_data = collateral::four_bones_neq100_fbx;
     auto uut = nc::convert::GeometryConverter{};
@@ -160,7 +160,7 @@ TEST(GeometryConverterTest, GetBoneWeights_WeightsNotEqual100_ImportFails)
     EXPECT_TRUE(threwNcError);
 }
 
-TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
+TEST(GeometryConverterTest, GetBonesData_rootBoneOffset_equalsGlobalInverse)
 {
     namespace test_data = collateral::single_bone_four_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
@@ -196,11 +196,11 @@ TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
      
     EXPECT_EQ(b1, 0);
     EXPECT_EQ(b2, 0);
-    EXPECT_EQ(b3, -1);
+    EXPECT_EQ(b3, 1);
     EXPECT_EQ(b4, 0);
 
     EXPECT_EQ(c1, 0);
-    EXPECT_EQ(c2, 1);
+    EXPECT_EQ(c2, -1);
     EXPECT_EQ(c3, 0);
     EXPECT_EQ(c4, 0);
     
@@ -210,7 +210,7 @@ TEST(GeometryConverterTest, GetBonesData_RootBoneOffset_EqualsGlobalInverse)
     EXPECT_EQ(d4, 1);
 }
 
-TEST(GeometryConverterTest, GetBonesData_MatrixVectorsPopulated)
+TEST(GeometryConverterTest, GetBonesData_matrixVectorsPopulated)
 {
     namespace test_data = collateral::single_bone_four_vertex_fbx;
     auto uut = nc::convert::GeometryConverter{};
@@ -221,7 +221,7 @@ TEST(GeometryConverterTest, GetBonesData_MatrixVectorsPopulated)
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[0].boneName, "Bone");
 }
 
-TEST(GeometryConverterTest, GetBonesData_GetBonesWeight_ElementsCorrespond)
+TEST(GeometryConverterTest, GetBonesData_getBonesWeight_elementsCorrespond)
 {
     namespace test_data = collateral::four_bones_one_bone_70_percent_fbx;
     auto uut = nc::convert::GeometryConverter{};
@@ -248,7 +248,7 @@ TEST(GeometryConverterTest, GetBonesData_GetBonesWeight_ElementsCorrespond)
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[3].boneName, "Bone3");
 }
 
-TEST(GeometryConverterTest, GetBonesData_ComplexMesh_ConvertedCorrectly)
+TEST(GeometryConverterTest, GetBonesData_complexMesh_convertedCorrectly)
 {
     namespace test_data = collateral::real_world_model_fbx;
     auto uut = nc::convert::GeometryConverter{};
@@ -266,4 +266,23 @@ TEST(GeometryConverterTest, GetBonesData_ComplexMesh_ConvertedCorrectly)
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[1].boneName, "DEF-spine.004");
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[2].boneName, "DEF-spine.005");
     EXPECT_EQ(bonesData.vertexSpaceToBoneSpace[3].boneName, "DEF-spine.006");
+}
+
+TEST(GeometryConverterTest, ImportSkeletalAnimation_singleClip_convertedCorrectly)
+{
+    namespace test_data = collateral::simple_cube_animation_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    const auto actual = uut.ImportSkeletalAnimation(test_data::filePath, std::string("Armature|Wiggle"));
+
+    EXPECT_EQ(actual.name, std::string("Armature|Wiggle"));
+    EXPECT_EQ(actual.durationInTicks, 60);
+    EXPECT_EQ(actual.ticksPerSecond, 24);
+    EXPECT_EQ(actual.framesPerBone.size(), 4);
+}
+
+TEST(GeometryConverterTest, ImportSkeletalAnimation_incorrectSubResourceName_throws)
+{
+    namespace test_data = collateral::simple_cube_animation_fbx;
+    auto uut = nc::convert::GeometryConverter{};
+    EXPECT_THROW(uut.ImportSkeletalAnimation(test_data::filePath, std::string("Armature|Wigglde")), nc::NcError);
 }

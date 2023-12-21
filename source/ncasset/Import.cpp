@@ -98,6 +98,18 @@ auto ImportMesh(const std::filesystem::path& ncaPath) -> Mesh
     return ImportMesh(file);
 }
 
+auto ImportSkeletalAnimation(std::istream& data) -> SkeletalAnimation
+{
+    auto [header, asset] = DeserializeSkeletalAnimation(data);
+    return asset;
+}
+
+auto ImportSkeletalAnimation(const std::filesystem::path& ncaPath) -> SkeletalAnimation
+{
+    auto file = ::OpenNca(ncaPath);
+    return ImportSkeletalAnimation(file);
+}
+
 auto ImportTexture(std::istream& data) -> Texture
 {
     auto [header, asset] = DeserializeTexture(data);

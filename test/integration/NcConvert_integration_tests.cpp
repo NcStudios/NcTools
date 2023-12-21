@@ -176,6 +176,7 @@ TEST_F(NcConvertIntegration, Manifest_succeeds)
     EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "cube1a.nca"));
     EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "cube2.nca"));
     EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "cube3.nca"));
+    EXPECT_TRUE(std::filesystem::exists(ncaTestOutDirectory / "wiggle.nca"));
 }
 
 TEST_F(NcConvertIntegration, Manifest_subResourceMeshNotPresent_manifestFails)

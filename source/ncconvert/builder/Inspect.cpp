@@ -117,6 +117,11 @@ void Inspect(const std::filesystem::path& ncaPath)
             LOG(textureTemplate, asset.width, asset.height);
             break;
         }
+        case asset::AssetType::Font:
+        {
+            LOG("Font not supported");
+            break;
+        }
     }
 }
 } // namespace nc::convert

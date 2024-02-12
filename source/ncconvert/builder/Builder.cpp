@@ -107,6 +107,10 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
             convert::Serialize(outFile, asset, assetId);
             return true;
         }
+        case asset::AssetType::Font:
+        {
+            throw NcError("Not implemented");
+        }
     }
     throw NcError(fmt::format("Unknown AssetType: {} for {}",
         static_cast<int>(type), target.sourcePath.string()

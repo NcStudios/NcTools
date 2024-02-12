@@ -11,6 +11,7 @@ enum class AssetType
     Mesh,
     Shader,
     SkeletalAnimation,
-    Texture
+    Texture,
+    Font
 };
 } // namespace nc::asset

@@ -134,4 +134,10 @@ struct CubeMap
     uint32_t faceSideLength;
     std::vector<unsigned char> pixelData;
 };
+
+struct Font
+{
+    std::string path;
+    float size = 12.0f;
+};
 } // namespace nc::asset

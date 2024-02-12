@@ -11,5 +11,4 @@ struct Mesh;
 struct MeshVertex;
 struct SkeletalAnimation;
 struct Texture;
-struct Font;
 } // namespace nc::asset

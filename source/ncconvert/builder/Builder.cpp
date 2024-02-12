@@ -107,9 +107,12 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
             convert::Serialize(outFile, asset, assetId);
             return true;
         }
+        default:
+        {
+            throw NcError(fmt::format("Unknown AssetType: {} for {}",
+                static_cast<int>(type), target.sourcePath.string()
+            ));
+        }
     }
-    throw NcError(fmt::format("Unknown AssetType: {} for {}",
-        static_cast<int>(type), target.sourcePath.string()
-    ));
 }
 } // namespace nc::convert
